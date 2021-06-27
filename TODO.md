@@ -1,0 +1,1 @@
+- [ ] set utils/structs as packages in their own module called 'handlers' or something like that
