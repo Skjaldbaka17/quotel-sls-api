@@ -346,3 +346,41 @@ func SetMaxMinNumber(orderConfig structs.OrderConfig, column string, orderDirect
 	}
 	return dbPointer.Order(column + " " + orderDirection)
 }
+
+//qodLanguageSQL adds to the sql query for the quotes db a condition of whether the quotes to be fetched are quotes in a particular language
+func (requestHandler *RequestHandler) QodLanguageSQL(language string) *gorm.DB {
+	switch strings.ToLower(language) {
+	case "icelandic":
+		return requestHandler.Db.Table("qodiceview")
+	default:
+		return requestHandler.Db.Table("qodview")
+	}
+}
+
+//SetNewRandomQOD sets a random quote as the qod for today (if language=icelandic is supplied then it adds the random qod to the icelandic qod table)
+func (requestHandler *RequestHandler) SetNewRandomQOD(language string) error {
+	var quoteItem structs.QuoteDBModel
+	var dbPointer *gorm.DB
+	dbPointer = requestHandler.Db.Table("quotes")
+	dbPointer = QuoteLanguageSQL(language, dbPointer)
+	if strings.ToLower(language) != "icelandic" {
+		dbPointer = dbPointer.Where("Random() < 0.005")
+	}
+
+	err := dbPointer.Order("random()").Limit(1).Scan(&quoteItem).Error
+	if err != nil {
+		return err
+	}
+
+	return requestHandler.setQOD(language, time.Now().Format("2006-01-02"), quoteItem.Id)
+}
+
+//setQOD inserts a new row into qod/qodice table
+func (requestHandler *RequestHandler) setQOD(language string, date string, quoteId int) error {
+	switch strings.ToLower(language) {
+	case "icelandic":
+		return requestHandler.Db.Exec("insert into qodice (quote_id, date) values((select id from quotes where id = ? and is_icelandic), ?) on conflict (date) do update set quote_id = ?", quoteId, date, quoteId).Error
+	default:
+		return requestHandler.Db.Exec("insert into qod (quote_id, date) values((select id from quotes where id = ? and not is_icelandic), ?) on conflict (date) do update set quote_id = ?", quoteId, date, quoteId).Error
+	}
+}
