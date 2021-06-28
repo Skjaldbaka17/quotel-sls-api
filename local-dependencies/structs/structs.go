@@ -1,5 +1,7 @@
 package structs
 
+import "encoding/json"
+
 type Request struct {
 	Ids          []int       `json:"ids,omitempty"`
 	Id           int         `json:"id,omitempty"`
@@ -39,4 +41,9 @@ type OrderConfig struct {
 type ErrorResponse struct {
 	Message    string `json:"message,omitempty"`
 	StatusCode int    `json:"status_code,omitempty"`
+}
+
+func (errorResponse *ErrorResponse) ToString() string {
+	out, _ := json.Marshal(errorResponse)
+	return string(out)
 }

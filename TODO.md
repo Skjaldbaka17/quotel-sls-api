@@ -1,1 +1,2 @@
 - [ ] set utils/structs as packages in their own module called 'handlers' or something like that
+- [ ] Create (and call from origin lambda function where necessary) updatingPopularityCount lambda functions!

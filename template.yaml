@@ -9,6 +9,17 @@ Description: >
 Globals:
   Function:
     Timeout: 15
+    Environment:
+          Variables:
+            DATABASE_URL: !ref DATABASE_URL
+
+
+Parameters:
+
+  DATABASE_URL:
+    Type: String
+    Description: The connection string for the Database
+    Default: default value
 
 
 Resources:

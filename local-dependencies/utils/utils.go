@@ -2,7 +2,6 @@ package utils
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -22,6 +21,7 @@ type RequestHandler struct {
 }
 
 func (requestHandler *RequestHandler) InitializeDB() structs.ErrorResponse {
+	log.Println("HEREBRUV:" + os.Getenv(DATABASE_URL))
 	if requestHandler.Db == nil {
 		var err error
 
@@ -44,18 +44,18 @@ func (requestHandler *RequestHandler) InitializeDB() structs.ErrorResponse {
 //ValidateRequestBody takes in the request and validates all the input fields, returns an error with reason for validation-failure
 //if validation fails.
 //TODO: Make validation better! i.e. make it "real"
-func (requestHandler *RequestHandler) ValidateRequest(request events.APIGatewayProxyRequest) (interface{}, error) {
+func (requestHandler *RequestHandler) ValidateRequest(request events.APIGatewayProxyRequest) (structs.Request, structs.ErrorResponse) {
 	requestBody := structs.Request{}
 	err := json.Unmarshal([]byte(request.Body), &requestBody)
 	if err != nil {
 		log.Printf("Got err:", err)
-		return structs.ErrorResponse{
+		return structs.Request{}, structs.ErrorResponse{
 			Message:    "request body is not structured correctly. Please refer to the /docs page for information on how to structure the request body",
-			StatusCode: http.StatusBadRequest}, err
+			StatusCode: http.StatusBadRequest}
 	}
 
-	if err := requestHandler.ValidateRequestApiKey(request); err != nil {
-		return err, errors.New("Some Error from validating apikey")
+	if err := requestHandler.ValidateRequestApiKey(request); err != (structs.ErrorResponse{}) {
+		return structs.Request{}, err
 	}
 
 	if requestBody.PageSize < 1 || requestBody.PageSize > maxPageSize {
@@ -85,9 +85,9 @@ func (requestHandler *RequestHandler) ValidateRequest(request events.APIGatewayP
 				parsedDate, err := time.Parse(layout, requestBody.Qods[idx].Date)
 				if err != nil {
 					log.Printf("Got error when decoding: %s", err)
-					return structs.ErrorResponse{
+					return structs.Request{}, structs.ErrorResponse{
 						Message:    fmt.Sprintf("the date is not structured correctly, should be in %s format", layout),
-						StatusCode: http.StatusBadRequest}, err
+						StatusCode: http.StatusBadRequest}
 				}
 
 				requestBody.Qods[idx].Date = parsedDate.UTC().Format(layout)
@@ -105,9 +105,9 @@ func (requestHandler *RequestHandler) ValidateRequest(request events.APIGatewayP
 				parsedDate, err := time.Parse(layout, requestBody.Aods[idx].Date)
 				if err != nil {
 					log.Printf("Got error when decoding: %s", err)
-					return structs.ErrorResponse{
+					return structs.Request{}, structs.ErrorResponse{
 						Message:    fmt.Sprintf("the date is not structured correctly, should be in %s format", layout),
-						StatusCode: http.StatusBadRequest}, err
+						StatusCode: http.StatusBadRequest}
 				}
 
 				requestBody.Aods[idx].Date = parsedDate.UTC().Format(layout)
@@ -120,9 +120,9 @@ func (requestHandler *RequestHandler) ValidateRequest(request events.APIGatewayP
 		_, err := time.Parse(layout, requestBody.Minimum)
 		if err != nil {
 			log.Printf("Got error when decoding: %s", err)
-			return structs.ErrorResponse{
+			return structs.Request{}, structs.ErrorResponse{
 				Message:    fmt.Sprintf("the minimum date is not structured correctly, should be in %s format", layout),
-				StatusCode: http.StatusBadRequest}, err
+				StatusCode: http.StatusBadRequest}
 		}
 	}
 
@@ -131,19 +131,19 @@ func (requestHandler *RequestHandler) ValidateRequest(request events.APIGatewayP
 		parseDate, err := time.Parse(layout, requestBody.Maximum)
 		if err != nil {
 			log.Printf("Got error when decoding: %s", err)
-			return structs.ErrorResponse{
+			return structs.Request{}, structs.ErrorResponse{
 				Message:    fmt.Sprintf("the maximum date is not structured correctly, should be in %s format", layout),
-				StatusCode: http.StatusBadRequest}, err
+				StatusCode: http.StatusBadRequest}
 		}
 		requestBody.Minimum = parseDate.Format("01-02-2006")
 	}
 
-	return requestBody, nil
+	return requestBody, structs.ErrorResponse{}
 }
 
 // ValidateRequestApiKey checks if the ApiKey supplied exists and wether the user has finished his allowed request in the past
 // hour. Also adds to the requestHistory... Maybe move that to the end of a request?
-func (requestHandler *RequestHandler) ValidateRequestApiKey(request events.APIGatewayProxyRequest) interface{} {
+func (requestHandler *RequestHandler) ValidateRequestApiKey(request events.APIGatewayProxyRequest) structs.ErrorResponse {
 	requestBody := structs.Request{}
 	err := json.Unmarshal([]byte(request.Body), &requestBody)
 	if err != nil {
@@ -216,5 +216,10 @@ func (requestHandler *RequestHandler) ValidateRequestApiKey(request events.APIGa
 			StatusCode: http.StatusInternalServerError}
 	}
 
-	return nil
+	return structs.ErrorResponse{}
+}
+
+func Pagination(requestBody structs.Request, dbPointer *gorm.DB) *gorm.DB {
+	return dbPointer.Limit(requestBody.PageSize).
+		Offset(requestBody.Page * requestBody.PageSize)
 }

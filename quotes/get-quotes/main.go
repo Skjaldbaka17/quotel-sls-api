@@ -2,12 +2,20 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
+	"net/http"
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
+	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/utils"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
+
+type RequestHandler struct {
+	utils.RequestHandler
+}
+
+var theReqHandler = RequestHandler{}
 
 // swagger:route POST /quotes QUOTES GetQuotes
 // Get quotes by their ids
@@ -17,56 +25,59 @@ import (
 //  400: incorrectBodyStructureResponse
 //  500: internalServerErrorResponse
 
-func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	data := structs.Request{}
-	err := json.Unmarshal([]byte(request.Body), &data)
-	if err != nil {
-		fmt.Println(err.Error())
-		//invalid character '\'' looking for beginning of object key string
+func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	if errResponse := requestHandler.InitializeDB(); errResponse != (structs.ErrorResponse{}) {
+		return events.APIGatewayProxyResponse{
+			Body:       errResponse.Message,
+			StatusCode: errResponse.StatusCode,
+		}, nil
 	}
 
-	out, _ := json.Marshal(data)
+	requestBody, errResponse := requestHandler.ValidateRequest(request)
+
+	if errResponse != (structs.ErrorResponse{}) {
+		return events.APIGatewayProxyResponse{
+			Body:       errResponse.Message,
+			StatusCode: errResponse.StatusCode,
+		}, nil
+	}
+
+	// ---------
+	var quotes []structs.SearchViewDBModel
+	//** ---------- Paramatere configuratino for DB query begins ---------- **//
+
+	dbPointer := requestHandler.Db.Table("searchview").Order("quote_id ASC")
+	if requestBody.AuthorId > 0 {
+		dbPointer = dbPointer.
+			Where("author_id = ?", requestBody.AuthorId)
+		dbPointer = utils.Pagination(requestBody, dbPointer)
+	} else {
+		dbPointer = dbPointer.Where("quote_id in ?", requestBody.Ids)
+	}
+	//** ---------- Paramatere configuratino for DB query ends ---------- **//
+
+	err := dbPointer.Find(&quotes).Error
+
+	if err != nil {
+		log.Printf("Got error when querying DB in GetQuotes: %s", err)
+		return events.APIGatewayProxyResponse{
+			Body:       utils.InternalServerError,
+			StatusCode: http.StatusInternalServerError,
+		}, nil
+	}
+
+	//Update popularity in background! TODO: PUT IN ITS OWN LAMBDA FUNCTION!
+	// go handlers.DirectFetchQuotesCountIncrement(requestBody.Ids)
+
+	searchViewsAPI := structs.ConvertToSearchViewsAPIModel(quotes)
+
+	out, _ := json.Marshal(searchViewsAPI)
 	return events.APIGatewayProxyResponse{
-		Body:       fmt.Sprintf("GetQuotes123, %v", string(out)),
+		Body:       string(out),
 		StatusCode: 200,
 	}, nil
 }
 
-// GetQuotes handles POST requests to get the quotes, and their authors, that have the given ids
-// func GetQuotes(rw http.ResponseWriter, r *http.Request) {
-// 	var requestBody structs.Request
-// 	if err := handlers.GetRequestBody(rw, r, &requestBody); err != nil {
-// 		return
-// 	}
-// 	var quotes []structs.SearchViewDBModel
-// 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
-
-// 	dbPointer := handlers.Db.Table("searchview").Order("quote_id ASC")
-// 	if requestBody.AuthorId > 0 {
-// 		dbPointer = dbPointer.
-// 			Where("author_id = ?", requestBody.AuthorId)
-// 		dbPointer = pagination(requestBody, dbPointer)
-// 	} else {
-// 		dbPointer = dbPointer.Where("quote_id in ?", requestBody.Ids)
-// 	}
-// 	//** ---------- Paramatere configuratino for DB query ends ---------- **//
-
-// 	err := dbPointer.Find(&quotes).Error
-
-// 	if err != nil {
-// 		rw.WriteHeader(http.StatusInternalServerError)
-// 		log.Printf("Got error when querying DB in GetQuotes: %s", err)
-// 		json.NewEncoder(rw).Encode(structs.ErrorResponse{Message: handlers.InternalServerError})
-// 		return
-// 	}
-
-// 	//Update popularity in background!
-// 	go handlers.DirectFetchQuotesCountIncrement(requestBody.Ids)
-
-// 	searchViewsAPI := structs.ConvertToSearchViewsAPIModel(quotes)
-// 	json.NewEncoder(rw).Encode(searchViewsAPI)
-// }
-
 func main() {
-	lambda.Start(handler)
+	lambda.Start(theReqHandler.handler)
 }

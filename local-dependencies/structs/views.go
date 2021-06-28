@@ -1,5 +1,7 @@
 package structs
 
+import "encoding/json"
+
 type SearchViewDBModel struct {
 	AuthorId    int    `json:"author_id"`
 	Name        string `json:"name"`
@@ -32,6 +34,11 @@ type SearchViewAPIModel struct {
 	QuoteCount int `json:"quoteCount"`
 	//swagger:ignore
 	AuthorCount int `json:"authorCount"`
+}
+
+func (view *SearchViewAPIModel) ToString() string {
+	out, _ := json.Marshal(view)
+	return string(out)
 }
 
 func (dbModel *SearchViewDBModel) ConvertToAPIModel() SearchViewAPIModel {
