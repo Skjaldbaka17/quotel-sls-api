@@ -92,3 +92,17 @@ func ConvertToQodViewsDBModel(authors []QodViewAPIModel) []QodViewDBModel {
 	}
 	return authorsDB
 }
+
+type Qod struct {
+	// the date for which this quote is the QOD, if left empty this quote is today's QOD.
+	//
+	// Example: 12-22-2020
+	Date string `json:"date"`
+	// The id of the quote to be set as this dates QOD
+	//
+	// Example: 1
+	Id int `json:"id"`
+	// The language of the QOD
+	// Example: icelandic
+	Language string `json:"language"`
+}

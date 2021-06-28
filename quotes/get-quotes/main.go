@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-
-	"github.com/Skjaldbaka17/quotel-sls-api/structs"
 )
 
 // swagger:route POST /quotes QUOTES GetQuotes
@@ -25,8 +24,10 @@ func handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		fmt.Println(err.Error())
 		//invalid character '\'' looking for beginning of object key string
 	}
+
+	out, _ := json.Marshal(data)
 	return events.APIGatewayProxyResponse{
-		Body:       fmt.Sprintf("GetQuotes123, %v", data),
+		Body:       fmt.Sprintf("GetQuotes123, %v", string(out)),
 		StatusCode: 200,
 	}, nil
 }

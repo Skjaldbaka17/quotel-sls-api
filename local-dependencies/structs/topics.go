@@ -3,13 +3,13 @@ package structs
 type TopicDBModel struct {
 	Id          int    `json:"id"`
 	Name        string `json:"name"`
-	Isicelandic string `json:"is_icelandic"`
+	IsIcelandic bool   `json:"is_icelandic"`
 }
 
 type TopicAPIModel struct {
 	Id          int    `json:"id"`
 	Name        string `json:"name"`
-	Isicelandic string `json:"isIcelandic"`
+	IsIcelandic bool   `json:"isIcelandic"`
 }
 
 func (dbModel *TopicDBModel) ConvertToAPIModel() TopicAPIModel {

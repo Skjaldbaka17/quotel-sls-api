@@ -26,6 +26,7 @@ type RequestEvent struct {
 	Route       string `json:"route"`
 	RequestBody string `json:"request_body"`
 	ApiKey      string `json:"api_key"`
+	Request     string `json:"request"`
 }
 
 type ErrorEvent struct {

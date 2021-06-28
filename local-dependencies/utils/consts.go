@@ -1,17 +1,15 @@
 package utils
 
-import (
-	"log"
-	"math"
-	"os"
-
-	"github.com/joho/godotenv"
-)
-
-const InternalServerError = "Internal Server error when fetching the data. Sorry for the inconveniance and try again later."
+import "math"
 
 var REQUESTS_PER_HOUR = map[string]float64{"free": 100, "basic": 1000, "lilleBoy": 100000, "GOD": math.Inf(1)}
 var TIERS = []string{"free", "basic", "lilleBoy", "GOD"}
+
+const defaultPageSize = 25
+const maxPageSize = 200
+const maxQuotes = 50
+const defaultMaxQuotes = 1
+const InternalServerError = "Internal Server error when fetching the data. Sorry for the inconveniance and try again later."
 
 const DATABASE_URL = "DATABASE_URL"
 const AUTHORS_TABLE = "AUTHORS_TABLE"
@@ -29,18 +27,3 @@ const ICELANDIC_QUOTE_OF_THE_DAY_VIEW = "ICELANDIC_QUOTE_OF_THE_DAY_VIEW"
 const TOPICS_VIEW = "TOPICS_VIEW"
 const ICELANDIC_QUOTE_OF_THE_DAY_TABLE = "ICELANDIC_QUOTE_OF_THE_DAY_TABLE"
 const QUOTE_OF_THE_DAY_TABLE = "QUOTE_OF_THE_DAY_TABLE"
-
-func GetEnvVariable(key string) string {
-	// load .env file
-	err := godotenv.Load("./.env")
-
-	if err != nil {
-		log.Printf("Error loading .env file")
-		err = godotenv.Load("../.env")
-		if err != nil {
-			log.Printf("Error loading ../.env file")
-		}
-	}
-
-	return os.Getenv(key)
-}
