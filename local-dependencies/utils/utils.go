@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"regexp"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
@@ -38,7 +41,65 @@ func (requestHandler *RequestHandler) InitializeDB() structs.ErrorResponse {
 		// defer db.Close()
 	}
 	return structs.ErrorResponse{}
+}
 
+func (requestHandler *RequestHandler) GetRandomQuoteFromDb(requestBody *structs.Request) (structs.TopicViewAPIModel, error) {
+	const NR_OF_QUOTES = 639028
+	const NR_OF_ENGLISH_QUOTES = 634841
+	var dbPointer *gorm.DB
+	var topicResult structs.TopicViewDBModel
+
+	var shouldDoQuick = true
+
+	//** ---------- Paramatere configuratino for DB query begins ---------- **//
+	m1 := regexp.MustCompile(` `)
+	phrasesearch := m1.ReplaceAllString(requestBody.SearchString, " <-> ")
+
+	//Random quote from a particular topic
+	if requestBody.TopicId > 0 {
+		dbPointer = requestHandler.Db.Table("topicsview, plainto_tsquery(?) as plainq, to_tsquery(?) as phraseq", requestBody.SearchString, phrasesearch).Where("topic_id = ?", requestBody.TopicId)
+		shouldDoQuick = false
+	} else {
+		dbPointer = requestHandler.Db.Table("searchview, plainto_tsquery(?) as plainq, to_tsquery(?) as phraseq", requestBody.SearchString, phrasesearch)
+	}
+
+	//Random quote from a particular author
+	if requestBody.AuthorId > 0 {
+		dbPointer = dbPointer.Where("author_id = ?", requestBody.AuthorId)
+		shouldDoQuick = false
+	}
+
+	//Random quote from a particular language
+	dbPointer = QuoteLanguageSQL(requestBody.Language, dbPointer)
+
+	if strings.ToLower(requestBody.Language) == "icelandic" {
+		shouldDoQuick = false
+	}
+
+	if requestBody.SearchString != "" {
+		dbPointer = dbPointer.Where("( quote_tsv @@ plainq OR quote_tsv @@ phraseq)")
+		shouldDoQuick = false
+	}
+
+	//Order by used to get random quote if there are "few" rows returned
+	if !shouldDoQuick {
+		dbPointer = dbPointer.Order("random()") //Randomized, O( n*log(n) )
+	} else {
+		r := rand.New(rand.NewSource(time.Now().UnixNano()))
+		if strings.ToLower(requestBody.Language) == "english" {
+			dbPointer = dbPointer.Offset(r.Intn(NR_OF_ENGLISH_QUOTES))
+		} else {
+			dbPointer = dbPointer.Offset(r.Intn(NR_OF_QUOTES))
+		}
+
+	}
+
+	//** ---------- Paramater configuratino for DB query ends ---------- **//
+	err := dbPointer.Limit(1).Find(&topicResult).Error
+	if err != nil {
+		return structs.TopicViewAPIModel{}, err
+	}
+	return topicResult.ConvertToAPIModel(), nil
 }
 
 //ValidateRequestBody takes in the request and validates all the input fields, returns an error with reason for validation-failure
@@ -222,4 +283,28 @@ func (requestHandler *RequestHandler) ValidateRequestApiKey(request events.APIGa
 func Pagination(requestBody structs.Request, dbPointer *gorm.DB) *gorm.DB {
 	return dbPointer.Limit(requestBody.PageSize).
 		Offset(requestBody.Page * requestBody.PageSize)
+}
+
+//quoteLanguageSQL adds to the sql query for the quotes db a condition of whether the quotes to be fetched are in a particular language
+func QuoteLanguageSQL(language string, dbPointer *gorm.DB) *gorm.DB {
+	if language != "" {
+		switch strings.ToLower(language) {
+		case "english":
+			dbPointer = dbPointer.Not("is_icelandic")
+		case "icelandic":
+			dbPointer = dbPointer.Where("is_icelandic")
+		}
+	}
+	return dbPointer
+}
+
+//setMaxMinNumber sets the condition for which authors to return
+func SetMaxMinNumber(orderConfig structs.OrderConfig, column string, orderDirection string, dbPointer *gorm.DB) *gorm.DB {
+	if nr, err := strconv.Atoi(orderConfig.Maximum); err == nil {
+		dbPointer = dbPointer.Where(column+" <= ?", nr)
+	}
+	if nr, err := strconv.Atoi(orderConfig.Minimum); err == nil {
+		dbPointer = dbPointer.Where(column+" >= ?", nr)
+	}
+	return dbPointer.Order(column + " " + orderDirection)
 }

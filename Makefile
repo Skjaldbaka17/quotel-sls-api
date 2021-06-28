@@ -3,5 +3,5 @@
 build:
 	sam build
 
-run-local-with-env:
+run-env:
 	sam local start-api --env-vars env.json

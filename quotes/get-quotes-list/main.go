@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/utils"
@@ -17,15 +18,16 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /quotes QUOTES GetQuotes
-// Get quotes by their ids
+// swagger:route POST /quotes/list QUOTES GetQuotesList
+//
+// Get list of quotes according to some ordering / parameters
 //
 // responses:
 //	200: searchViewsResponse
 //  400: incorrectBodyStructureResponse
 //  500: internalServerErrorResponse
 
-// GetQuotes handles POST requests to get the quotes, and their authors, that have the given ids
+// GetQuotesList handles POST requests to get the quotes that fit the parameters
 func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	if errResponse := requestHandler.InitializeDB(); errResponse != (structs.ErrorResponse{}) {
 		return events.APIGatewayProxyResponse{
@@ -45,21 +47,35 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 
 	var quotes []structs.SearchViewDBModel
 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
+	dbPointer := requestHandler.Db.Table("searchview")
+	dbPointer = utils.QuoteLanguageSQL(requestBody.Language, dbPointer)
 
-	dbPointer := requestHandler.Db.Table("searchview").Order("quote_id ASC")
-	if requestBody.AuthorId > 0 {
-		dbPointer = dbPointer.
-			Where("author_id = ?", requestBody.AuthorId)
-		dbPointer = utils.Pagination(requestBody, dbPointer)
-	} else {
-		dbPointer = dbPointer.Where("quote_id in ?", requestBody.Ids)
+	orderDirection := "ASC"
+	if requestBody.OrderConfig.Reverse {
+		orderDirection = "DESC"
 	}
+
+	switch strings.ToLower(requestBody.OrderConfig.OrderBy) {
+	case "popularity": //TODO: add popularity ordering
+		orderDirection = "DESC"
+		if requestBody.OrderConfig.Reverse {
+			orderDirection = "ASC"
+		}
+		dbPointer = dbPointer.Order("quote_count " + orderDirection)
+	case "length":
+		dbPointer = utils.SetMaxMinNumber(requestBody.OrderConfig, "length(quote)", orderDirection, dbPointer)
+	default:
+		dbPointer = utils.SetMaxMinNumber(requestBody.OrderConfig, "quote_id", orderDirection, dbPointer)
+	}
+
 	//** ---------- Paramatere configuratino for DB query ends ---------- **//
 
-	err := dbPointer.Find(&quotes).Error
+	err := utils.Pagination(requestBody, dbPointer).Order("quote_id").
+		Find(&quotes).
+		Error
 
 	if err != nil {
-		log.Printf("Got error when querying DB in GetQuotes: %s", err)
+		log.Printf("Got error when querying DB in GetQuotesList: %s", err)
 		return events.APIGatewayProxyResponse{
 			Body:       utils.InternalServerError,
 			StatusCode: http.StatusInternalServerError,
@@ -67,10 +83,8 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	}
 
 	//Update popularity in background! TODO: PUT IN ITS OWN LAMBDA FUNCTION!
-	// go handlers.DirectFetchQuotesCountIncrement(requestBody.Ids)
-
+	// go handlers.QuotesAppearInSearchCountIncrement(quotes)
 	searchViewsAPI := structs.ConvertToSearchViewsAPIModel(quotes)
-
 	out, _ := json.Marshal(searchViewsAPI)
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),
