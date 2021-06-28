@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
@@ -17,18 +16,25 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /quotes/random QUOTES GetRandomQuote
-// Get a random quote according to the given parameters
+// swagger:route POST /quotes/qod/new QUOTES SetQuoteOfTheDay
+// Sets the quote of the day for the given dates
 // responses:
-//  200: topicViewResponse
+//	200: successResponse
 //  400: incorrectBodyStructureResponse
-//  404: notFoundResponse
 //  500: internalServerErrorResponse
 
-// GetRandomQuote handles POST requests for getting a random quote
+//SetQuoteOfTheyDay sets the quote of the day (is password protected)
 func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	//Initialize DB if requestHandler.Db = nil
 	if errResponse := requestHandler.InitializeDB(); errResponse != (structs.ErrorResponse{}) {
+		return events.APIGatewayProxyResponse{
+			Body:       errResponse.Message,
+			StatusCode: errResponse.StatusCode,
+		}, nil
+	}
+
+	// Only let user call this endpoint if her is GOD-tier
+	if errResponse := requestHandler.AuthorizeGODApiKey(request); errResponse != (structs.ErrorResponse{}) {
 		return events.APIGatewayProxyResponse{
 			Body:       errResponse.Message,
 			StatusCode: errResponse.StatusCode,
@@ -44,26 +50,31 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	result, err := requestHandler.GetRandomQuoteFromDb(&requestBody)
-	if err != nil {
-		log.Printf("Got error when querying DB in GetRandomQuote: %s", err)
+	if requestBody.Language == "" {
+		requestBody.Language = "English"
+	}
+
+	if len(requestBody.Qods) == 0 {
+		log.Println("Not QODS supplied when setting quote of the day")
 		return events.APIGatewayProxyResponse{
-			Body:       utils.InternalServerError,
-			StatusCode: http.StatusInternalServerError,
+			Body:       "Please supply some quotes",
+			StatusCode: http.StatusBadRequest,
 		}, nil
 	}
 
-	if result == (structs.TopicViewAPIModel{}) {
-		log.Printf("Got error when querying DB in GetRandomQuote: %s", err)
-		return events.APIGatewayProxyResponse{
-			Body:       "No quote exists that matches the given parameters",
-			StatusCode: http.StatusNotFound,
-		}, nil
+	for _, qod := range requestBody.Qods {
+		err := requestHandler.SetQOD(requestBody.Language, qod.Date, qod.Id)
+		if err != nil {
+			log.Printf("Got error when settin the qod %+v as QOD: %s", qod, err)
+			return events.APIGatewayProxyResponse{
+				Body:       "Some of the quotes (ids) you supplied are not in " + requestBody.Language,
+				StatusCode: http.StatusBadRequest,
+			}, nil
+		}
 	}
 
-	out, _ := json.Marshal(result)
 	return events.APIGatewayProxyResponse{
-		Body:       string(out),
+		Body:       "Successfully inserted quote of the day!",
 		StatusCode: http.StatusOK,
 	}, nil
 }

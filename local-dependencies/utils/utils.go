@@ -102,6 +102,44 @@ func (requestHandler *RequestHandler) GetRandomQuoteFromDb(requestBody *structs.
 	return topicResult.ConvertToAPIModel(), nil
 }
 
+//setQOD inserts a new row into qod/qodice table
+func (requestHandler *RequestHandler) SetQOD(language string, date string, quoteId int) error {
+	switch strings.ToLower(language) {
+	case "icelandic":
+		return requestHandler.Db.Exec("insert into qodice (quote_id, date) values((select id from quotes where id = ? and is_icelandic), ?) on conflict (date) do update set quote_id = ?", quoteId, date, quoteId).Error
+	default:
+		return requestHandler.Db.Exec("insert into qod (quote_id, date) values((select id from quotes where id = ? and not is_icelandic), ?) on conflict (date) do update set quote_id = ?", quoteId, date, quoteId).Error
+	}
+}
+
+// Check whether user has GOD-tier permissions
+func (requestHandler *RequestHandler) AuthorizeGODApiKey(request events.APIGatewayProxyRequest) structs.ErrorResponse {
+	requestBody := structs.Request{}
+	err := json.Unmarshal([]byte(request.Body), &requestBody)
+	if err != nil {
+		log.Printf("Got err: %s", err)
+		return structs.ErrorResponse{Message: InternalServerError, StatusCode: http.StatusInternalServerError}
+	}
+
+	var user structs.UserDBModel
+	if err := requestHandler.Db.Table("users").Where("api_key = ?", requestBody.ApiKey).First(&user).Error; err != nil {
+		log.Printf("error when searching for user with the given api key in AuthorIzeGOD (api key validation): %s", err)
+		return structs.ErrorResponse{
+			Message:    "You need special privileges to access this route.",
+			StatusCode: http.StatusUnauthorized,
+		}
+	}
+
+	if user.Tier != TIERS[len(TIERS)-1] {
+		return structs.ErrorResponse{
+			Message:    "you do not have the authorization to perform this action. Is your name Bassi Maraj? This is not meant for you... Sorry for the inconvenience",
+			StatusCode: http.StatusUnauthorized,
+		}
+	}
+
+	return structs.ErrorResponse{}
+}
+
 //ValidateRequestBody takes in the request and validates all the input fields, returns an error with reason for validation-failure
 //if validation fails.
 //TODO: Make validation better! i.e. make it "real"

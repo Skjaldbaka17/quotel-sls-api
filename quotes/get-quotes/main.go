@@ -27,6 +27,7 @@ var theReqHandler = RequestHandler{}
 
 // GetQuotes handles POST requests to get the quotes, and their authors, that have the given ids
 func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	//Initialize DB if requestHandler.Db = nil
 	if errResponse := requestHandler.InitializeDB(); errResponse != (structs.ErrorResponse{}) {
 		return events.APIGatewayProxyResponse{
 			Body:       errResponse.Message,
