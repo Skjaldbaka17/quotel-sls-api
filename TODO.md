@@ -3,4 +3,7 @@
 - [ ] Setup A testing structure and test all functions already created + TDD after that
 
 
+- [ ] Always order returned Quotes/Authors in /search by Popularity also (i.e. count desc)
+
+
 - [ ] Testing by mocking GORM: https://betterprogramming.pub/how-to-unit-test-a-gorm-application-with-sqlmock-97ee73e36526 
