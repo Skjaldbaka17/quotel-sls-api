@@ -99,7 +99,7 @@ Resources:
             Path: /quotes/qod/history
             Method: POST
 
-#------------------- /authors -------------------#   
+#-------------------------------------- /authors --------------------------------------#   
   GetAuthorsByIdsFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
@@ -179,7 +179,8 @@ Resources:
             Path: /authors/aod/new
             Method: POST
 
-#------------------- /search -------------------#   
+#-------------------------------------- /search --------------------------------------#   
+
   SearchByStringFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
@@ -219,3 +220,19 @@ Resources:
             Properties:
               Path: /search/quotes
               Method: POST
+
+#-------------------------------------- /search --------------------------------------#  
+
+  ListLanguagesSupportedFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+          CodeUri: functions/meta/list-languages-supported
+          Handler: list-languages-supported
+          Runtime: go1.x
+          Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+          Events:
+            GetQuotesAPI:
+              Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+              Properties:
+                Path: /meta/languages
+                Method: GET
