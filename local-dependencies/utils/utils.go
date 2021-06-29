@@ -147,7 +147,7 @@ func (requestHandler *RequestHandler) ValidateRequest(request events.APIGatewayP
 	requestBody := structs.Request{}
 	err := json.Unmarshal([]byte(request.Body), &requestBody)
 	if err != nil {
-		log.Printf("Got err:", err)
+		log.Printf("Got err: %s", err)
 		return structs.Request{}, structs.ErrorResponse{
 			Message:    "request body is not structured correctly. Please refer to the /docs page for information on how to structure the request body",
 			StatusCode: http.StatusBadRequest}
@@ -453,4 +453,22 @@ func (requestHandler *RequestHandler) GetBasePointer(requestBody structs.Request
 		dbPointer = dbPointer.Where("topic_id = ?", requestBody.TopicId)
 	}
 	return dbPointer
+}
+
+//ValidateUserRequestBody takes in the request and validates all the input fields, returns an error with reason for validation-failure
+//if validation fails.
+//TODO: Make validation better! i.e. make it "real"
+
+func GetUserRequestBody(request events.APIGatewayProxyRequest) (structs.UserApiModel, structs.ErrorResponse) {
+	//Save the state back into the body for later use (Especially useful for getting the AOD/QOD because if the AOD has not been set a random AOD is set and the function called again)
+	requestBody := structs.UserApiModel{}
+	err := json.Unmarshal([]byte(request.Body), &requestBody)
+	if err != nil {
+		log.Printf("Got err: %s", err)
+		return structs.UserApiModel{}, structs.ErrorResponse{
+			Message:    "request body is not structured correctly. Please refer to the /docs page for information on how to structure the request body",
+			StatusCode: http.StatusBadRequest}
+	}
+
+	return requestBody, structs.ErrorResponse{}
 }
