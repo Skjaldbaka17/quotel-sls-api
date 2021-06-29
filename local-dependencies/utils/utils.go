@@ -472,3 +472,43 @@ func GetUserRequestBody(request events.APIGatewayProxyRequest) (structs.UserApiM
 
 	return requestBody, structs.ErrorResponse{}
 }
+
+func ValidateUserInformation(requestBody *structs.UserApiModel) structs.ErrorResponse {
+	//TODO: Add email validation
+	if requestBody.Email == "" {
+		return structs.ErrorResponse{
+			Message:    "email should not be empty",
+			StatusCode: http.StatusBadRequest}
+	}
+
+	if requestBody.Name == "" {
+		return structs.ErrorResponse{
+			Message:    "name should not be empty",
+			StatusCode: http.StatusBadRequest}
+	}
+
+	if requestBody.Password == "" {
+		return structs.ErrorResponse{
+			Message:    "password should not be empty",
+			StatusCode: http.StatusBadRequest}
+	}
+
+	if len(requestBody.Password) < 8 {
+		return structs.ErrorResponse{
+			Message:    "password should be at least 8 characters long",
+			StatusCode: http.StatusBadRequest}
+	}
+
+	if requestBody.PasswordConfirmation == "" {
+		return structs.ErrorResponse{
+			Message:    "password confirmation should not be empty",
+			StatusCode: http.StatusBadRequest}
+	}
+
+	if requestBody.PasswordConfirmation != requestBody.Password {
+		return structs.ErrorResponse{
+			Message:    "passwords do not match",
+			StatusCode: http.StatusBadRequest}
+	}
+	return structs.ErrorResponse{}
+}
