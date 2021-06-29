@@ -5,10 +5,10 @@ require (
 
 )
 
-replace github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs => ../../local-dependencies/structs
+replace github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs => ../../../local-dependencies/structs
 
-replace github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/utils => ../../local-dependencies/utils
+replace github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/utils => ../../../local-dependencies/utils
 
-module get-quote-of-the-day
+module get-quotes
 
 go 1.16

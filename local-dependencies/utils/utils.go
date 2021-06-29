@@ -384,3 +384,16 @@ func (requestHandler *RequestHandler) setQOD(language string, date string, quote
 		return requestHandler.Db.Exec("insert into qod (quote_id, date) values((select id from quotes where id = ? and not is_icelandic), ?) on conflict (date) do update set quote_id = ?", quoteId, date, quoteId).Error
 	}
 }
+
+//authorLanguageSQL adds to the sql query for the authors db a condition of whether the authors to be fetched have quotes in a particular language
+func AuthorLanguageSQL(language string, dbPointer *gorm.DB) *gorm.DB {
+	if language != "" {
+		switch strings.ToLower(language) {
+		case "english":
+			dbPointer = dbPointer.Not("has_icelandic_quotes")
+		case "icelandic":
+			dbPointer = dbPointer.Where("has_icelandic_quotes")
+		}
+	}
+	return dbPointer
+}

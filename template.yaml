@@ -18,10 +18,12 @@ Globals:
       Variables:
         DATABASE_URL: !Ref DATABASEURL
 Resources:
+
+#------------------- /quotes -------------------#
   GetQuotesFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: quotes/get-quotes/
+      CodeUri: functions/quotes/get-quotes/
       Handler: get-quotes
       Runtime: go1.x
       Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
@@ -34,7 +36,7 @@ Resources:
   GetQuotesListFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: quotes/get-quotes-list/
+      CodeUri: functions/quotes/get-quotes-list/
       Handler: get-quotes-list
       Runtime: go1.x
       Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
@@ -47,7 +49,7 @@ Resources:
   GetRandomQuoteFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: quotes/get-random-quote/
+      CodeUri: functions/quotes/get-random-quote/
       Handler: get-random-quote
       Runtime: go1.x
       Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
@@ -60,7 +62,7 @@ Resources:
   SetQuoteOfTheDayFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: quotes/set-quote-of-the-day/
+      CodeUri: functions/quotes/set-quote-of-the-day/
       Handler: set-quote-of-the-day
       Runtime: go1.x
       Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
@@ -73,7 +75,7 @@ Resources:
   GetQuoteOfTheDayFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: quotes/get-quote-of-the-day/
+      CodeUri: functions/quotes/get-quote-of-the-day/
       Handler: get-quote-of-the-day
       Runtime: go1.x
       Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
@@ -86,7 +88,7 @@ Resources:
   GetQODHistoryFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: quotes/get-qod-history/
+      CodeUri: functions/quotes/get-qod-history/
       Handler: get-qod-history
       Runtime: go1.x
       Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
@@ -96,4 +98,44 @@ Resources:
           Properties:
             Path: /quotes/qod/history
             Method: POST
-  
+
+#------------------- /authors -------------------#   
+  GetAuthorsByIdsFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+        CodeUri: functions/authors/get-authors-by-ids
+        Handler: get-authors-by-ids
+        Runtime: go1.x
+        Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+        Events:
+          GetQuotesAPI:
+            Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+            Properties:
+              Path: /authors
+              Method: POST
+  GetAuthorsListFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+        CodeUri: functions/authors/get-authors-list
+        Handler: get-authors-list
+        Runtime: go1.x
+        Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+        Events:
+          GetQuotesAPI:
+            Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+            Properties:
+              Path: /authors/list
+              Method: POST
+  GetRandomAuthorFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+        CodeUri: functions/authors/get-random-author
+        Handler: get-random-author
+        Runtime: go1.x
+        Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+        Events:
+          GetQuotesAPI:
+            Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+            Properties:
+              Path: /authors/random
+              Method: POST
