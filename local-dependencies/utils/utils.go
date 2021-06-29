@@ -30,7 +30,7 @@ func (requestHandler *RequestHandler) InitializeDB() structs.ErrorResponse {
 
 		dsn := os.Getenv(DATABASE_URL)
 		requestHandler.Db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-			Logger: logger.Default.LogMode(logger.Silent),
+			Logger: logger.Default.LogMode(logger.Info),
 		})
 		if err != nil {
 			log.Printf("Could not connect to DB, got error: %s", err)
