@@ -409,7 +409,7 @@ func AodLanguageSQL(language string, dbPointer *gorm.DB) *gorm.DB {
 }
 
 //setAOD inserts a new row into the aod/aodice table
-func (requestHandler *RequestHandler) setAOD(language string, date string, authorId int) error {
+func (requestHandler *RequestHandler) SetAOD(language string, date string, authorId int) error {
 	switch strings.ToLower(language) {
 	case "icelandic":
 		return requestHandler.Db.Exec("insert into aodice (author_id, date) values((select id from authors where id = ? and has_icelandic_quotes), ?) on conflict (date) do update set author_id = ?", authorId, date, authorId).Error
@@ -433,5 +433,5 @@ func (requestHandler *RequestHandler) SetNewRandomAOD(language string) error {
 		return err
 	}
 
-	return requestHandler.setAOD(language, time.Now().Format("2006-01-02"), authorItem.Id)
+	return requestHandler.SetAOD(language, time.Now().Format("2006-01-02"), authorItem.Id)
 }
