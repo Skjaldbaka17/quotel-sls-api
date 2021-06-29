@@ -252,3 +252,16 @@ Resources:
               Properties:
                 Path: /topic
                 Method: POST
+  GetTopicsFunction:
+        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+        Properties:
+          CodeUri: functions/topics/get-topics
+          Handler: get-topics
+          Runtime: go1.x
+          Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+          Events:
+            GetQuotesAPI:
+              Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+              Properties:
+                Path: /topics
+                Method: POST
