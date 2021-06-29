@@ -397,3 +397,41 @@ func AuthorLanguageSQL(language string, dbPointer *gorm.DB) *gorm.DB {
 	}
 	return dbPointer
 }
+
+//aodLanguageSQL adds to the sql query for the authors db a condition of whether the authors to be fetched have quotes in a particular language
+func AodLanguageSQL(language string, dbPointer *gorm.DB) *gorm.DB {
+	switch strings.ToLower(language) {
+	case "icelandic":
+		return dbPointer.Table("aodiceview")
+	default:
+		return dbPointer.Table("aodview")
+	}
+}
+
+//setAOD inserts a new row into the aod/aodice table
+func (requestHandler *RequestHandler) setAOD(language string, date string, authorId int) error {
+	switch strings.ToLower(language) {
+	case "icelandic":
+		return requestHandler.Db.Exec("insert into aodice (author_id, date) values((select id from authors where id = ? and has_icelandic_quotes), ?) on conflict (date) do update set author_id = ?", authorId, date, authorId).Error
+	default:
+		return requestHandler.Db.Exec("insert into aod (author_id, date) values((select id from authors where id = ? and not has_icelandic_quotes), ?) on conflict (date) do update set author_id = ?", authorId, date, authorId).Error
+	}
+}
+
+//SetNewRandomQOD sets a random quote as the qod for today (if language=icelandic is supplied then it adds the random qod to the icelandic qod table)
+func (requestHandler *RequestHandler) SetNewRandomAOD(language string) error {
+	var authorItem structs.AuthorDBModel
+
+	if language == "" {
+		language = "english"
+	}
+	dbPointer := requestHandler.Db.Table("authors")
+	dbPointer = AuthorLanguageSQL(language, dbPointer)
+
+	err := dbPointer.Order("random()").Limit(1).Scan(&authorItem).Error
+	if err != nil {
+		return err
+	}
+
+	return requestHandler.setAOD(language, time.Now().Format("2006-01-02"), authorItem.Id)
+}
