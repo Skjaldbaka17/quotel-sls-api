@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"regexp"
+	"time"
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/utils"
@@ -19,13 +19,13 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-func firstSearch(requestBody *structs.Request, dbPointer *gorm.DB) *gorm.DB {
+func search(requestBody *structs.Request, dbPointer *gorm.DB) *gorm.DB {
 	table := "searchview"
 	//TODO: Validate that this topicId exists
 	if requestBody.TopicId > 0 {
 		table = "topicsview"
 	}
-	dbPointer = dbPointer.Table(table+", plainto_tsquery(?) as plainq ",
+	dbPointer = dbPointer.Table(table+", plainto_tsquery('english', ?) as plainq ",
 		requestBody.SearchString).Select("*, ts_rank(tsv, plainq) as plainrank")
 
 	if requestBody.TopicId > 0 {
@@ -34,29 +34,6 @@ func firstSearch(requestBody *structs.Request, dbPointer *gorm.DB) *gorm.DB {
 
 	//Order by authorid to have definitive order (when for examplke some quotes rank the same for plain, phrase, general and similarity)
 	dbPointer = dbPointer.Where("( tsv @@ plainq )").Order("plainrank desc, author_id desc")
-
-	//Particular language search
-	dbPointer = utils.QuoteLanguageSQL(requestBody.Language, dbPointer)
-	return dbPointer
-}
-
-func secondSearch(requestBody *structs.Request, dbPointer *gorm.DB) *gorm.DB {
-	table := "searchview"
-	//TODO: Validate that this topicId exists
-	if requestBody.TopicId > 0 {
-		table = "topicsview"
-	}
-	m1 := regexp.MustCompile(` `)
-	generalsearch := m1.ReplaceAllString(requestBody.SearchString, " | ")
-	dbPointer = dbPointer.Table(table+", to_tsquery(?) as generalq ",
-		generalsearch).Select("*, ts_rank(tsv, generalq) as generalrank")
-
-	if requestBody.TopicId > 0 {
-		dbPointer = dbPointer.Where("topic_id = ?", requestBody.TopicId)
-	}
-
-	//Order by authorid to have definitive order (when for examplke some quotes rank the same for plain, phrase, general and similarity)
-	dbPointer = dbPointer.Where("( tsv @@ generalq )").Order("generalrank DESC, author_id desc")
 
 	//Particular language search
 	dbPointer = utils.QuoteLanguageSQL(requestBody.Language, dbPointer)
@@ -97,13 +74,17 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 
 	var dbPointer *gorm.DB
 	for i := 0; i < 2; i++ {
-		if i == 0 {
-			dbPointer = firstSearch(&requestBody, requestHandler.Db)
-		} else if i == 1 {
-			dbPointer = secondSearch(&requestBody, requestHandler.Db)
+		if i == 1 {
+			requestBody.SearchString = requestHandler.CheckForSpellingErrorsInSearchString(requestBody.SearchString)
 		}
+
+		dbPointer = search(&requestBody, requestHandler.Db)
+		start := time.Now()
 		err := utils.Pagination(requestBody, dbPointer).
 			Find(&topicResults).Error
+		t := time.Now()
+		elapsed := t.Sub(start)
+		log.Printf("Time fetching data: %d millisec", elapsed.Milliseconds())
 
 		if err != nil {
 			log.Printf("Got error when querying DB in SearchByString: %s", err)

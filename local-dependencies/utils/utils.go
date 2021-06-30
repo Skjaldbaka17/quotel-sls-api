@@ -16,6 +16,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"gorm.io/gorm/logger"
 )
 
@@ -511,4 +512,37 @@ func ValidateUserInformation(requestBody *structs.UserApiModel) structs.ErrorRes
 			StatusCode: http.StatusBadRequest}
 	}
 	return structs.ErrorResponse{}
+}
+
+// CheckForSpellingErrorsInSearchString takes the searchstring and partitions it into its separate words (max 20)
+// Then it runs a similarity search on the unique_lexeme table (where all the words from quotes.quote and authors.name are stored)
+// this is to check if the user made some spelling errors. Then the searchstring is put into the firstSearch and the
+// same search as before run again.
+func (requestHandler *RequestHandler) CheckForSpellingErrorsInSearchString(searchString string) string {
+	newSearchString := ""
+	for idx, word := range strings.Fields(searchString) {
+		if idx >= 20 {
+			break
+		}
+		var theWord []string
+		err := requestHandler.Db.Table("unique_lexeme").
+			Select("word").
+			Where("similarity(word, ?) > 0.4", word).
+			Clauses(clause.OrderBy{
+				Expression: clause.Expr{SQL: "similarity(word,?) desc, length(word)", Vars: []interface{}{word}, WithoutParentheses: true},
+			}).
+			Limit(1).
+			Find(&theWord).Error
+
+		if err != nil {
+			log.Printf("Got error when querying DB in SearchByString: %s", err)
+		}
+		log.Println("THE WORD:", theWord)
+		if len(theWord) > 0 && theWord[0] != "" {
+			log.Printf("THe word %s, the STring %s", theWord[0], newSearchString)
+			newSearchString = strings.Join([]string{newSearchString, theWord[0]}, " ")
+		}
+		log.Println("THe string:", newSearchString)
+	}
+	return newSearchString
 }

@@ -29,4 +29,9 @@ FROM quotes,
 plainto_tsquery('float like butterfly') as plainq  
 WHERE ( tsv @@ plainq ) 
 ORDER BY plainrank desc, 
-author_id desc LIMIT 25
+author_id desc LIMIT 25;
+
+
+select *, similarity(name,'friedrik nietse') as sml from authors where name % 'friedrik nietse' order by sml desc limit 10;
+select *, similarity(quote,'float like a butterfly') as sml from quotes where quote % 'friedrik nietse' order by sml desc limit 10;
+CREATE INDEX quotes_trgm_idx ON quotes USING GIN (quote gin_trgm_ops);
