@@ -68,7 +68,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	}
 
 	//Update popularity in background! TODO: PUT IN ITS OWN LAMBDA FUNCTION!
-	// go handlers.DirectFetchQuotesCountIncrement(requestBody.Ids)
+	go requestHandler.DirectFetchQuotesCountIncrement(requestBody.Ids)
 
 	searchViewsAPI := structs.ConvertToSearchViewsAPIModel(quotes)
 

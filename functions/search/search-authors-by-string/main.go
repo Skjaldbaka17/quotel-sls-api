@@ -9,6 +9,7 @@ import (
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/utils"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -17,6 +18,29 @@ type RequestHandler struct {
 }
 
 var theReqHandler = RequestHandler{}
+
+func generalSearch(requestBody *structs.Request, dbPointer *gorm.DB) *gorm.DB {
+	//Order by authorid to have definitive order (when for examplke some names rank the same for similarity), same for why quote_id
+	dbPointer = dbPointer.Table("authors").
+		Where("( similarity(name, ?) > 0.4)", requestBody.SearchString).
+		Clauses(clause.OrderBy{
+			Expression: clause.Expr{SQL: "similarity(name,?) desc", Vars: []interface{}{requestBody.SearchString}, WithoutParentheses: true},
+		})
+
+	//Particular language search
+	dbPointer = utils.AuthorLanguageSQL(requestBody.Language, dbPointer)
+	return dbPointer
+}
+
+func search(requestBody *structs.Request, dbPointer *gorm.DB) *gorm.DB {
+	//Order by authorid to have definitive order (when for examplke some names rank the same for similarity), same for why quote_id
+	dbPointer = dbPointer.Table("authors, plainto_tsquery('english', ?) as plainq", requestBody.SearchString).Select("*, ts_rank(tsv, plainq) as plainrank").
+		Where("( tsv @@ plainq )").Order("plainrank desc, id desc")
+
+	//Particular language search
+	dbPointer = utils.AuthorLanguageSQL(requestBody.Language, dbPointer)
+	return dbPointer
+}
 
 // swagger:route POST /search/authors SEARCH SearchAuthorsByString
 //
@@ -47,31 +71,37 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	}
 
 	var results []structs.AuthorDBModel
-	//** ---------- Paramatere configuratino for DB query begins ---------- **//
-	//Order by authorid to have definitive order (when for examplke some names rank the same for similarity), same for why quote_id
-	//% is same as SIMILARITY but with default threshold 0.3
-	dbPointer := requestHandler.Db.Table("authors").
-		Where("( tsv @@ plainto_tsquery(?) OR (?) % ANY(STRING_TO_ARRAY(name,' ')) )", requestBody.SearchString, requestBody.SearchString).
-		Clauses(clause.OrderBy{
-			Expression: clause.Expr{SQL: "similarity(name, ?) DESC, id DESC", Vars: []interface{}{requestBody.SearchString}, WithoutParentheses: true},
-		})
 
-	//Particular language search
-	dbPointer = utils.AuthorLanguageSQL(requestBody.Language, dbPointer)
-	//** ---------- Paramatere configuratino for DB query ends ---------- **//
-	err := utils.Pagination(requestBody, dbPointer).
-		Find(&results).Error
-	//  500: internalServerErrorResponse
-	if err != nil {
-		log.Printf("Got error when querying DB in SearchAuthorsByString: %s", err)
-		return events.APIGatewayProxyResponse{
-			Body:       utils.InternalServerError,
-			StatusCode: http.StatusInternalServerError,
-		}, nil
+	var dbPointer *gorm.DB
+	for i := 0; i < 3; i++ {
+		if i == 1 {
+			requestBody.SearchString = requestHandler.CheckForSpellingErrorsInSearchString(requestBody.SearchString, "unique_lexeme_authors")
+		} else if i == 2 {
+			dbPointer = generalSearch(&requestBody, requestHandler.Db)
+		}
+
+		if i != 2 {
+			dbPointer = search(&requestBody, requestHandler.Db)
+		}
+
+		err := utils.Pagination(requestBody, dbPointer).
+			Find(&results).Error
+		//  500: internalServerErrorResponse
+		if err != nil {
+			log.Printf("Got error when querying DB in SearchAuthorsByString: %s", err)
+			return events.APIGatewayProxyResponse{
+				Body:       utils.InternalServerError,
+				StatusCode: http.StatusInternalServerError,
+			}, nil
+		}
+
+		if len(results) > 0 {
+			break
+		}
 	}
 
 	//Update popularity in background! TODO: add as its own lambda function
-	// go handlers.AuthorsAppearInSearchCountIncrement(results)
+	go requestHandler.AuthorsAppearInSearchCountIncrement(results)
 
 	authorsAPI := structs.ConvertToAuthorsAPIModel(results)
 	out, _ := json.Marshal(authorsAPI)

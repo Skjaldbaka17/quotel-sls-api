@@ -1,34 +1,34 @@
 package structs
 
 type AuthorDBModel struct {
-	Id                  int    `json:"id"`
-	Name                string `json:"name"`
-	HasIcelandicQuotes  bool   `json:"has_icelandic_quotes"`
-	NrOfIcelandicQuotes int    `json:"nr_of_icelandic_quotes"`
-	NrOfEnglishQuotes   int    `json:"nr_of_english_quotes"`
-	Count               int    `json:"count"`
+	Id                  int    `json:"id,omitempty"`
+	Name                string `json:"name,omitempty"`
+	HasIcelandicQuotes  bool   `json:"has_icelandic_quotes,omitempty"`
+	NrOfIcelandicQuotes int    `json:"nr_of_icelandic_quotes,omitempty"`
+	NrOfEnglishQuotes   int    `json:"nr_of_english_quotes,omitempty"`
+	Count               int    `json:"count,omitempty"`
 }
 
 type AuthorAPIModel struct {
 	// The author's id
 	// unique: true
 	// example: 24952
-	Id int `json:"id"`
+	Id int `json:"id,omitempty"`
 	// Name of the author
 	// example: Muhammad Ali
-	Name string `json:"name"`
+	Name string `json:"name,omitempty"`
 	// Whether or not this author has some icelandic quotes
 	// example: true
-	HasIcelandicQuotes bool `json:"hasIcelandicQuotes"`
+	HasIcelandicQuotes bool `json:"hasIcelandicQuotes,omitempty"`
 	// How many quotes in Icelandic this author has
 	// example: 6
-	NrOfIcelandicQuotes int `json:"nrOfIcelandicQuotes"`
+	NrOfIcelandicQuotes int `json:"nrOfIcelandicQuotes,omitempty"`
 	// How many quotes in English this author has
 	// example: 78
-	NrOfEnglishQuotes int `json:"nrOfEnglishQuotes"`
+	NrOfEnglishQuotes int `json:"nrOfEnglishQuotes,omitempty"`
 	// The popularity index of the author
 	// example: 1111
-	Count int `json:"count"`
+	Count int `json:"count,omitempty"`
 }
 
 func (dbModel *AuthorDBModel) ConvertToAPIModel() AuthorAPIModel {
@@ -56,19 +56,19 @@ func ConvertToAuthorsDBModel(authors []AuthorAPIModel) []AuthorDBModel {
 }
 
 type AodDBModel struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-	Date string `json:"date"`
+	Id   int    `json:"id,omitempty"`
+	Name string `json:"name,omitempty"`
+	Date string `json:"date,omitempty"`
 }
 
 type AodAPIModel struct {
 	// The author's id
 	// example: 24952
-	Id int `json:"id"`
+	Id int `json:"id,omitempty"`
 	// The name of the author
 	// example: Muhammad Ali
-	Name string `json:"name"`
+	Name string `json:"name,omitempty"`
 	// The date when this author was the author of the day
 	// example: 2021-06-12T00:00:00Z
-	Date string `json:"date"`
+	Date string `json:"date,omitempty"`
 }

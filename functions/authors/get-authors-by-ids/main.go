@@ -61,8 +61,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	}
 
 	//Update popularity in background! TODO: PUT IN ITS OWN LAMBDA FUNCTION!
-	// go handlers.DirectFetchAuthorsCountIncrement(requestBody.Ids)
-
+	go requestHandler.DirectFetchAuthorsCountIncrement(requestBody.Ids)
 	authorsAPI := structs.ConvertToAuthorsAPIModel(authors)
 	out, _ := json.Marshal(authorsAPI)
 	return events.APIGatewayProxyResponse{

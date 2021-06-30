@@ -100,7 +100,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	}
 
 	//Update popularity in background! TODO: Put into its own Lambda function
-	// go handlers.AuthorsAppearInSearchCountIncrement(authors)
+	go requestHandler.AuthorsAppearInSearchCountIncrement(authors)
 
 	authorsAPI := structs.ConvertToAuthorsAPIModel(authors)
 	out, _ := json.Marshal(authorsAPI)

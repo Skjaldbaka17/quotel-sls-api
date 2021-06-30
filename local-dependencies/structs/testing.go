@@ -1,19 +1,19 @@
 package structs
 
 type TestApiResponse struct {
-	Id                  int    `json:"id"`
-	Name                string `json:"name"`
-	HasIcelandicQuotes  bool   `json:"hasIcelandicQuotes"`
-	NrOfIcelandicQuotes int    `json:"nrOfIcelandicQuotes"`
-	NrOfEnglishQuotes   int    `json:"nrOfEnglishQuotes"`
-	Count               int    `json:"count"`
-	AuthorId            int    `json:"authorId"`
-	QuoteId             int    `json:"quoteId" `
-	TopicId             int    `json:"topicId" `
-	TopicName           string `json:"topicName" `
-	Quote               string `json:"quote"`
-	IsIcelandic         bool   `json:"isIcelandic"`
-	Date                string `json:"date"`
-	QuoteCount          int    `json:"quoteCount"`
-	AuthorCount         int    `json:"authorCount"`
+	Id                  int    `json:"id,omitempty"`
+	Name                string `json:"name,omitempty"`
+	HasIcelandicQuotes  bool   `json:"hasIcelandicQuotes,omitempty"`
+	NrOfIcelandicQuotes int    `json:"nrOfIcelandicQuotes,omitempty"`
+	NrOfEnglishQuotes   int    `json:"nrOfEnglishQuotes,omitempty"`
+	Count               int    `json:"count,omitempty"`
+	AuthorId            int    `json:"authorId,omitempty"`
+	QuoteId             int    `json:"quoteId,omitempty" `
+	TopicId             int    `json:"topicId,omitempty" `
+	TopicName           string `json:"topicName,omitempty" `
+	Quote               string `json:"quote,omitempty"`
+	IsIcelandic         bool   `json:"isIcelandic,omitempty"`
+	Date                string `json:"date,omitempty"`
+	QuoteCount          int    `json:"quoteCount,omitempty"`
+	AuthorCount         int    `json:"authorCount,omitempty"`
 }

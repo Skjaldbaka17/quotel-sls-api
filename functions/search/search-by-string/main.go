@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/utils"
@@ -68,23 +67,17 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	}
 
 	var topicResults []structs.TopicViewDBModel
-	//** ---------- Paramatere configuratino for DB query begins ---------- **//
-
-	//** ---------- Paramatere configuratino for DB query ends ---------- **//
 
 	var dbPointer *gorm.DB
 	for i := 0; i < 2; i++ {
 		if i == 1 {
-			requestBody.SearchString = requestHandler.CheckForSpellingErrorsInSearchString(requestBody.SearchString)
+			requestBody.SearchString = requestHandler.CheckForSpellingErrorsInSearchString(requestBody.SearchString, "unique_lexeme")
 		}
 
 		dbPointer = search(&requestBody, requestHandler.Db)
-		start := time.Now()
+
 		err := utils.Pagination(requestBody, dbPointer).
 			Find(&topicResults).Error
-		t := time.Now()
-		elapsed := t.Sub(start)
-		log.Printf("Time fetching data: %d millisec", elapsed.Milliseconds())
 
 		if err != nil {
 			log.Printf("Got error when querying DB in SearchByString: %s", err)
@@ -100,7 +93,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	}
 
 	//Update popularity in background! TODO: Add as its own lambda function
-	// go handlers.TopicViewAppearInSearchCountIncrement(topicResults)
+	go requestHandler.TopicViewAppearInSearchCountIncrement(topicResults)
 	apiResults := structs.ConvertToTopicViewsAPIModel(topicResults)
 	out, _ := json.Marshal(apiResults)
 	return events.APIGatewayProxyResponse{

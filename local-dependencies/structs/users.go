@@ -1,48 +1,48 @@
 package structs
 
 type UserApiModel struct {
-	ApiKey               string `json:"apiKey"`
-	Id                   int    `json:"id"`
-	Email                string `json:"email"`
-	Name                 string `json:"name"`
-	Password             string `json:"password"`
-	PasswordConfirmation string `json:"passwordConfirmation"`
-	Tier                 string `json:"tier"`
+	ApiKey               string `json:"apiKey,omitempty"`
+	Id                   int    `json:"id,omitempty"`
+	Email                string `json:"email,omitempty"`
+	Name                 string `json:"name,omitempty"`
+	Password             string `json:"password,omitempty"`
+	PasswordConfirmation string `json:"passwordConfirmation,omitempty"`
+	Tier                 string `json:"tier,omitempty"`
 }
 
 type UserDBModel struct {
-	Id           int    `json:"id"`
-	ApiKey       string `json:"api_key"`
-	Message      string `json:"message"`
-	PasswordHash string `json:"password_hash"`
-	Tier         string `json:"tier"`
-	Name         string `json:"name"`
-	Email        string `json:"email"`
+	Id           int    `json:"id,omitempty"`
+	ApiKey       string `json:"api_key,omitempty"`
+	Message      string `json:"message,omitempty"`
+	PasswordHash string `json:"password_hash,omitempty"`
+	Tier         string `json:"tier,omitempty"`
+	Name         string `json:"name,omitempty"`
+	Email        string `json:"email,omitempty"`
 }
 
 type RequestEvent struct {
-	Id          int    `json:"id"`
-	UserId      int    `json:"user_id"`
-	Route       string `json:"route"`
-	RequestBody string `json:"request_body"`
-	ApiKey      string `json:"api_key"`
-	Request     string `json:"request"`
+	Id          int    `json:"id,omitempty"`
+	UserId      int    `json:"user_id,omitempty"`
+	Route       string `json:"route,omitempty"`
+	RequestBody string `json:"request_body,omitempty"`
+	ApiKey      string `json:"api_key,omitempty"`
+	Request     string `json:"request,omitempty"`
 }
 
 type ErrorEvent struct {
-	Id           int    `json:"id"`
-	UserId       int    `json:"user_id"`
-	Route        string `json:"route"`
-	RequestBody  string `json:"request_body"`
-	ErrorMessage string `json:"error_message"`
-	ExtraInfo    string `json:"extra_info"`
+	Id           int    `json:"id,omitempty"`
+	UserId       int    `json:"user_id,omitempty"`
+	Route        string `json:"route,omitempty"`
+	RequestBody  string `json:"request_body,omitempty"`
+	ErrorMessage string `json:"error_message,omitempty"`
+	ExtraInfo    string `json:"extra_info,omitempty"`
 }
 
 type UserResponse struct {
 	// The user id
 	// example: 1
-	Id int `json:"id"`
+	Id int `json:"id,omitempty"`
 	// The api-key that the user should send to get access to the api
 	// example: 1d8db1d2-6f5b-4254-8b74-44f5e5229add
-	ApiKey string `json:"apiKey"`
+	ApiKey string `json:"apiKey,omitempty"`
 }

@@ -69,7 +69,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	}
 
 	//Update popularity in background! TODO: Add as its own lambda function
-	// go handlers.DirectFetchTopicCountIncrement(requestBody.Id, requestBody.Topic)
+	go requestHandler.DirectFetchTopicCountIncrement(requestBody.Id, requestBody.Topic)
 	topicViewsAPI := structs.ConvertToTopicViewsAPIModel(results)
 	out, _ := json.Marshal(topicViewsAPI)
 	return events.APIGatewayProxyResponse{

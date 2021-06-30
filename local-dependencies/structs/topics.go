@@ -1,15 +1,15 @@
 package structs
 
 type TopicDBModel struct {
-	Id          int    `json:"id"`
-	Name        string `json:"name"`
-	IsIcelandic bool   `json:"is_icelandic"`
+	Id          int    `json:"id,omitempty"`
+	Name        string `json:"name,omitempty"`
+	IsIcelandic bool   `json:"is_icelandic,omitempty"`
 }
 
 type TopicAPIModel struct {
-	Id          int    `json:"id"`
-	Name        string `json:"name"`
-	IsIcelandic bool   `json:"isIcelandic"`
+	Id          int    `json:"id,omitempty"`
+	Name        string `json:"name,omitempty"`
+	IsIcelandic bool   `json:"isIcelandic,omitempty"`
 }
 
 func (dbModel *TopicDBModel) ConvertToAPIModel() TopicAPIModel {
@@ -37,39 +37,39 @@ func ConvertToTopicsDBModel(authors []TopicAPIModel) []TopicDBModel {
 }
 
 type TopicViewDBModel struct {
-	AuthorId    int    `json:"author_id"`
-	Name        string `json:"name"`
-	QuoteId     int    `json:"quote_id" `
-	Quote       string `json:"quote"`
-	IsIcelandic bool   `json:"is_icelandic"`
-	TopicName   string `json:"topic_name"`
-	TopicId     int    `json:"topic_id"`
+	AuthorId    int    `json:"author_id,omitempty"`
+	Name        string `json:"name,omitempty"`
+	QuoteId     int    `json:"quote_id,omitempty" `
+	Quote       string `json:"quote,omitempty"`
+	IsIcelandic bool   `json:"is_icelandic,omitempty"`
+	TopicName   string `json:"topic_name,omitempty"`
+	TopicId     int    `json:"topic_id,omitempty"`
 }
 
 type TopicViewAPIModel struct {
 	// The author's id
 	//Unique: true
 	//example: 24952
-	AuthorId int `json:"authorId"`
+	AuthorId int `json:"authorId,omitempty"`
 	// Name of author
 	//example: Muhammad Ali
-	Name string `json:"name"`
+	Name string `json:"name,omitempty"`
 	// The quote's id
 	//Unique: true
 	//example: 582676
-	QuoteId int `json:"quoteId" `
+	QuoteId int `json:"quoteId,omitempty" `
 	// The quote
 	//example: Float like a butterfly, sting like a bee.
-	Quote string `json:"quote"`
+	Quote string `json:"quote,omitempty"`
 	// Whether or not this quote is in Icelandic or not
 	// example: false
-	IsIcelandic bool `json:"isIcelandic"`
+	IsIcelandic bool `json:"isIcelandi,omitempty"`
 	// The topic's name (if topic id / name not supplied this will return empty string "")
 	// example: inspirational
-	TopicName string `json:"topicName"`
+	TopicName string `json:"topicName,omitempty"`
 	// The topic's id (if topic id / name not supplied this will return a zero id)
 	// example: 10
-	TopicId int `json:"topicId"`
+	TopicId int `json:"topicId,omitempty"`
 }
 
 func (dbModel *TopicViewDBModel) ConvertToAPIModel() TopicViewAPIModel {

@@ -437,25 +437,6 @@ func (requestHandler *RequestHandler) SetNewRandomAOD(language string) error {
 	return requestHandler.SetAOD(language, time.Now().Format("2006-01-02"), authorItem.Id)
 }
 
-//getBasePointer returns a base DB pointer for a table for a thorough full text search
-func (requestHandler *RequestHandler) GetBasePointer(requestBody structs.Request) *gorm.DB {
-	table := "searchview"
-	//TODO: Validate that this topicId exists
-	if requestBody.TopicId > 0 {
-		table = "topicsview"
-	}
-	m1 := regexp.MustCompile(` `)
-	phrasesearch := m1.ReplaceAllString(requestBody.SearchString, " <-> ")
-	generalsearch := m1.ReplaceAllString(requestBody.SearchString, " | ")
-	dbPointer := requestHandler.Db.Table(table+", plainto_tsquery(?) as plainq, to_tsquery(?) as phraseq,to_tsquery(?) as generalq ",
-		requestBody.SearchString, phrasesearch, generalsearch).Select("*, ts_rank(quote_tsv, plainq) as plainrank, ts_rank(quote_tsv, phraseq) as phraserank, ts_rank(quote_tsv, generalq) as generalrank")
-
-	if requestBody.TopicId > 0 {
-		dbPointer = dbPointer.Where("topic_id = ?", requestBody.TopicId)
-	}
-	return dbPointer
-}
-
 //ValidateUserRequestBody takes in the request and validates all the input fields, returns an error with reason for validation-failure
 //if validation fails.
 //TODO: Make validation better! i.e. make it "real"
@@ -518,14 +499,14 @@ func ValidateUserInformation(requestBody *structs.UserApiModel) structs.ErrorRes
 // Then it runs a similarity search on the unique_lexeme table (where all the words from quotes.quote and authors.name are stored)
 // this is to check if the user made some spelling errors. Then the searchstring is put into the firstSearch and the
 // same search as before run again.
-func (requestHandler *RequestHandler) CheckForSpellingErrorsInSearchString(searchString string) string {
+func (requestHandler *RequestHandler) CheckForSpellingErrorsInSearchString(searchString string, table string) string {
 	newSearchString := ""
 	for idx, word := range strings.Fields(searchString) {
 		if idx >= 20 {
 			break
 		}
 		var theWord []string
-		err := requestHandler.Db.Table("unique_lexeme").
+		err := requestHandler.Db.Table(table).
 			Select("word").
 			Where("similarity(word, ?) > 0.4", word).
 			Clauses(clause.OrderBy{

@@ -48,7 +48,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 
 	var quotes []structs.SearchViewDBModel
 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
-	dbPointer := requestHandler.Db.Table("searchview")
+	dbPointer := requestHandler.Db.Table("popularityview")
 	dbPointer = utils.QuoteLanguageSQL(requestBody.Language, dbPointer)
 
 	orderDirection := "ASC"
@@ -84,7 +84,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	}
 
 	//Update popularity in background! TODO: PUT IN ITS OWN LAMBDA FUNCTION!
-	// go handlers.QuotesAppearInSearchCountIncrement(quotes)
+	go requestHandler.QuotesAppearInSearchCountIncrement(quotes)
 	searchViewsAPI := structs.ConvertToSearchViewsAPIModel(quotes)
 	out, _ := json.Marshal(searchViewsAPI)
 	return events.APIGatewayProxyResponse{

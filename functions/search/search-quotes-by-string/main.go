@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/utils"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
-	"gorm.io/gorm/clause"
+	"gorm.io/gorm"
 )
 
 type RequestHandler struct {
@@ -17,6 +18,27 @@ type RequestHandler struct {
 }
 
 var theReqHandler = RequestHandler{}
+
+func search(requestBody *structs.Request, dbPointer *gorm.DB) *gorm.DB {
+	table := "searchview"
+	//TODO: Validate that this topicId exists
+	if requestBody.TopicId > 0 {
+		table = "topicsview"
+	}
+	dbPointer = dbPointer.Table(table+", plainto_tsquery('english', ?) as plainq ",
+		requestBody.SearchString).Select("*, ts_rank(tsv, plainq) as plainrank")
+
+	if requestBody.TopicId > 0 {
+		dbPointer = dbPointer.Where("topic_id = ?", requestBody.TopicId)
+	}
+
+	//Order by authorid to have definitive order (when for examplke some quotes rank the same for plain, phrase, general and similarity)
+	dbPointer = dbPointer.Where("( quote_tsv @@ plainq )").Order("plainrank desc, author_id desc")
+
+	//Particular language search
+	dbPointer = utils.QuoteLanguageSQL(requestBody.Language, dbPointer)
+	return dbPointer
+}
 
 // swagger:route POST /search/quotes SEARCH SearchQuotesByString
 // Quotes search. Searching quotes by a given search string
@@ -27,6 +49,8 @@ var theReqHandler = RequestHandler{}
 
 // SearchQuotesByString handles POST requests to search for quotes by a search-string
 func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	begin := time.Now()
+	start := time.Now()
 	//Initialize DB if requestHandler.Db = nil
 	if errResponse := requestHandler.InitializeDB(); errResponse != (structs.ErrorResponse{}) {
 		return events.APIGatewayProxyResponse{
@@ -34,8 +58,14 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 			StatusCode: errResponse.StatusCode,
 		}, nil
 	}
-
+	t := time.Now()
+	elapsed := t.Sub(start)
+	log.Printf("INIT DB TIME: %d", elapsed.Milliseconds())
+	start2 := time.Now()
 	requestBody, errResponse := requestHandler.ValidateRequest(request)
+	t2 := time.Now()
+	elapsed2 := t2.Sub(start2)
+	log.Printf("Validate Req: %d", elapsed2.Milliseconds())
 
 	if errResponse != (structs.ErrorResponse{}) {
 		return events.APIGatewayProxyResponse{
@@ -45,38 +75,41 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	}
 
 	var topicResults []structs.TopicViewDBModel
-	//** ---------- Paramatere configuratino for DB query begins ---------- **//
-	dbPointer := requestHandler.GetBasePointer(requestBody)
-	dbPointer = dbPointer.Where("( quote_tsv @@ plainq OR quote_tsv @@ phraseq OR quote_tsv @@ generalq)")
 
-	if requestBody.AuthorId > 0 {
-		dbPointer = dbPointer.Where("author_id = ?", requestBody.AuthorId)
-	}
+	var dbPointer *gorm.DB
+	for i := 0; i < 2; i++ {
+		start1 := time.Now()
+		if i == 1 {
+			requestBody.SearchString = requestHandler.CheckForSpellingErrorsInSearchString(requestBody.SearchString, "unique_lexeme_quotes")
+		}
 
-	//Order by quote_id to have definitive order (when for examplke some quotes rank the same for plain, phrase and general)
-	dbPointer = dbPointer.
-		Clauses(clause.OrderBy{
-			Expression: clause.Expr{SQL: "plainrank DESC, phraserank DESC, generalrank DESC, quote_id DESC", Vars: []interface{}{}, WithoutParentheses: true},
-		})
+		dbPointer = search(&requestBody, requestHandler.Db)
+		err := utils.Pagination(requestBody, dbPointer).
+			Find(&topicResults).Error
 
-	//Particular language search
-	dbPointer = utils.QuoteLanguageSQL(requestBody.Language, dbPointer)
-	//** ---------- Paramatere configuratino for DB query ends ---------- **//
-	err := utils.Pagination(requestBody, dbPointer).
-		Find(&topicResults).Error
+		if err != nil {
+			log.Printf("Got error when querying DB in SearchQuotesByString: %s", err)
+			return events.APIGatewayProxyResponse{
+				Body:       utils.InternalServerError,
+				StatusCode: http.StatusInternalServerError,
+			}, nil
+		}
+		t := time.Now()
+		elapsed := t.Sub(start1)
+		log.Printf("FOR LOOP TIME:: %d", elapsed.Milliseconds())
 
-	if err != nil {
-		log.Printf("Got error when querying DB in SearchQuotesByString: %s", err)
-		return events.APIGatewayProxyResponse{
-			Body:       utils.InternalServerError,
-			StatusCode: http.StatusInternalServerError,
-		}, nil
+		if len(topicResults) > 0 {
+			break
+		}
 	}
 
 	//Update popularity in background! TODO: add as its own lambda function
-	// go handlers.TopicViewAppearInSearchCountIncrement(topicResults)
+	go requestHandler.TopicViewAppearInSearchCountIncrement(topicResults)
 	apiResults := structs.ConvertToTopicViewsAPIModel(topicResults)
 	out, _ := json.Marshal(apiResults)
+	end := time.Now()
+	elapsed_complete := end.Sub(begin)
+	log.Printf("WHOLE TIME TIME: %d", elapsed_complete.Milliseconds())
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),
 		StatusCode: http.StatusOK,
