@@ -1,5 +1,3 @@
-- [ ] ELASTIC SEARCH FOR POSTGRES! https://medium.com/@emreceylan/how-to-sync-postgresql-data-to-elasticsearch-572af15845ad and https://www.google.com/search?client=safari&rls=en&q=elasticsearch&ie=UTF-8&oe=UTF-8 !!!!!
-
 - [ ] Optimize random for both English and Icelandic and BOTH!!!
 
 - [ ] Create (and call from origin lambda function where necessary) updatingPopularityCount lambda functions!
@@ -14,3 +12,9 @@
 
 
 - [x] set utils/structs as packages in their own module called 'handlers' or something like that
+
+- [ ] Explain how the searchin works in README (i.e. first plainto_ts then check fuzzy search if user had )
+
+- [ ] Let ApiGateway / aws take care of Api_key authorization etc (https://aws.amazon.com/blogs/compute/generate-your-own-api-gateway-developer-portal/ --- usage plans)
+- [ ] Authorizer instead of yourself?
+- [ ] AWS marketplace for payement of api etc!

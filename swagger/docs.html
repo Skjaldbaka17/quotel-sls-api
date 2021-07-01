@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.19.5/swagger-ui.css" >
+    <style>
+      .topbar {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="swagger-ui"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.19.5/swagger-ui-bundle.js"> </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.19.5/swagger-ui-standalone-preset.js"> </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script>
+
+      window.onload = function() {
+          
+        $.get(
+     "",
+(t) => {
+    alert(t)
+   });
+
+   $.ajax({
+         url: "https://s3.eu-west-1.amazonaws.com/www.api.quotel-rest.com/swagger.yaml",
+         type: "GET",
+         beforeSend: function(xhr){xhr.setRequestHeader('Access-Control-Allow-Headers', '*');},
+         success: function(t) { alert('Success!' + t); }
+      });
+        // const ui = SwaggerUIBundle({
+        //   spec: spec,
+        //   dom_id: '#swagger-ui',
+        //   deepLinking: true,
+        //   presets: [
+        //     SwaggerUIBundle.presets.apis,
+        //     SwaggerUIStandalonePreset
+        //   ],
+        //   plugins: [
+        //     SwaggerUIBundle.plugins.DownloadUrl
+        //   ],
+        //   layout: "StandaloneLayout"
+        // })
+     
+        // window.ui = ui
+      }
+  </script>
+  </body>
+</html>

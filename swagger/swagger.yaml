@@ -1,0 +1,10 @@
+paths: {}
+swagger: "2.0"
+tags:
+- description: Using text search for finding authors and quotes.
+  name: SEARCH
+- description: Everthing with quotes.
+  name: QUOTES
+- description: Access all authors. Use this to get/explore authors, get a random author
+    or see the Author of the day.
+  name: AUTHORS
