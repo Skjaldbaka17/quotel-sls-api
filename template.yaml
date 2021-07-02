@@ -17,9 +17,16 @@ Globals:
     Environment:
       Variables:
         DATABASE_URL: !Ref DATABASEURL
+  Api:
+    Auth:
+      ApiKeyRequired: true # sets for all methods
+
 Resources:
 
+#################### LAMBDA FUNCTIONS ####################
+
 #------------------- /quotes -------------------#
+
   GetQuotesFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -265,3 +272,70 @@ Resources:
               Properties:
                 Path: /topics
                 Method: POST
+
+#################### USAGE PLANS ####################
+
+  GodUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties: 
+      ApiStages: 
+        - ApiId: rxvglshzhl
+          Stage: Prod
+      Description: This tier gives you access to the whole shebang.
+      Throttle:
+        BurstLimit: 100
+        RateLimit: 50
+      UsagePlanName: GOD
+  FreeUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties: 
+      ApiStages: 
+        - ApiId: rxvglshzhl
+          Stage: Prod
+      Description: The bare minimum.
+      Quota:
+        Limit: 250
+        Period: DAY
+      Throttle:
+        BurstLimit: 6
+        RateLimit: 3
+      UsagePlanName: FREE
+  BasicUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties: 
+      ApiStages: 
+        - ApiId: rxvglshzhl
+          Stage: Prod
+      Description: Now we are starting to get somewhere.
+      Quota:
+        Limit: 1250
+        Period: DAY
+      Throttle:
+        BurstLimit: 25
+        RateLimit: 15
+      UsagePlanName: BASIC
+  PremiumUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties: 
+      ApiStages: 
+        - ApiId: rxvglshzhl
+          Stage: Prod
+      Description: When working on something, do it right.
+      Quota:
+        Limit: 5000
+        Period: DAY
+      Throttle:
+        BurstLimit: 100
+        RateLimit: 50
+      UsagePlanName: PREMIUM
+  LegendaryUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties: 
+      ApiStages: 
+        - ApiId: rxvglshzhl
+          Stage: Prod
+      Description: Float like a butterfly, sting like a bee. LEGEND.
+      Throttle:
+        BurstLimit: 200
+        RateLimit: 100
+      UsagePlanName: LEGENDARY
