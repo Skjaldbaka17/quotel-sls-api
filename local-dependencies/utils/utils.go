@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 	"regexp"
@@ -31,7 +30,7 @@ func (requestHandler *RequestHandler) InitializeDB() structs.ErrorResponse {
 
 		dsn := os.Getenv(DATABASE_URL)
 		requestHandler.Db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-			Logger: logger.Default.LogMode(logger.Info),
+			Logger: logger.Default.LogMode(logger.Error),
 		})
 		if err != nil {
 			log.Printf("Could not connect to DB, got error: %s", err)
@@ -86,13 +85,7 @@ func (requestHandler *RequestHandler) GetRandomQuoteFromDb(requestBody *structs.
 	if !shouldDoQuick {
 		dbPointer = dbPointer.Order("random()") //Randomized, O( n*log(n) )
 	} else {
-		r := rand.New(rand.NewSource(time.Now().UnixNano()))
-		if strings.ToLower(requestBody.Language) == "english" {
-			dbPointer = dbPointer.Offset(r.Intn(NR_OF_ENGLISH_QUOTES))
-		} else {
-			dbPointer = dbPointer.Offset(r.Intn(NR_OF_QUOTES))
-		}
-
+		dbPointer = dbPointer.Raw("select * from searchview tablesample system(0.1)")
 	}
 
 	//** ---------- Paramater configuratino for DB query ends ---------- **//

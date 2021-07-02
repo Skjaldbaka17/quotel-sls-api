@@ -1,7 +1,0 @@
-tags:
-  - name: SEARCH
-    description: Using text search for finding authors and quotes.
-  - name: QUOTES
-    description: Everthing with quotes.
-  - name: AUTHORS
-    description: Access all authors. Use this to get/explore authors, get a random author or see the Author of the day. 
