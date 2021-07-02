@@ -18,3 +18,7 @@
 - [ ] Let ApiGateway / aws take care of Api_key authorization etc (https://aws.amazon.com/blogs/compute/generate-your-own-api-gateway-developer-portal/ --- usage plans)
 - [ ] Authorizer instead of yourself?
 - [ ] AWS marketplace for payement of api etc!
+- [ ] Developer portal: https://docs.amazonaws.cn/en_us/apigateway/latest/developerguide/apigateway-developer-portal.html !!!
+- [ ] https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-developer-portal.html#apigateway-developer-portal-create !!!!!
+- [ ] https://docs.amazonaws.cn/en_us/apigateway/latest/developerguide/rest-api-distribute.html !!!
+- [ ] https://serverlessrepo.aws.amazon.com/applications/arn:aws:serverlessrepo:us-east-1:563878140293:applications~api-gateway-dev-portal !!!! 

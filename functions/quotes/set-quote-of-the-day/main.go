@@ -33,14 +33,6 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	// Only let user call this endpoint if her is GOD-tier
-	if errResponse := requestHandler.AuthorizeGODApiKey(request); errResponse != (structs.ErrorResponse{}) {
-		return events.APIGatewayProxyResponse{
-			Body:       errResponse.Message,
-			StatusCode: errResponse.StatusCode,
-		}, nil
-	}
-
 	requestBody, errResponse := requestHandler.ValidateRequest(request)
 
 	if errResponse != (structs.ErrorResponse{}) {

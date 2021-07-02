@@ -265,32 +265,3 @@ Resources:
               Properties:
                 Path: /topics
                 Method: POST
-
-#-------------------------------------- /users --------------------------------------#  
-
-  LoginFunction:
-        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-        Properties:
-          CodeUri: functions/users/login
-          Handler: login
-          Runtime: go1.x
-          Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
-          Events:
-            GetQuotesAPI:
-              Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-              Properties:
-                Path: /users/login
-                Method: POST
-  CreateUserFunction:
-        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-        Properties:
-          CodeUri: functions/users/create-user
-          Handler: create-user
-          Runtime: go1.x
-          Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
-          Events:
-            GetQuotesAPI:
-              Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-              Properties:
-                Path: /users/signup
-                Method: POST

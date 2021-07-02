@@ -113,34 +113,6 @@ func (requestHandler *RequestHandler) SetQOD(language string, date string, quote
 	}
 }
 
-// Check whether user has GOD-tier permissions
-func (requestHandler *RequestHandler) AuthorizeGODApiKey(request events.APIGatewayProxyRequest) structs.ErrorResponse {
-	requestBody := structs.Request{}
-	err := json.Unmarshal([]byte(request.Body), &requestBody)
-	if err != nil {
-		log.Printf("Got err: %s", err)
-		return structs.ErrorResponse{Message: InternalServerError, StatusCode: http.StatusInternalServerError}
-	}
-
-	var user structs.UserDBModel
-	if err := requestHandler.Db.Table("users").Where("api_key = ?", requestBody.ApiKey).First(&user).Error; err != nil {
-		log.Printf("error when searching for user with the given api key in AuthorIzeGOD (api key validation): %s", err)
-		return structs.ErrorResponse{
-			Message:    "You need special privileges to access this route.",
-			StatusCode: http.StatusUnauthorized,
-		}
-	}
-
-	if user.Tier != TIERS[len(TIERS)-1] {
-		return structs.ErrorResponse{
-			Message:    "you do not have the authorization to perform this action. Is your name Bassi Maraj? This is not meant for you... Sorry for the inconvenience",
-			StatusCode: http.StatusUnauthorized,
-		}
-	}
-
-	return structs.ErrorResponse{}
-}
-
 //ValidateRequestBody takes in the request and validates all the input fields, returns an error with reason for validation-failure
 //if validation fails.
 //TODO: Make validation better! i.e. make it "real"
@@ -152,10 +124,6 @@ func (requestHandler *RequestHandler) ValidateRequest(request events.APIGatewayP
 		return structs.Request{}, structs.ErrorResponse{
 			Message:    "request body is not structured correctly. Please refer to the /docs page for information on how to structure the request body",
 			StatusCode: http.StatusBadRequest}
-	}
-
-	if err := requestHandler.ValidateRequestApiKey(request); err != (structs.ErrorResponse{}) {
-		return structs.Request{}, err
 	}
 
 	if requestBody.PageSize < 1 || requestBody.PageSize > maxPageSize {
@@ -239,84 +207,6 @@ func (requestHandler *RequestHandler) ValidateRequest(request events.APIGatewayP
 	}
 
 	return requestBody, structs.ErrorResponse{}
-}
-
-// ValidateRequestApiKey checks if the ApiKey supplied exists and wether the user has finished his allowed request in the past
-// hour. Also adds to the requestHistory... Maybe move that to the end of a request?
-func (requestHandler *RequestHandler) ValidateRequestApiKey(request events.APIGatewayProxyRequest) structs.ErrorResponse {
-	requestBody := structs.Request{}
-	err := json.Unmarshal([]byte(request.Body), &requestBody)
-	if err != nil {
-		return structs.ErrorResponse{
-			Message:    "request body is not structured correctly. Please refer to the /docs page for information on how to structure the request body",
-			StatusCode: http.StatusBadRequest}
-	}
-
-	if requestBody.ApiKey == "" {
-		log.Printf("no ApiKey given when accessing resource")
-		return structs.ErrorResponse{
-			Message:    fmt.Sprintf("you need to supply an apiKey to access this resource. Create a user and get a free-tier apiKey here: %s", os.Getenv("WEBSITE_URL")),
-			StatusCode: http.StatusForbidden}
-	}
-
-	var user structs.UserDBModel
-
-	err = requestHandler.Db.Table("users").Where("api_key = ?", requestBody.ApiKey).First(&user).Error
-	// Err==nil if user with given api_key does not exist or internal server error
-	if err != nil {
-		m1 := regexp.MustCompile(`record not found`)
-		if m1.Match([]byte(err.Error())) {
-			log.Printf("the api-key that the requester supplied does not exist")
-			return structs.ErrorResponse{
-				Message:    fmt.Sprintf("you need to supply an apiKey to access this resource. Create a user and get a free-tier apiKey here: %s", os.Getenv("WEBSITE_URL")),
-				StatusCode: http.StatusForbidden}
-		}
-		log.Printf("error when searching for user with the given api key (api key validation): %s", err)
-		return structs.ErrorResponse{
-			Message:    InternalServerError,
-			StatusCode: http.StatusInternalServerError}
-	}
-
-	//Check if requests from this api-key the past hour are less than allowed for the users-tier (i.e. if this next request is
-	// allowed then save the request to request-history)
-	type countStruct struct {
-		Count int `json:"count"`
-	}
-	var count countStruct
-	if err := requestHandler.Db.Table("requesthistory").Select("count(*)").
-		Where("created_at >= (NOW() - INTERVAL '1 hour')").
-		Where("user_id = ?", user.Id).
-		First(&count).Error; err != nil {
-		log.Printf("error when counting request history: %s", err)
-		return structs.ErrorResponse{
-			Message:    InternalServerError,
-			StatusCode: http.StatusInternalServerError}
-	}
-
-	if float64(count.Count) >= REQUESTS_PER_HOUR[user.Tier] {
-		return structs.ErrorResponse{
-			Message:    fmt.Sprintf("you have used all the requests per hour that your tier %s allows for, i.e. %f request per hour. See %s for more info and pricing plans to upgrade your tier if necessary", user.Tier, REQUESTS_PER_HOUR[user.Tier], os.Getenv("WEBSITE_URL")),
-			StatusCode: http.StatusUnauthorized}
-	}
-
-	//TODO: Put the following in its own golang function and run as a separate process!
-	requestAsString, _ := json.Marshal(request)
-	requestEvent := structs.RequestEvent{
-		UserId:      user.Id,
-		RequestBody: request.Body,
-		Route:       request.Path,
-		ApiKey:      user.ApiKey,
-		Request:     string(requestAsString),
-	}
-	result := requestHandler.Db.Table("requesthistory").Create(&requestEvent)
-	if result.Error != nil {
-		log.Printf("error when inserting into requestHistory: %s", result.Error)
-		return structs.ErrorResponse{
-			Message:    InternalServerError,
-			StatusCode: http.StatusInternalServerError}
-	}
-
-	return structs.ErrorResponse{}
 }
 
 func Pagination(requestBody structs.Request, dbPointer *gorm.DB) *gorm.DB {
@@ -435,64 +325,6 @@ func (requestHandler *RequestHandler) SetNewRandomAOD(language string) error {
 	}
 
 	return requestHandler.SetAOD(language, time.Now().Format("2006-01-02"), authorItem.Id)
-}
-
-//ValidateUserRequestBody takes in the request and validates all the input fields, returns an error with reason for validation-failure
-//if validation fails.
-//TODO: Make validation better! i.e. make it "real"
-
-func GetUserRequestBody(request events.APIGatewayProxyRequest) (structs.UserApiModel, structs.ErrorResponse) {
-	//Save the state back into the body for later use (Especially useful for getting the AOD/QOD because if the AOD has not been set a random AOD is set and the function called again)
-	requestBody := structs.UserApiModel{}
-	err := json.Unmarshal([]byte(request.Body), &requestBody)
-	if err != nil {
-		log.Printf("Got err: %s", err)
-		return structs.UserApiModel{}, structs.ErrorResponse{
-			Message:    "request body is not structured correctly. Please refer to the /docs page for information on how to structure the request body",
-			StatusCode: http.StatusBadRequest}
-	}
-
-	return requestBody, structs.ErrorResponse{}
-}
-
-func ValidateUserInformation(requestBody *structs.UserApiModel) structs.ErrorResponse {
-	//TODO: Add email validation
-	if requestBody.Email == "" {
-		return structs.ErrorResponse{
-			Message:    "email should not be empty",
-			StatusCode: http.StatusBadRequest}
-	}
-
-	if requestBody.Name == "" {
-		return structs.ErrorResponse{
-			Message:    "name should not be empty",
-			StatusCode: http.StatusBadRequest}
-	}
-
-	if requestBody.Password == "" {
-		return structs.ErrorResponse{
-			Message:    "password should not be empty",
-			StatusCode: http.StatusBadRequest}
-	}
-
-	if len(requestBody.Password) < 8 {
-		return structs.ErrorResponse{
-			Message:    "password should be at least 8 characters long",
-			StatusCode: http.StatusBadRequest}
-	}
-
-	if requestBody.PasswordConfirmation == "" {
-		return structs.ErrorResponse{
-			Message:    "password confirmation should not be empty",
-			StatusCode: http.StatusBadRequest}
-	}
-
-	if requestBody.PasswordConfirmation != requestBody.Password {
-		return structs.ErrorResponse{
-			Message:    "passwords do not match",
-			StatusCode: http.StatusBadRequest}
-	}
-	return structs.ErrorResponse{}
 }
 
 // CheckForSpellingErrorsInSearchString takes the searchstring and partitions it into its separate words (max 20)

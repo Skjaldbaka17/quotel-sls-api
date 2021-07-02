@@ -27,6 +27,8 @@ definitions:
       count:
         description: The popularity index of the author
         
+ https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/restapis/rxvglshzhl/stages/Prod/exports/swagger
+            
         format: int64
         type: integer
         name: Count
