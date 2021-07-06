@@ -28,7 +28,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	//Initialize DB if requestHandler.Db = nil
 	if errResponse := requestHandler.InitializeDB(); errResponse != (structs.ErrorResponse{}) {
 		return events.APIGatewayProxyResponse{
-			Body:       errResponse.Message,
+			Body:       errResponse.ToString(),
 			StatusCode: errResponse.StatusCode,
 		}, nil
 	}
@@ -37,7 +37,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 
 	if errResponse != (structs.ErrorResponse{}) {
 		return events.APIGatewayProxyResponse{
-			Body:       errResponse.Message,
+			Body:       errResponse.ToString(),
 			StatusCode: errResponse.StatusCode,
 		}, nil
 	}

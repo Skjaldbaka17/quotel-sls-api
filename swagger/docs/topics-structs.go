@@ -1,4 +1,4 @@
-package structs
+package docs
 
 type TopicDBModel struct {
 	Id          int    `json:"id,omitempty"`

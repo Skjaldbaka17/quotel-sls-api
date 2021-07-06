@@ -31,7 +31,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	//Initialize DB if requestHandler.Db = nil
 	if errResponse := requestHandler.InitializeDB(); errResponse != (structs.ErrorResponse{}) {
 		return events.APIGatewayProxyResponse{
-			Body:       errResponse.Message,
+			Body:       errResponse.ToString(),
 			StatusCode: errResponse.StatusCode,
 		}, nil
 	}
@@ -40,7 +40,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 
 	if errResponse != (structs.ErrorResponse{}) {
 		return events.APIGatewayProxyResponse{
-			Body:       errResponse.Message,
+			Body:       errResponse.ToString(),
 			StatusCode: errResponse.StatusCode,
 		}, nil
 	}
@@ -61,16 +61,22 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 
 	if err != nil {
 		log.Printf("Got error when parsing mindate in GetAODHistory: %s", err)
+		errResponse := structs.ErrorResponse{
+			Message: "Please supply date in '2020-12-21' format",
+		}
 		return events.APIGatewayProxyResponse{
-			Body:       "Please supply date in '2020-12-21' format",
+			Body:       errResponse.ToString(),
 			StatusCode: http.StatusBadRequest,
 		}, nil
 	}
 
 	if !now.After(minDate) {
 		log.Printf("Got error when comparing mindate to today in GetAodHistory: %s", err)
+		errResponse := structs.ErrorResponse{
+			Message: "Please send a minimum date that is before today",
+		}
 		return events.APIGatewayProxyResponse{
-			Body:       "Please send a minimum date that is before today",
+			Body:       errResponse.ToString(),
 			StatusCode: http.StatusBadRequest,
 		}, nil
 	}
@@ -85,8 +91,11 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 
 	if err != nil {
 		log.Printf("Got error when querying DB in GetAodHistory: %s", err)
+		errResponse := structs.ErrorResponse{
+			Message: utils.InternalServerError,
+		}
 		return events.APIGatewayProxyResponse{
-			Body:       utils.InternalServerError,
+			Body:       errResponse.ToString(),
 			StatusCode: http.StatusInternalServerError,
 		}, nil
 	}
@@ -97,8 +106,11 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		err = requestHandler.SetNewRandomAOD(requestBody.Language)
 		if err != nil {
 			log.Printf("Got error when setting newRandomAOD in getAODHistory: %s", err)
+			errResponse := structs.ErrorResponse{
+				Message: utils.InternalServerError,
+			}
 			return events.APIGatewayProxyResponse{
-				Body:       utils.InternalServerError,
+				Body:       errResponse.ToString(),
 				StatusCode: http.StatusInternalServerError,
 			}, nil
 		}

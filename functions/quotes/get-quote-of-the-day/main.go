@@ -30,7 +30,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	//Initialize DB if requestHandler.Db = nil
 	if errResponse := requestHandler.InitializeDB(); errResponse != (structs.ErrorResponse{}) {
 		return events.APIGatewayProxyResponse{
-			Body:       errResponse.Message,
+			Body:       errResponse.ToString(),
 			StatusCode: errResponse.StatusCode,
 		}, nil
 	}
@@ -39,7 +39,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 
 	if errResponse != (structs.ErrorResponse{}) {
 		return events.APIGatewayProxyResponse{
-			Body:       errResponse.Message,
+			Body:       errResponse.ToString(),
 			StatusCode: errResponse.StatusCode,
 		}, nil
 	}
@@ -57,8 +57,11 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 
 	if err != nil {
 		log.Printf("Got error when querying DB in GetQODs: %s", err)
+		errResponse := structs.ErrorResponse{
+			Message: utils.InternalServerError,
+		}
 		return events.APIGatewayProxyResponse{
-			Body:       utils.InternalServerError,
+			Body:       errResponse.ToString(),
 			StatusCode: http.StatusInternalServerError,
 		}, nil
 	}
@@ -68,8 +71,11 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		err = requestHandler.SetNewRandomQOD(requestBody.Language)
 		if err != nil {
 			log.Printf("Got error when setting new random qod: %s", err)
+			errResponse := structs.ErrorResponse{
+				Message: utils.InternalServerError,
+			}
 			return events.APIGatewayProxyResponse{
-				Body:       utils.InternalServerError,
+				Body:       errResponse.ToString(),
 				StatusCode: http.StatusInternalServerError,
 			}, nil
 		}
