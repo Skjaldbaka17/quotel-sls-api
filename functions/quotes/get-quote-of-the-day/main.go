@@ -68,7 +68,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 
 	if (structs.QodViewDBModel{}) == quote {
 		fmt.Println("Setting a brand new QOD for today")
-		err = requestHandler.SetNewRandomQOD(requestBody.Language)
+		err = requestHandler.SetNewRandomQOD(&requestBody)
 		if err != nil {
 			log.Printf("Got error when setting new random qod: %s", err)
 			errResponse := structs.ErrorResponse{

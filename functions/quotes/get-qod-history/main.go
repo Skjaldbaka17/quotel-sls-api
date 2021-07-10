@@ -72,7 +72,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	}
 
 	if len(quotes) == 0 {
-		err = requestHandler.SetNewRandomQOD(requestBody.Language)
+		err = requestHandler.SetNewRandomQOD(&requestBody)
 		if err != nil {
 			log.Printf("Got error when querying setting new Random QOD in history: %s", err)
 			errResponse := structs.ErrorResponse{

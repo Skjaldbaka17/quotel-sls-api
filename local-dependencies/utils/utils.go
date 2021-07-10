@@ -242,21 +242,13 @@ func (requestHandler *RequestHandler) QodLanguageSQL(language string) *gorm.DB {
 }
 
 //SetNewRandomQOD sets a random quote as the qod for today (if language=icelandic is supplied then it adds the random qod to the icelandic qod table)
-func (requestHandler *RequestHandler) SetNewRandomQOD(language string) error {
-	var quoteItem structs.QuoteDBModel
-	var dbPointer *gorm.DB
-	dbPointer = requestHandler.Db.Table("quotes")
-	dbPointer = QuoteLanguageSQL(language, dbPointer)
-	if strings.ToLower(language) != "icelandic" {
-		dbPointer = dbPointer.Where("Random() < 0.005")
-	}
-
-	err := dbPointer.Order("random()").Limit(1).Scan(&quoteItem).Error
+func (requestHandler *RequestHandler) SetNewRandomQOD(requestBody *structs.Request) error {
+	quoteItem, err := requestHandler.GetRandomQuoteFromDb(requestBody)
 	if err != nil {
 		return err
 	}
 
-	return requestHandler.setQOD(language, time.Now().Format("2006-01-02"), quoteItem.Id)
+	return requestHandler.setQOD(requestBody.Language, time.Now().Format("2006-01-02"), quoteItem.QuoteId)
 }
 
 //setQOD inserts a new row into qod/qodice table
