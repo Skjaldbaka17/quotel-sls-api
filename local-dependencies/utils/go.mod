@@ -7,6 +7,7 @@ replace github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs => ../
 require (
 	github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs v0.0.0-00010101000000-000000000000
 	github.com/aws/aws-lambda-go v1.24.0
+	github.com/joho/godotenv v1.3.0
 	gorm.io/driver/postgres v1.1.0
 	gorm.io/gorm v1.21.11
 )

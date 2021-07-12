@@ -13,6 +13,7 @@ import (
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -24,7 +25,11 @@ type RequestHandler struct {
 }
 
 func (requestHandler *RequestHandler) InitializeDB() structs.ErrorResponse {
-	log.Println("HEREBRUV:" + os.Getenv(DATABASE_URL))
+	log.Println("HERE:", os.Getenv("DATABASE_URL"))
+	if os.Getenv("DATABASE_URL") == "" {
+		godotenv.Load("../../../.env")
+		log.Println("HERE2:", os.Getenv("DATABASE_URL"))
+	}
 	if requestHandler.Db == nil {
 		var err error
 
