@@ -2,118 +2,130 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"regexp"
 	"testing"
 
+	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
 	"github.com/aws/aws-lambda-go/events"
 )
 
-func Setup() {
+//Returns AODs and AODICEs, in that order, put into the DB
+func Setup(handler *RequestHandler, t *testing.T) ([]structs.AodDBModel, []structs.AodDBModel) {
+	handler.InitializeDB()
 
+	//Get the first 3 english- and icelandic-authors to be set as AODs/AODICEs
+	var englishAuthors []structs.AuthorDBModel
+	var icelandicAuthors []structs.AuthorDBModel
+	err := handler.Db.Table("authors").Where("nr_of_english_quotes > 0").Find(&englishAuthors).Limit(3).Error
+	if err != nil {
+		t.Fatalf("Setup error: %s", err)
+	}
+	err = handler.Db.Table("authors").Where("nr_of_icelandic_quotes > 0").Find(&icelandicAuthors).Limit(3).Error
+	if err != nil {
+		t.Fatalf("Setup error: %s", err)
+	}
+
+	// Insert AODs and AODICEs for 2021-06-16, 2021-06-16,2019-06-16
+	dates := []string{"2021-06-16", "2020-06-16", "2019-06-16"}
+	var AODs []structs.AodDBModel
+	var AODICEs []structs.AodDBModel
+	for idx, date := range dates {
+		AODs = append(AODs, englishAuthors[idx].ConvertToAODDBModel(date))
+		AODICEs = append(AODICEs, icelandicAuthors[idx].ConvertToAODDBModel(date))
+	}
+	err = handler.Db.Table("aods").Create(&AODs).Error
+	if err != nil {
+		t.Fatalf("Setup error 2: %s", err)
+	}
+	err = handler.Db.Table("aodices").Create(&AODICEs).Error
+	if err != nil {
+		t.Fatalf("Setup error 2: %s", err)
+	}
+
+	//CleanUp
+	t.Cleanup(func() {
+		handler.Db.Unscoped().Table("aods").Delete(&AODs)
+		handler.Db.Unscoped().Table("aodices").Delete(&AODICEs)
+	})
+
+	return AODs, AODICEs
 }
 func TestHandler(t *testing.T) {
 	var testingHandler = RequestHandler{}
-	t.Run("Author of the day", func(t *testing.T) {
+	AODs, AODICEs := Setup(&testingHandler, t)
+	t.Run("AOD/AODICE History", func(t *testing.T) {
 
-		t.Run("Should get complete history of Author of the day", func(t *testing.T) {
+		t.Run("Should get complete history of AODs", func(t *testing.T) {
 			//Get History:
 			jsonStr := []byte(fmt.Sprintf(`{"language":"%s"}`, "english"))
 			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
-
 			if err != nil {
 				t.Fatalf("Expected the history of AOD but got an error: %+v", err)
 			}
 
-			log.Println("HERE:", response.Body)
-
-			// if len(authors) == 0 {
-			// 	t.Fatalf("Expected the history of AOD but got an empty list: %+v", authors)
-			// }
-
-			// containsBirfdayAuthor := false
-			// containsTodayAuthor := false
-			// const layout = "2006-01-02T15:04:05Z" //The date needed for reference always
-			// for _, author := range authors {
-			// 	if author.Id == 0 {
-			// 		t.Fatalf("Expected all authors to have id > 0 but got: %+v", authors)
-			// 	}
-			// 	date, _ := time.Parse(layout, author.Date)
-			// 	if date.Format("01-02-2006") == time.Now().Format("01-02-2006") {
-			// 		containsTodayAuthor = true
-			// 	}
-
-			// 	if date.Format("01-02-2006") == "06-16-1998" {
-			// 		containsBirfdayAuthor = true
-			// 	}
-			// }
-
-			// if !containsBirfdayAuthor {
-			// 	t.Fatalf("AOD history should contain the AOD for birfday but does not: %+v", authors)
-			// }
-
-			// if !containsTodayAuthor {
-			// 	t.Fatalf("AOD history should contain the AOD for today but does not: %+v", authors)
-			// }
+			for _, author := range AODs {
+				reg := regexp.MustCompile(author.Date)
+				if !reg.MatchString(response.Body) {
+					t.Fatalf("Missing Aod for date: %s", author.Date)
+				}
+			}
 
 		})
 
-		// t.Run("Should get history of AOD starting from June 4th 2021", func(t *testing.T) {
+		t.Run("Should get complete history of AODICEs", func(t *testing.T) {
+			//Get History:
+			jsonStr := []byte(fmt.Sprintf(`{"language":"%s"}`, "icelandic"))
+			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
+			if err != nil {
+				t.Fatalf("Expected the history of AODICE but got an error: %+v", err)
+			}
 
-		// 	//Input a quote in history for testing
-		// 	authorId := 666
-		// 	date := "2021-06-04"
-		// 	var jsonStr = []byte(fmt.Sprintf(`{"apiKey":"%s","aods": [{"id":%d, "date":"%s"}]}`, godUser.ApiKey, authorId, date))
-		// 	_, response := requestAndReturnArray(jsonStr, SetAuthorOfTheDay)
-		// 	if response.StatusCode != 200 {
-		// 		t.Fatalf("Expected a succesful insert but got %+v", response)
-		// 	}
+			for _, author := range AODICEs {
+				reg := regexp.MustCompile(author.Date)
+				if !reg.MatchString(response.Body) {
+					t.Fatalf("Missing Aodice for date: %s", author.Date)
+				}
+			}
 
-		// 	//Get History:
+		})
 
-		// 	minimum := "2021-06-04"
-		// 	jsonStr = []byte(fmt.Sprintf(`{"apiKey":"%s","language":"%s", "minimum":"%s"}`, user.ApiKey, "english", minimum))
-		// 	authors, _ := requestAndReturnArray(jsonStr, GetAODHistory)
+		t.Run("Should get complete history of AODs from 2020-01-01", func(t *testing.T) {
+			//Get History:
+			jsonStr := []byte(fmt.Sprintf(`{"language":"%s","minimum":"%s"}`, "english", "2020-01-01"))
+			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
+			if err != nil {
+				t.Fatalf("Expected the history of AOD but got an error: %+v", err)
+			}
 
-		// 	if len(authors) == 0 {
-		// 		t.Fatalf("Expected the history of AOD but got an empty list: %+v", authors)
-		// 	}
+			shouldMatchReg := regexp.MustCompile(AODs[1].Date) //Regex for 2020-06-16 AODICE
+			if !shouldMatchReg.MatchString(response.Body) {
+				t.Fatalf("Expected the history of AODs to contain input AODICE for date %s but got body %s", AODs[1].Date, response.Body)
+			}
+			shouldNotMatchReg := regexp.MustCompile(AODs[2].Date) //Regex for 2019-06-16 AODICE
+			if shouldNotMatchReg.MatchString(response.Body) {
+				t.Fatalf("Expected the hisory of AODs only from 2020-01-01 but got body %s", response.Body)
+			}
 
-		// 	const layout = "2006-01-02T15:04:05Z" //The date needed for reference always
-		// 	compareDate, _ := time.Parse(layout, "2021-06-04")
-		// 	compareYear := compareDate.Year()
-		// 	compareMonth := compareDate.Month()
-		// 	compareDay := compareDate.Day()
-		// 	containsAuthorNotInRange := false
-		// 	containsFourthOfJuneAuthor := false
-		// 	for _, author := range authors {
-		// 		date, _ := time.Parse(layout, author.Date)
-		// 		yearOfAuthor := date.Year()
-		// 		monthOfAuthor := date.Month()
-		// 		dayOfAuthor := date.Day()
+		})
 
-		// 		if yearOfAuthor < compareYear || (yearOfAuthor == compareYear && monthOfAuthor < compareMonth) || (yearOfAuthor == compareYear && monthOfAuthor == compareMonth && dayOfAuthor < compareDay) {
-		// 			containsAuthorNotInRange = true
-		// 		}
+		t.Run("Should get complete history of AODICEs from 2020-01-01", func(t *testing.T) {
+			//Get History:
+			jsonStr := []byte(fmt.Sprintf(`{"language":"%s","minimum":"%s"}`, "icelandic", "2020-01-01"))
+			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
+			if err != nil {
+				t.Fatalf("Expected the history of AODICE but got an error: %+v", err)
+			}
 
-		// 		if date.Format("2006-01-02") == "2021-06-04" {
-		// 			containsFourthOfJuneAuthor = true
-		// 		}
+			shouldMatchReg := regexp.MustCompile(AODICEs[1].Date) //Regex for 2020-06-16 AODICE
+			if !shouldMatchReg.MatchString(response.Body) {
+				t.Fatalf("Expected the history of AODICEs to contain input AODICE for date %s but got body %s", AODICEs[1].Date, response.Body)
+			}
+			shouldNotMatchReg := regexp.MustCompile(AODICEs[2].Date) //Regex for 2019-06-16 AODICE
+			if shouldNotMatchReg.MatchString(response.Body) {
+				t.Fatalf("Expected the hisory of AODICEs only from 2020-01-01 but got body %s", response.Body)
+			}
 
-		// 		if author.Id == 0 {
-		// 			t.Fatalf("Expected all authors to have id > 0 but got: %+v", authors)
-		// 		}
-
-		// 	}
-
-		// 	if containsAuthorNotInRange {
-		// 		t.Fatalf("AOD history contains an earlier quote than was requested: %+v", authors)
-		// 	}
-
-		// 	if !containsFourthOfJuneAuthor {
-		// 		t.Fatalf("QOD history should contain the QOD for 4th of june 2021 but does not: %+v", authors)
-		// 	}
-
-		// })
+		})
 
 	})
 

@@ -28,6 +28,7 @@ var theReqHandler = RequestHandler{}
 
 //GetAODHistory gets Aod history starting from some point
 func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
 	//Initialize DB if requestHandler.Db = nil
 	if errResponse := requestHandler.InitializeDB(); errResponse != (structs.ErrorResponse{}) {
 		return events.APIGatewayProxyResponse{
@@ -102,7 +103,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 
 	reg := regexp.MustCompile(time.Now().Format("2006-01-02"))
 
-	if len(authors) == 0 || !reg.Match([]byte(authors[0].Date)) {
+	if (len(authors) == 0 || !reg.Match([]byte(authors[0].Date))) && !requestBody.StopRecursion {
 		err = requestHandler.SetNewRandomAOD(requestBody.Language)
 		if err != nil {
 			log.Printf("Got error when setting newRandomAOD in getAODHistory: %s", err)
@@ -114,10 +115,14 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 				StatusCode: http.StatusInternalServerError,
 			}, nil
 		}
+		requestBody.StopRecursion = true
+		bod, _ := json.Marshal(requestBody)
+		request.Body = string(bod)
 		return requestHandler.handler(request)
 	}
 
-	out, _ := json.Marshal(authors)
+	authorsAPI := structs.ConvertToAodAPIModel(authors)
+	out, _ := json.Marshal(authorsAPI)
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),
 		StatusCode: http.StatusOK,
