@@ -46,9 +46,9 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	var quotes []structs.SearchViewDBModel
+	var quotes []structs.QuoteDBModel
 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
-	dbPointer := requestHandler.Db.Table("popularityview")
+	dbPointer := requestHandler.Db.Table("quotes")
 	dbPointer = utils.QuoteLanguageSQL(requestBody.Language, dbPointer)
 
 	orderDirection := "ASC"
@@ -62,16 +62,16 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		if requestBody.OrderConfig.Reverse {
 			orderDirection = "ASC"
 		}
-		dbPointer = dbPointer.Order("quote_count " + orderDirection)
+		dbPointer = dbPointer.Order("count " + orderDirection)
 	case "length":
 		dbPointer = utils.SetMaxMinNumber(requestBody.OrderConfig, "length(quote)", orderDirection, dbPointer)
 	default:
-		dbPointer = utils.SetMaxMinNumber(requestBody.OrderConfig, "quote_id", orderDirection, dbPointer)
+		dbPointer = utils.SetMaxMinNumber(requestBody.OrderConfig, "id", orderDirection, dbPointer)
 	}
 
 	//** ---------- Paramatere configuratino for DB query ends ---------- **//
 
-	err := utils.Pagination(requestBody, dbPointer).Order("quote_id").
+	err := utils.Pagination(requestBody, dbPointer).Order("id").
 		Find(&quotes).
 		Error
 
@@ -88,8 +88,8 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 
 	//Update popularity in background! TODO: PUT IN ITS OWN LAMBDA FUNCTION!
 	go requestHandler.QuotesAppearInSearchCountIncrement(quotes)
-	searchViewsAPI := structs.ConvertToSearchViewsAPIModel(quotes)
-	out, _ := json.Marshal(searchViewsAPI)
+	quotesAPI := structs.ConvertToQuotesAPIModel(quotes)
+	out, _ := json.Marshal(quotesAPI)
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),
 		StatusCode: http.StatusOK,

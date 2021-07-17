@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"testing"
 	"time"
 
@@ -50,29 +49,24 @@ func TestHandler(t *testing.T) {
 
 			end := time.Now()
 			duration := end.Sub(start)
-			log.Println(duration.Milliseconds())
 			if duration.Milliseconds() > int64(maxTime) {
 				t.Fatalf("Expected getting history of quotes to take less than %dms but it took %dms", maxTime, duration.Milliseconds())
 			}
 		})
 
 		t.Run("should get Quotes for author by his id", func(t *testing.T) {
+			start := time.Now()
 			var jsonStr = fmt.Sprintf(`{"authorId":  %d}`, authors[0].ID)
-			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
+			_, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
 			if err != nil {
 				t.Fatalf("Expected 3 quotes but got an error: %+v", err)
 			}
-
-			var respQuotes []structs.QuoteAPIModel
-			json.Unmarshal([]byte(response.Body), &respQuotes)
-
-			if len(respQuotes) == 0 {
-				t.Fatalf("got list of length 0 but expected some quotes, response : %s", response.Body)
+			end := time.Now()
+			duration := end.Sub(start)
+			if duration.Milliseconds() > int64(maxTime) {
+				t.Fatalf("Expected getting history of quotes to take less than %dms but it took %dms", maxTime, duration.Milliseconds())
 			}
 
-			if respQuotes[0].Id != authors[0].ID {
-				t.Fatalf("got quotes for author with id %d but expected quotes for the author with id %d, respObj: %s", respQuotes[0].Id, authors[0].ID, response.Body)
-			}
 		})
 	})
 
