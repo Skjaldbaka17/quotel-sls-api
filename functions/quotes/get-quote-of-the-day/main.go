@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -48,7 +47,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		requestBody.Language = "English"
 	}
 
-	var quote structs.QodViewDBModel
+	var quote structs.QodDBModel
 	var err error
 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
 	dbPointer := requestHandler.QodLanguageSQL(requestBody.Language).Where("date = current_date")
@@ -64,23 +63,6 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 			Body:       errResponse.ToString(),
 			StatusCode: http.StatusInternalServerError,
 		}, nil
-	}
-
-	if (structs.QodViewDBModel{}) == quote {
-		fmt.Println("Setting a brand new QOD for today")
-		err = requestHandler.SetNewRandomQOD(&requestBody)
-		if err != nil {
-			log.Printf("Got error when setting new random qod: %s", err)
-			errResponse := structs.ErrorResponse{
-				Message: utils.InternalServerError,
-			}
-			return events.APIGatewayProxyResponse{
-				Body:       errResponse.ToString(),
-				StatusCode: http.StatusInternalServerError,
-			}, nil
-		}
-
-		return requestHandler.handler(request)
 	}
 
 	out, _ := json.Marshal(quote.ConvertToAPIModel())
