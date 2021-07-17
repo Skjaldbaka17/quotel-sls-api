@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/utils"
@@ -43,16 +44,25 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	var result []structs.SearchViewDBModel
+	var result []structs.QuoteDBModel
 	var author structs.AuthorDBModel
 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
-
+	var shouldDoQuick = false
 	//Get Random author
-	dbPointer := requestHandler.Db.Table("authors").Order("random()")
+	dbPointer := requestHandler.Db.Table("authors")
 
+	if strings.ToLower(requestBody.Language) != "icelandic" && strings.ToLower(requestBody.Language) != "english" {
+		shouldDoQuick = true
+	}
 	//author from a particular language
 	dbPointer = utils.AuthorLanguageSQL(requestBody.Language, dbPointer)
 	//** ---------- Paramatere configuratino for DB query ends ---------- **//
+
+	if !shouldDoQuick {
+		dbPointer = dbPointer.Order("random()")
+	} else {
+		dbPointer = dbPointer.Raw("select * from authors tablesample system(0.25)")
+	}
 
 	err := dbPointer.First(&author).Error
 
@@ -67,7 +77,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	dbPointer = requestHandler.Db.Table("searchview").Where("author_id = ?", author.Id)
+	dbPointer = requestHandler.Db.Table("quotes").Where("author_id = ?", author.ID)
 
 	//An icelandic quote from the particular/random author
 	dbPointer = utils.QuoteLanguageSQL(requestBody.Language, dbPointer)
@@ -85,8 +95,8 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	searchViewAPI := structs.ConvertToSearchViewsAPIModel(result)
-	out, _ := json.Marshal(searchViewAPI)
+	quotesAPI := structs.ConvertToQuotesAPIModel(result)
+	out, _ := json.Marshal(quotesAPI)
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),
 		StatusCode: http.StatusOK,
