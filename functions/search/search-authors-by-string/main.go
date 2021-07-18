@@ -34,8 +34,8 @@ func generalSearch(requestBody *structs.Request, dbPointer *gorm.DB) *gorm.DB {
 
 func search(requestBody *structs.Request, dbPointer *gorm.DB) *gorm.DB {
 	//Order by authorid to have definitive order (when for examplke some names rank the same for similarity), same for why quote_id
-	dbPointer = dbPointer.Table("authors, plainto_tsquery('english', ?) as plainq", requestBody.SearchString).Select("*, ts_rank(tsv, plainq) as plainrank").
-		Where("( tsv @@ plainq )").Order("plainrank desc, id desc")
+	dbPointer = dbPointer.Unscoped().Table("authors, plainto_tsquery('english', ?) as plainq", requestBody.SearchString).Select("*, ts_rank(name_tsv, plainq) as plainrank").
+		Where("( name_tsv @@ plainq )").Order("plainrank desc, id desc")
 
 	//Particular language search
 	dbPointer = utils.AuthorLanguageSQL(requestBody.Language, dbPointer)
