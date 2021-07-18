@@ -44,17 +44,17 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	var results []structs.TopicViewDBModel
+	var results []structs.QuoteDBModel
 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
 	//Order by quoteid to have definitive order (when for examplke some quotes rank the same for plain, phrase and general)
 	dbPoint := requestHandler.Db.Table("topicsview").Clauses(clause.OrderBy{
-		Expression: clause.Expr{SQL: "quote_id DESC", Vars: []interface{}{}, WithoutParentheses: true},
+		Expression: clause.Expr{SQL: "id DESC", Vars: []interface{}{}, WithoutParentheses: true},
 	})
 
 	if requestBody.Topic != "" {
 		dbPoint = dbPoint.Where("lower(topic_name) = lower(?)", requestBody.Topic)
 	} else {
-		dbPoint = dbPoint.Where("topic_id = ?", requestBody.Id)
+		dbPoint = dbPoint.Where("topic_id = ?", requestBody.TopicId)
 	}
 
 	//** ---------- Paramatere configuratino for DB query ends ---------- **//
@@ -73,8 +73,8 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 
 	//Update popularity in background! TODO: Add as its own lambda function
 	go requestHandler.DirectFetchTopicCountIncrement(requestBody.Id, requestBody.Topic)
-	topicViewsAPI := structs.ConvertToTopicViewsAPIModel(results)
-	out, _ := json.Marshal(topicViewsAPI)
+	quotesAPI := structs.ConvertToQuotesAPIModel(results)
+	out, _ := json.Marshal(quotesAPI)
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),
 		StatusCode: http.StatusOK,
