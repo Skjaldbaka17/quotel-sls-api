@@ -19,10 +19,20 @@ var theReqHandler = RequestHandler{}
 
 func (requestHandler *RequestHandler) insertEnglishQOD(today string) error {
 	//------------------- Start ENGLISH QOD -------------------//
-
-	var err error
 	var quote structs.QuoteDBModel
+	//Delete if QOD for today has already been set
+	err := requestHandler.Db.Table("qods").
+		Where("date = ?", today).
+		Where("topic_id = 0").
+		Not("is_icelandic").
+		Delete(&quote).Error
+
+	if err != nil {
+		log.Fatalf("Got error when checking for existing QOD: %s", err)
+	}
+
 	for i := 0; i < 10; i++ {
+		quote = structs.QuoteDBModel{}
 		//Note we are sampling from table "topicsview" but not quotes for more chance of a good quote
 		err = requestHandler.Db.Raw("select * from topicsview tablesample system(0.1)").Limit(1).First(&quote).Error
 		if err != nil {
@@ -31,9 +41,12 @@ func (requestHandler *RequestHandler) insertEnglishQOD(today string) error {
 		if !quote.IsIcelandic {
 			break
 		}
-		quote = structs.QuoteDBModel{}
 	}
+
 	createQOD := quote.ConvertToQODDBModel(today)
+	createQOD.TopicId = 0
+	createQOD.TopicName = ""
+	createQOD.IsIcelandic = false
 	err = requestHandler.Db.Table("qods").Create(&createQOD).Error
 	if err != nil {
 		log.Fatalf("Got error when creating english QOD: %s", err)
@@ -45,16 +58,28 @@ func (requestHandler *RequestHandler) insertEnglishQOD(today string) error {
 
 func (requestHandler *RequestHandler) insertIcelandicQOD(today string) error {
 	//------------------- Start ICELANDIC QOD -------------------//
-	var err error
 	var quote structs.QuoteDBModel
-	quote = structs.QuoteDBModel{
-		IsIcelandic: true,
+	//Delete row if QOD for today has already been set
+	err := requestHandler.Db.Table("qods").
+		Where("date = ?", today).
+		Where("topic_id = 0").
+		Where("is_icelandic").
+		Delete(&quote).Error
+
+	if err != nil {
+		log.Fatalf("Got error when checking for existing QOD: %s", err)
 	}
-	err = requestHandler.Db.Table("quote").Order("random()").Limit(1).First(quote).Error
+
+	quote = structs.QuoteDBModel{}
+	err = requestHandler.Db.Table("quotes").Where("is_icelandic").Order("random()").First(&quote).Error
 	if err != nil {
 		log.Fatalf("Got error when getting random icelandic quote: %s", err)
 	}
+
 	createQOD := quote.ConvertToQODDBModel(today)
+	createQOD.TopicId = 0
+	createQOD.TopicName = ""
+	createQOD.IsIcelandic = true
 	err = requestHandler.Db.Table("qods").Create(&createQOD).Error
 	if err != nil {
 		log.Fatalf("Got error when creating icelandic QOD: %s", err)
@@ -81,7 +106,18 @@ func (requestHandler *RequestHandler) insertTopicsQOD(today string) {
 			log.Fatalf("Got error when getting a random quote for topic %s: %s", topic.Name, err)
 		}
 
-		err = requestHandler.Db.Table("qods").Create(&quote).Error
+		deleteQuote := structs.QuoteDBModel{}
+		err = requestHandler.Db.Table("qods").
+			Where("date = ?", today).
+			Where("topic_id = ?", topic.Id).
+			Delete(&deleteQuote).Error
+		if err != nil {
+			log.Fatalf("Got error when delete topic QOD for topic %s: %s", topic.Name, err)
+		}
+		createQuote := quote.ConvertToQODDBModel(today)
+		createQuote.TopicId = uint(topic.Id)
+		createQuote.TopicName = topic.Name
+		err = requestHandler.Db.Table("qods").Create(&createQuote).Error
 		if err != nil {
 			log.Fatalf("Got error when creating QOD for topic %s: %s", topic.Name, err)
 		}
@@ -89,10 +125,19 @@ func (requestHandler *RequestHandler) insertTopicsQOD(today string) {
 
 }
 
-func (requestHandler *RequestHandler) insertEnglishAOD(today string, isIcelandic bool) {
+func (requestHandler *RequestHandler) insertEnglishAOD(today string) {
 	//------------------- Start AOD -------------------//
-	var err error
 	var author structs.AuthorDBModel
+	//Delete if QOD for today has already been set
+	err := requestHandler.Db.Table("aods").
+		Where("date = ?", today).
+		Not("is_icelandic").
+		Delete(&author).Error
+
+	if err != nil {
+		log.Fatalf("Got error when checking for existing AOD: %s", err)
+	}
+
 	for i := 0; i < 10; i++ {
 		//Note we are sampling from table "topicsview" but not quotes for more chance of a good quote
 		err = requestHandler.Db.Raw("select * from authors tablesample system(0.1)").Limit(1).First(&author).Error
@@ -104,7 +149,7 @@ func (requestHandler *RequestHandler) insertEnglishAOD(today string, isIcelandic
 		}
 		author = structs.AuthorDBModel{}
 	}
-	createAOD := author.ConvertToAODDBModel(today)
+	createAOD := author.ConvertToAODDBModel(today, false)
 	err = requestHandler.Db.Table("aods").Create(&createAOD).Error
 	if err != nil {
 		log.Fatalf("Got error when creating english AOD: %s", err)
@@ -113,16 +158,25 @@ func (requestHandler *RequestHandler) insertEnglishAOD(today string, isIcelandic
 	//------------------- AOD DONE -------------------//
 }
 
-func (requestHandler *RequestHandler) insertIcelandicAOD(today string, isIcelandic bool) {
+func (requestHandler *RequestHandler) insertIcelandicAOD(today string) {
 	//------------------- Start AOD -------------------//
-	var err error
 	var author structs.AuthorDBModel
+	//Delete if QOD for today has already been set
+	err := requestHandler.Db.Table("aods").
+		Where("date = ?", today).
+		Where("is_icelandic").
+		Delete(&author).Error
+
+	if err != nil {
+		log.Fatalf("Got error when checking for existing AOD: %s", err)
+	}
+
 	err = requestHandler.Db.Table("authors").Order("random()").Where("nr_of_icelandic_quotes > 0").Limit(1).First(&author).Error
 	if err != nil {
 		log.Fatalf("Got error when getting random english author: %s", err)
 	}
 
-	createAOD := author.ConvertToAODDBModel(today)
+	createAOD := author.ConvertToAODDBModel(today, true)
 	err = requestHandler.Db.Table("aods").Create(&createAOD).Error
 	if err != nil {
 		log.Fatalf("Got error when creating english AOD: %s", err)
@@ -142,8 +196,8 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 
 	go requestHandler.insertEnglishQOD(today)
 	go requestHandler.insertIcelandicQOD(today)
-	go requestHandler.insertEnglishQOD(today)
-	go requestHandler.insertIcelandicQOD(today)
+	go requestHandler.insertEnglishAOD(today)
+	go requestHandler.insertIcelandicAOD(today)
 	go requestHandler.insertTopicsQOD(today)
 }
 
