@@ -56,7 +56,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	if result == (structs.TopicViewAPIModel{}) {
+	if result == (structs.QuoteDBModel{}) {
 		log.Printf("Got error when querying DB in GetRandomQuote: %s", err)
 		return events.APIGatewayProxyResponse{
 			Body:       "No quote exists that matches the given parameters",
@@ -64,7 +64,8 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	out, _ := json.Marshal(result)
+	quoteAPI := result.ConvertToAPIModel()
+	out, _ := json.Marshal(quoteAPI)
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),
 		StatusCode: http.StatusOK,
