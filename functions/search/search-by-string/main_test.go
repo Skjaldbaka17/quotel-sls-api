@@ -167,5 +167,26 @@ func TestHandler(t *testing.T) {
 			}
 		})
 
+		t.Run("Search By string pagination", func(t *testing.T) {
+
+			searchString := "Love"
+			pageSize := 50
+			var jsonStr = fmt.Sprintf(`{"searchString": "%s","pageSize":%d}`, searchString, pageSize)
+			var respQuotes []structs.QuoteAPIModel
+			GetRequest(jsonStr, &respQuotes, t)
+			obj26 := respQuotes[25]
+
+			pageSize = 25
+			jsonStr = fmt.Sprintf(`{"searchString": "%s","pageSize":%d, "page":1}`, searchString, pageSize)
+			GetRequest(jsonStr, &respQuotes, t)
+
+			if pageSize != len(respQuotes) {
+				t.Fatalf("got list of length %d but expected %d", len(respQuotes), pageSize)
+			}
+
+			if respQuotes[0].QuoteId != obj26.QuoteId {
+				t.Fatalf("got %+v, want %+v", respQuotes[0], obj26)
+			}
+		})
 	})
 }
