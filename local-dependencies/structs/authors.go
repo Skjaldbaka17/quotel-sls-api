@@ -49,7 +49,7 @@ type AodDBModel struct {
 	Name        string `json:"name,omitempty"`
 	AuthorId    uint   `json:"author_id,omitempty"`
 	Date        string `json:"date,omitempty"`
-	IsIcelandic bool   `json:"is_icelandic,OMITEMPTY"`
+	IsIcelandic bool   `json:"is_icelandic,omitempty"`
 }
 
 type AodAPIModel struct {
@@ -59,10 +59,10 @@ type AodAPIModel struct {
 	Profession  string `json:"profession,omitempty"`
 	Nationality string `json:"nationality,omitempty"`
 	Date        string `json:"date,omitempty"`
-	IsIcelandic bool   `json:"isIcelandic,OMITEMPTY"`
-	TopicId     uint   `json:"topicId,OMITEMPTY"`
-	TopicName   string `json:"topicName,OMITEMPTY"`
-	AuthorId    uint   `json:"authorId,OMITEMPTY"`
+	IsIcelandic bool   `json:"isIcelandic,omitempty"`
+	TopicId     uint   `json:"topicId,omitempty"`
+	TopicName   string `json:"topicName,omitempty"`
+	AuthorId    uint   `json:"authorId,omitempty"`
 }
 
 //------------------- STRUCT CONVERSIONS -------------------//

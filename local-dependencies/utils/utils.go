@@ -48,7 +48,7 @@ func (requestHandler *RequestHandler) InitializeDB() structs.ErrorResponse {
 
 func (requestHandler *RequestHandler) GetRandomQuoteFromDb(requestBody *structs.Request) (structs.QuoteDBModel, error) {
 	var dbPointer *gorm.DB
-	var topicResult structs.QuoteDBModel
+	var topicResult []structs.QuoteDBModel
 
 	var shouldDoQuick = true
 
@@ -90,11 +90,26 @@ func (requestHandler *RequestHandler) GetRandomQuoteFromDb(requestBody *structs.
 	}
 
 	//** ---------- Paramater configuratino for DB query ends ---------- **//
-	err := dbPointer.Limit(1).Find(&topicResult).Error
+	err := dbPointer.Limit(100).Find(&topicResult).Error
+
 	if err != nil {
 		return structs.QuoteDBModel{}, err
 	}
-	return topicResult, nil
+	if len(topicResult) == 0 {
+		return structs.QuoteDBModel{}, nil
+	}
+	toReturn := topicResult[0]
+	//Sometimes if request is for an english quote we are returned an icelandic quote (because of tablesample) therefore go through the 100 quotes returned and return the first
+	//non-icelandic one you find
+	if toReturn.IsIcelandic && strings.ToLower(requestBody.Language) != "icelandic" {
+		for _, quote := range topicResult {
+			if !quote.IsIcelandic {
+				toReturn = quote
+				break
+			}
+		}
+	}
+	return toReturn, nil
 }
 
 //ValidateRequestBody takes in the request and validates all the input fields, returns an error with reason for validation-failure

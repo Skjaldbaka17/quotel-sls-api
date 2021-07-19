@@ -21,12 +21,8 @@ var theReqHandler = RequestHandler{}
 func (requestHandler *RequestHandler) insertEnglishQOD(today string) error {
 	//------------------- Start ENGLISH QOD -------------------//
 	var quote structs.QuoteDBModel
-	//Delete if QOD for today has already been set
-	err := requestHandler.Db.Table("qods").
-		Where("date = ?", today).
-		Where("topic_id = 0").
-		Not("is_icelandic").
-		Delete(&quote).Error
+	//Delete row if QOD for today has already been set
+	err := requestHandler.Db.Exec("delete from qods where date = ? and topic_id = 0 and not is_icelandic", today).Error
 
 	if err != nil {
 		log.Fatalf("Got error when checking for existing QOD: %s", err)
@@ -61,11 +57,7 @@ func (requestHandler *RequestHandler) insertIcelandicQOD(today string) error {
 	//------------------- Start ICELANDIC QOD -------------------//
 	var quote structs.QuoteDBModel
 	//Delete row if QOD for today has already been set
-	err := requestHandler.Db.Table("qods").
-		Where("date = ?", today).
-		Where("topic_id = 0").
-		Where("is_icelandic").
-		Delete(&quote).Error
+	err := requestHandler.Db.Exec("delete from qods where date = ? and topic_id = 0 and is_icelandic", today).Error
 
 	if err != nil {
 		log.Fatalf("Got error when checking for existing QOD: %s", err)
@@ -97,7 +89,10 @@ func (requestHandler *RequestHandler) insertTopicsQOD(today string) {
 	if err != nil {
 		log.Fatalf("Got error when getting all topics: %s", err)
 	}
-
+	err = requestHandler.Db.Exec("delete from qods where date = ? and topic_id > 0", today).Error
+	if err != nil {
+		log.Fatalf("Got error second when getting all topics: %s", err)
+	}
 	for i, topic := range topics {
 		wg.Add(1)
 
@@ -112,11 +107,6 @@ func (requestHandler *RequestHandler) insertTopicsQOD(today string) {
 				log.Fatalf("Got error when getting a random quote for topic %s: %s", topic.Name, err)
 			}
 
-			deleteQuote := structs.QuoteDBModel{}
-			err = requestHandler.Db.Table("qods").
-				Where("date = ?", today).
-				Where("topic_id = ?", topic.Id).
-				Delete(&deleteQuote).Error
 			if err != nil {
 				log.Fatalf("Got error when delete topic QOD for topic %s: %s", topic.Name, err)
 			}
@@ -140,10 +130,7 @@ func (requestHandler *RequestHandler) insertEnglishAOD(today string) {
 	//------------------- Start AOD -------------------//
 	var author structs.AuthorDBModel
 	//Delete if QOD for today has already been set
-	err := requestHandler.Db.Table("aods").
-		Where("date = ?", today).
-		Not("is_icelandic").
-		Delete(&author).Error
+	err := requestHandler.Db.Exec("delete from aods where date = ? and not is_icelandic", today).Error
 
 	if err != nil {
 		log.Fatalf("Got error when checking for existing AOD: %s", err)
@@ -172,11 +159,7 @@ func (requestHandler *RequestHandler) insertEnglishAOD(today string) {
 func (requestHandler *RequestHandler) insertIcelandicAOD(today string) {
 	//------------------- Start AOD -------------------//
 	var author structs.AuthorDBModel
-	//Delete if QOD for today has already been set
-	err := requestHandler.Db.Table("aods").
-		Where("date = ?", today).
-		Where("is_icelandic").
-		Delete(&author).Error
+	err := requestHandler.Db.Exec("delete from aods where date = ? and is_icelandic", today).Error
 
 	if err != nil {
 		log.Fatalf("Got error when checking for existing AOD: %s", err)

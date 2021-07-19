@@ -50,6 +50,8 @@ func Setup(handler *RequestHandler, t *testing.T) (structs.QodDBModel, structs.Q
 	//CleanUp
 	t.Cleanup(func() {
 		handler.Db.Exec("delete from qods")
+		handler.Db.Exec("update quotes set count = 0 where count > 0")
+
 	})
 
 	return QOD, QODICE, QODtopic

@@ -1,77 +1,77 @@
 package structs
 
 type QuoteDBModel struct {
-	Id          uint   `json:"id,OMITEMPTY"`
-	AuthorId    uint   `json:"author_id,OMITEMPTY"`
-	Quote       string `json:"quote,OMITEMPTY"`
-	Count       int    `json:"count,OMITEMPTY"`
-	IsIcelandic bool   `json:"is_icelandic,OMITEMPTY"`
+	Id          uint   `json:"id,omitempty"`
+	AuthorId    uint   `json:"author_id,omitempty"`
+	Quote       string `json:"quote,omitempty"`
+	Count       int    `json:"count,omitempty"`
+	IsIcelandic bool   `json:"is_icelandic,omitempty"`
 
-	Nationality string `json:"nationality,OMITEMPTY"`
-	Profession  string `json:"profession,OMITEMPTY"`
-	BirthYear   int    `json:"birth_year,OMITEMPTY"`
-	BirthMonth  string `json:"birth_month,OMITEMPTY"`
-	BirthDate   int    `json:"birth_date,OMITEMPTY"`
-	DeathYear   int    `json:"death_year,OMITEMPTY"`
-	DeathMonth  string `json:"death_month,OMITEMPTY"`
-	DeathDate   int    `json:"death_date,OMITEMPTY"`
-	Name        string `json:"name,OMITEMPTY"`
-	TopicName   string `json:"topic_name,OMITEMPTY"`
-	TopicId     int    `json:"topic_id,OMITEMPTY"`
+	Nationality string `json:"nationality,omitempty"`
+	Profession  string `json:"profession,omitempty"`
+	BirthYear   int    `json:"birth_year,omitempty"`
+	BirthMonth  string `json:"birth_month,omitempty"`
+	BirthDate   int    `json:"birth_date,omitempty"`
+	DeathYear   int    `json:"death_year,omitempty"`
+	DeathMonth  string `json:"death_month,omitempty"`
+	DeathDate   int    `json:"death_date,omitempty"`
+	Name        string `json:"name,omitempty"`
+	TopicName   string `json:"topic_name,omitempty"`
+	TopicId     int    `json:"topic_id,omitempty"`
 }
 
 type QuoteAPIModel struct {
-	QuoteId     uint   `json:"quoteId,OMITEMPTY"`
-	AuthorId    uint   `json:"authorId,OMITEMPTY"` //Author_id
-	Quote       string `json:"quote,OMITEMPTY"`
-	Count       int    `json:"count,OMITEMPTY"`
-	IsIcelandic bool   `json:"isIcelandic,OMITEMPTY"`
+	QuoteId     uint   `json:"quoteId,omitempty"`
+	AuthorId    uint   `json:"authorId,omitempty"` //Author_id
+	Quote       string `json:"quote,omitempty"`
+	Count       int    `json:"count,omitempty"`
+	IsIcelandic bool   `json:"isIcelandic,omitempty"`
 
-	Nationality string `json:"nationality,OMITEMPTY"`
-	Profession  string `json:"profession,OMITEMPTY"`
-	BirthDate   string `json:"birthDate,OMITEMPTY"`
-	DeathDate   string `json:"deathDate,OMITEMPTY"`
-	Name        string `json:"name,OMITEMPTY"`
-	TopicName   string `json:"topicName,OMITEMPTY"`
-	TopicId     int    `json:"topicId,OMITEMPTY"`
+	Nationality string `json:"nationality,omitempty"`
+	Profession  string `json:"profession,omitempty"`
+	BirthDate   string `json:"birthDate,omitempty"`
+	DeathDate   string `json:"deathDate,omitempty"`
+	Name        string `json:"name,omitempty"`
+	TopicName   string `json:"topicName,omitempty"`
+	TopicId     int    `json:"topicId,omitempty"`
 }
 
 type QodDBModel struct {
-	QuoteId  uint   `json:"quote_id,OMITEMPTY"`
-	Quote    string `json:"quote,OMITEMPTY"`
-	AuthorId uint   `json:"author_id,OMITEMPTY"`
+	QuoteId  uint   `json:"quote_id,omitempty"`
+	Quote    string `json:"quote,omitempty"`
+	AuthorId uint   `json:"author_id,omitempty"`
 
-	Name        string `json:"name,OMITEMPTY"`
-	Nationality string `json:"nationality,OMITEMPTY"`
-	Profession  string `json:"profession,OMITEMPTY"`
-	BirthYear   int    `json:"birth_year,OMITEMPTY"`
-	BirthMonth  string `json:"birth_month,OMITEMPTY"`
-	BirthDate   int    `json:"birth_date,OMITEMPTY"`
-	DeathYear   int    `json:"death_year,OMITEMPTY"`
-	DeathMonth  string `json:"death_month,OMITEMPTY"`
-	DeathDate   int    `json:"death_date,OMITEMPTY"`
-	Date        string `json:"date,OMITEMPTY"`
+	Name        string `json:"name,omitempty"`
+	Nationality string `json:"nationality,omitempty"`
+	Profession  string `json:"profession,omitempty"`
+	BirthYear   int    `json:"birth_year,omitempty"`
+	BirthMonth  string `json:"birth_month,omitempty"`
+	BirthDate   int    `json:"birth_date,omitempty"`
+	DeathYear   int    `json:"death_year,omitempty"`
+	DeathMonth  string `json:"death_month,omitempty"`
+	DeathDate   int    `json:"death_date,omitempty"`
+	Date        string `json:"date,omitempty"`
 
-	IsIcelandic bool   `json:"is_icelandic,OMITEMPTY"`
-	TopicId     uint   `json:"topic_id,OMITEMPTY"`
-	TopicName   string `json:"topic_name,OMITEMPTY"`
+	IsIcelandic bool   `json:"is_icelandic,omitempty"`
+	TopicId     uint   `json:"topic_id,omitempty"`
+	TopicName   string `json:"topic_name,omitempty"`
 }
 
 type QodAPIModel struct {
-	QuoteId  uint   `json:"quoteId,OMITEMPTY"`
-	Quote    string `json:"quote,OMITEMPTY"`
-	AuthorId uint   `json:"authorId,OMITEMPTY"` //author_id
+	QuoteId  uint   `json:"quoteId,omitempty"`
+	Quote    string `json:"quote,omitempty"`
+	AuthorId uint   `json:"authorId,omitempty"` //author_id
 
-	Name        string `json:"name,OMITEMPTY"`
-	Nationality string `json:"nationality,OMITEMPTY"`
-	Profession  string `json:"profession,OMITEMPTY"`
-	BirthDate   string `json:"birthDate,OMITEMPTY"`
-	DeathDate   string `json:"deathDate,OMITEMPTY"`
-	Date        string `json:"date,OMITEMPTY"`
+	Name        string `json:"name,omitempty"`
+	Nationality string `json:"nationality,omitempty"`
+	Profession  string `json:"profession,omitempty"`
+	BirthDate   string `json:"birthDate,omitempty"`
+	DeathDate   string `json:"deathDate,omitempty"`
+	Date        string `json:"date,omitempty"`
 
-	IsIcelandic bool   `json:"isIcelandic,OMITEMPTY"`
-	TopicId     uint   `json:"topicId,OMITEMPTY"`
-	TopicName   string `json:"topicName,OMITEMPTY"`
+	IsIcelandic bool   `json:"isIcelandic,omitempty"`
+	TopicId     uint   `json:"topicId,omitempty"`
+	TopicName   string `json:"topicName,omitempty"`
 }
 
 //------------------- STRUCT CONVERSIONS -------------------//

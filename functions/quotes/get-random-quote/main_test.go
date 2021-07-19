@@ -56,6 +56,8 @@ func Setup(handler *RequestHandler, t *testing.T) ([]structs.AuthorDBModel, []st
 	t.Cleanup(func() {
 		handler.Db.Table("authors").Model(&authors).Update("count", 0)
 		handler.Db.Table("topics").Model(&authors).Update("count", 0)
+		handler.Db.Exec("update quotes set count = 0 where count > 0")
+
 	})
 	return authors, topics
 }
@@ -242,7 +244,7 @@ func TestHandler(t *testing.T) {
 			var firstRespQuote structs.QuoteAPIModel
 			GetRequest(jsonStr, &firstRespQuote, t)
 			if firstRespQuote.IsIcelandic {
-				t.Fatalf("first response, got an IcelandicQuote but expected an English quote")
+				t.Fatalf("first response, got an IcelandicQuote %s but expected an English quote", firstRespQuote.Quote)
 			}
 			var secondRespQuote structs.QuoteAPIModel
 			GetRequest(jsonStr, &secondRespQuote, t)

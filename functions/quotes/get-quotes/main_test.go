@@ -30,7 +30,8 @@ func Setup(handler *RequestHandler, t *testing.T) ([]structs.AuthorDBModel, []st
 	//CleanUp
 	t.Cleanup(func() {
 		handler.Db.Table("authors").Model(&authors).Update("count", 0)
-		handler.Db.Table("quotes").Model(&quotes).Update("count", 0)
+		handler.Db.Exec("update quotes set count = 0 where count > 0")
+
 	})
 
 	return authors, quotes

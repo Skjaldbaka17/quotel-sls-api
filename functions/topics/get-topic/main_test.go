@@ -33,7 +33,7 @@ func Setup(t *testing.T) []structs.TopicDBModel {
 
 	t.Cleanup(func() {
 		testingHandler.Db.Table("authors").Update("count", 0)
-		testingHandler.Db.Table("topics").Update("count", 0)
+		testingHandler.Db.Exec("update topics set count = 0 where count > 0")
 	})
 	return topics
 }

@@ -27,9 +27,9 @@ Resources:
 
 #-------------------------------------- daily --------------------------------------#  
   SetOfTheDayFunction:
-    Timeout: 120
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
+      Timeout: 120
       CodeUri: functions/daily/set-of-the-day/
       Handler: set-of-the-day
       Runtime: go1.x
