@@ -14,8 +14,8 @@ func TestHandler(t *testing.T) {
 	testingHandler.InitializeDB()
 
 	t.Cleanup(func() {
-		testingHandler.Db.Exec("delete from aods")
-		testingHandler.Db.Exec("delete from qods")
+		// testingHandler.Db.Exec("delete from aods")
+		// testingHandler.Db.Exec("delete from qods")
 	})
 
 	year, month, day := time.Now().Date()

@@ -35,39 +35,39 @@ func (requestHandler *RequestHandler) AuthorsAppearInSearchCountIncrement(author
 	if len(authors) == 0 {
 		return nil
 	}
-	authorIds := []int{}
+	authorIds := []uint{}
 
 	for _, author := range authors {
-		authorIds = append(authorIds, author.Id)
+		authorIds = append(authorIds, author.ID)
 	}
 
 	return requestHandler.Db.Exec("UPDATE authors SET count = count + ? where id in (?) returning *", incrementAppearInSearchList, authorIds).Error
 }
 
 //QuotesAppearInSearchCountIncrement increments the popularity count of the Quotes from a listing in a search
-func (requestHandler *RequestHandler) QuotesAppearInSearchCountIncrement(quotes []structs.SearchViewDBModel) error {
+func (requestHandler *RequestHandler) QuotesAppearInSearchCountIncrement(quotes []structs.QuoteDBModel) error {
 	if len(quotes) == 0 {
 		return nil
 	}
-	quoteIds := []int{}
+	quoteIds := []uint{}
 
 	for _, quote := range quotes {
-		quoteIds = append(quoteIds, quote.QuoteId)
+		quoteIds = append(quoteIds, quote.Id)
 	}
 
 	return requestHandler.Db.Exec("UPDATE quotes SET count = count + ? where id in (?) returning *", incrementAppearInSearchList, quoteIds).Error
 }
 
 //AppearInSearchCountIncrement increments the popularity count of the Authors and quotes from a listing in a search
-func (requestHandler *RequestHandler) TopicViewAppearInSearchCountIncrement(quotes []structs.TopicViewDBModel) error {
+func (requestHandler *RequestHandler) TopicViewAppearInSearchCountIncrement(quotes []structs.QuoteDBModel) error {
 	if len(quotes) == 0 {
 		return nil
 	}
 	authorIds := []int{}
 	quoteIds := []int{}
 	for _, quote := range quotes {
-		authorIds = append(authorIds, quote.AuthorId)
-		quoteIds = append(quoteIds, quote.QuoteId)
+		authorIds = append(authorIds, int(quote.AuthorId))
+		quoteIds = append(quoteIds, int(quote.Id))
 	}
 
 	err := requestHandler.Db.Exec("UPDATE authors SET count = count + ? where id in (?) returning *", incrementAppearInSearchList, authorIds).Error

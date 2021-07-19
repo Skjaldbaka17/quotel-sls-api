@@ -52,6 +52,7 @@ func TestHandler(t *testing.T) {
 
 	t.Run("Time Test for searching by string", func(t *testing.T) {
 		maxTime := 25
+		longerTime := 50
 
 		t.Run("easy search should return list of quotes with Muhammad Ali as first author", func(t *testing.T) {
 			start := time.Now()
@@ -60,8 +61,8 @@ func TestHandler(t *testing.T) {
 			GetRequest(jsonStr, &respQuotes, t)
 			end := time.Now()
 			duration := end.Sub(start)
-			if duration.Milliseconds() > int64(maxTime) {
-				t.Fatalf("Expected search for author to take less than %dms but it took %dms", maxTime, duration.Milliseconds())
+			if duration.Milliseconds() > int64(longerTime) {
+				t.Fatalf("Expected search for author to take less than %dms but it took %dms", longerTime, duration.Milliseconds())
 			}
 		})
 

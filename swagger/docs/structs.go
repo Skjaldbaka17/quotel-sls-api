@@ -23,7 +23,7 @@ type Request struct {
 }
 
 type OrderConfig struct {
-	// What to order by, 'alphabetical', 'popularity' or 'nrOfQuotes'
+	// What to order by, 'alphabetical', 'popularity','nrOfQuotes','dateOfBirth', 'dateOfDeath' or 'age'
 	// example: popularity
 	OrderBy string `json:"orderBy,omitempty"`
 	// Where to start the ordering (if empty it starts from beginning, for example start at 'A' for alphabetical ascending order)

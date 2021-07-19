@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
@@ -90,39 +91,49 @@ func (requestHandler *RequestHandler) insertIcelandicQOD(today string) error {
 }
 
 func (requestHandler *RequestHandler) insertTopicsQOD(today string) {
+	var wg sync.WaitGroup
 	var topics []structs.TopicDBModel
 	err := requestHandler.Db.Table("topics").Find(&topics).Error
 	if err != nil {
 		log.Fatalf("Got error when getting all topics: %s", err)
 	}
 
-	for _, topic := range topics {
-		quote := structs.QuoteDBModel{
-			TopicId:   topic.Id,
-			TopicName: topic.Name,
-		}
-		err = requestHandler.Db.Table("topicsview").Order("random()").Limit(1).First(&quote).Error
-		if err != nil {
-			log.Fatalf("Got error when getting a random quote for topic %s: %s", topic.Name, err)
-		}
+	for i, topic := range topics {
+		wg.Add(1)
 
-		deleteQuote := structs.QuoteDBModel{}
-		err = requestHandler.Db.Table("qods").
-			Where("date = ?", today).
-			Where("topic_id = ?", topic.Id).
-			Delete(&deleteQuote).Error
-		if err != nil {
-			log.Fatalf("Got error when delete topic QOD for topic %s: %s", topic.Name, err)
-		}
-		createQuote := quote.ConvertToQODDBModel(today)
-		createQuote.TopicId = uint(topic.Id)
-		createQuote.TopicName = topic.Name
-		err = requestHandler.Db.Table("qods").Create(&createQuote).Error
-		if err != nil {
-			log.Fatalf("Got error when creating QOD for topic %s: %s", topic.Name, err)
+		go func(topic structs.TopicDBModel) {
+			defer wg.Done()
+			quote := structs.QuoteDBModel{
+				TopicId:   topic.Id,
+				TopicName: topic.Name,
+			}
+			err = requestHandler.Db.Table("topicsview").Order("random()").Limit(1).First(&quote).Error
+			if err != nil {
+				log.Fatalf("Got error when getting a random quote for topic %s: %s", topic.Name, err)
+			}
+
+			deleteQuote := structs.QuoteDBModel{}
+			err = requestHandler.Db.Table("qods").
+				Where("date = ?", today).
+				Where("topic_id = ?", topic.Id).
+				Delete(&deleteQuote).Error
+			if err != nil {
+				log.Fatalf("Got error when delete topic QOD for topic %s: %s", topic.Name, err)
+			}
+			createQuote := quote.ConvertToQODDBModel(today)
+			createQuote.TopicId = uint(topic.Id)
+			createQuote.TopicName = topic.Name
+			err = requestHandler.Db.Table("qods").Create(&createQuote).Error
+			if err != nil {
+				log.Fatalf("Got error when creating QOD for topic %s: %s", topic.Name, err)
+			}
+		}(topic)
+
+		if i%40 == 0 && i != 0 {
+			wg.Wait()
 		}
 	}
-
+	wg.Wait()
 }
 
 func (requestHandler *RequestHandler) insertEnglishAOD(today string) {
@@ -140,11 +151,11 @@ func (requestHandler *RequestHandler) insertEnglishAOD(today string) {
 
 	for i := 0; i < 10; i++ {
 		//Note we are sampling from table "topicsview" but not quotes for more chance of a good quote
-		err = requestHandler.Db.Raw("select * from authors tablesample system(0.1)").Limit(1).First(&author).Error
+		err = requestHandler.Db.Raw("select * from authors tablesample system(0.1)").Limit(1).Find(&author).Error
 		if err != nil {
 			log.Fatalf("Got error when getting random english author: %s", err)
 		}
-		if author.NrOfEnglishQuotes > 0 {
+		if author != (structs.AuthorDBModel{}) && author.NrOfEnglishQuotes > 0 {
 			break
 		}
 		author = structs.AuthorDBModel{}
@@ -194,11 +205,14 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	year, month, day := time.Now().Date()
 	today := fmt.Sprintf("%d-%d-%d", year, month, day)
 
-	go requestHandler.insertEnglishQOD(today)
-	go requestHandler.insertIcelandicQOD(today)
-	go requestHandler.insertEnglishAOD(today)
-	go requestHandler.insertIcelandicAOD(today)
-	go requestHandler.insertTopicsQOD(today)
+	var wg sync.WaitGroup
+	wg.Add(5)
+	go func() { defer wg.Done(); requestHandler.insertEnglishQOD(today) }()
+	go func() { defer wg.Done(); requestHandler.insertIcelandicQOD(today) }()
+	go func() { defer wg.Done(); requestHandler.insertEnglishAOD(today) }()
+	go func() { defer wg.Done(); requestHandler.insertIcelandicAOD(today) }()
+	go func() { defer wg.Done(); requestHandler.insertTopicsQOD(today) }()
+	wg.Wait()
 }
 
 func main() {

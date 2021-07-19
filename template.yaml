@@ -25,6 +25,22 @@ Resources:
 
 #################### LAMBDA FUNCTIONS ####################
 
+#-------------------------------------- daily --------------------------------------#  
+  SetOfTheDayFunction:
+    Timeout: 120
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/daily/set-of-the-day/
+      Handler: set-of-the-day
+      Runtime: go1.x
+      Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+      Events:
+        DailyTrigger:
+          Type: Schedule
+          Properties:
+            Description: Is triggered daily at 01:00AM
+            Name: DailyTrigger
+            Schedule: cron(0 1 * * ? *) #cron(minute hour dayofmonth month dayofweek year)
 #------------------- /quotes -------------------#
 
   GetQuotesFunction:
@@ -65,19 +81,6 @@ Resources:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /quotes/random
-            Method: POST
-  SetQuoteOfTheDayFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: functions/quotes/set-quote-of-the-day/
-      Handler: set-quote-of-the-day
-      Runtime: go1.x
-      Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
-      Events:
-        GetQuotesAPI:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /quotes/qod/new
             Method: POST
   GetQuoteOfTheDayFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -171,19 +174,6 @@ Resources:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /authors/aod/history
-            Method: POST
-  SetAuthorOfTheDayFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: functions/authors/set-author-of-the-day
-      Handler: set-author-of-the-day
-      Runtime: go1.x
-      Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
-      Events:
-        GetQuotesAPI:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /authors/aod/new
             Method: POST
 
 #-------------------------------------- /search --------------------------------------#   

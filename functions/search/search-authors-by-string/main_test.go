@@ -10,54 +10,6 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
-func Setup(handler *RequestHandler, t *testing.T) ([]structs.AuthorDBModel, []structs.TopicDBModel) {
-	handler.InitializeDB()
-	var authors []structs.AuthorDBModel
-	var author structs.AuthorDBModel
-	err := handler.Db.Table("authors").Where("name = ?", "Theodore Roosevelt").First(&author).Error
-	if err != nil {
-		t.Fatalf("got error in setup: %s", err)
-	}
-	authors = append(authors, author)
-
-	var topics []structs.TopicDBModel
-	var topic structs.TopicDBModel
-	err = handler.Db.Table("topics").Where("name = ?", "Motivational").First(&topic).Error
-	if err != nil {
-		t.Fatalf("got error in setup motivational: %s", err)
-	}
-
-	topics = append(topics, topic)
-	topic = structs.TopicDBModel{}
-	err = handler.Db.Table("topics").Where("name = ?", "Smile").Find(&topic).Error
-	if err != nil {
-		t.Fatalf("got error in setup smile: %s", err)
-	}
-
-	topics = append(topics, topic)
-	topic = structs.TopicDBModel{}
-	err = handler.Db.Table("topics").Where("name = ?", "Happiness").First(&topic).Error
-	if err != nil {
-		t.Fatalf("got error in setup happiness: %s", err)
-	}
-
-	topics = append(topics, topic)
-
-	topic = structs.TopicDBModel{}
-	err = handler.Db.Table("topics").Where("name = ?", "Inspirational").First(&topic).Error
-	if err != nil {
-		t.Fatalf("got error in setup happiness: %s", err)
-	}
-
-	topics = append(topics, topic)
-
-	t.Cleanup(func() {
-		handler.Db.Table("authors").Model(&authors).Update("count", 0)
-		handler.Db.Table("topics").Model(&authors).Update("count", 0)
-	})
-	return authors, topics
-}
-
 var testingHandler = RequestHandler{}
 
 func GetRequest(jsonStr string, obj interface{}, t *testing.T) string {
@@ -69,6 +21,10 @@ func GetRequest(jsonStr string, obj interface{}, t *testing.T) string {
 	return response.Body
 }
 func TestHandler(t *testing.T) {
+	t.Cleanup(func() {
+		testingHandler.Db.Table("authors").Update("count", 0)
+		testingHandler.Db.Table("topics").Update("count", 0)
+	})
 
 	t.Run("Time Test for getting quotes", func(t *testing.T) {
 		maxTime := 25

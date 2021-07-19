@@ -47,7 +47,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		requestBody.Language = "English"
 	}
 
-	var quotes []structs.QodViewDBModel
+	var quotes []structs.QodDBModel
 	var err error
 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
 	dbPointer := requestHandler.QodLanguageSQL(requestBody.Language)
@@ -71,22 +71,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	if len(quotes) == 0 {
-		err = requestHandler.SetNewRandomQOD(&requestBody)
-		if err != nil {
-			log.Printf("Got error when querying setting new Random QOD in history: %s", err)
-			errResponse := structs.ErrorResponse{
-				Message: utils.InternalServerError,
-			}
-			return events.APIGatewayProxyResponse{
-				Body:       errResponse.ToString(),
-				StatusCode: http.StatusInternalServerError,
-			}, nil
-		}
-		return requestHandler.handler(request)
-	}
-
-	qodHistoryAPI := structs.ConvertToQodViewsAPIModel(quotes)
+	qodHistoryAPI := structs.ConvertToQodAPIModel(quotes)
 	out, _ := json.Marshal(qodHistoryAPI)
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),

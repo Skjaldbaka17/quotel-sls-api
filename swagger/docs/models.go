@@ -2,7 +2,7 @@ package docs
 
 // swagger:model OrderConfiguration
 type orderConfigListAuthorsModel struct {
-	// What to order by, 'alphabetical', 'popularity' or 'nrOfQuotes'
+	// What to order by, 'alphabetical', 'popularity','nrOfQuotes','dateOfBirth', 'dateOfDeath' or 'age'
 	// example: popularity
 	OrderBy string `json:"orderBy"`
 	// Where to start the ordering (if empty it starts from beginning, for example start at 'A' for alphabetical ascending order).
@@ -96,4 +96,53 @@ type orderConfigListQuotesModel struct {
 	// Whether to order the list in reverse or not (true is Descending and false is Ascending, false is default)
 	// example: true
 	Reverse bool `json:"reverse"`
+}
+
+// swagger:model Time
+type timeModel struct {
+	//Model
+	Born beforeAfterModel `json:"born"`
+	//Model
+	Died beforeAfterModel `json:"died"`
+	// If true only return authors that are alive
+	// Example: true
+	// Default: false
+	IsAlive bool `json:"isAlive"`
+	// If true only return authors that are dead
+	// Example: true
+	// Default: false
+	IsDead bool `json:"isDead"`
+	// Model
+	Age ageModel `json:"age"`
+}
+
+type ageModel struct {
+	// Only return authors that are exactly the given age
+	// Example: 25
+	Exactly int `json:"exactly"`
+	// Only return authors that are older than or of equal age as the given age
+	// Example: 25
+	OlderThan int `json:"olderThan"`
+	// Only return authors that are younger than or of equal age as the given age
+	// Example: 25
+	YoungerThan int `json:"youngerThan"`
+}
+
+// swagger:model BeforeAfter
+type beforeAfterModel struct {
+	// The date the author should be born/or have died on or before (i.e. <= 1998-06-16)
+	// Example: 1998-06-16
+	Before string `json:"before"`
+	// The date the author should be born/or have died on or after (i.e. >= 1998-06-16)
+	// Example: 1998-06-16
+	After string `json:"after"`
+	// Only return authors that were born/died in the given year
+	// Example: 1998
+	Year int `json:"year"`
+	// Only return authors that were born/died in the given month
+	// Example: June
+	Month string `json:"month"`
+	// Only return authors that were born/died on the given date
+	// Example: 16
+	Date int `json:"date"`
 }

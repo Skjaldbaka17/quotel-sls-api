@@ -1,9 +1,150 @@
 package main
 
 import (
+	"fmt"
+	"regexp"
 	"testing"
+	"time"
+
+	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
+	"github.com/aws/aws-lambda-go/events"
 )
 
+//Returns AODs and AODICEs, in that order, put into the DB
+func Setup(handler *RequestHandler, t *testing.T) ([]structs.QodDBModel, []structs.QodDBModel) {
+	handler.InitializeDB()
+
+	//Get the first 3 english- and icelandic-authors to be set as AODs/AODICEs
+	var englishQuotes []structs.QuoteDBModel
+	var icelandicQuotes []structs.QuoteDBModel
+	err := handler.Db.Table("quotes").Not("is_icelandic").Limit(3).Find(&englishQuotes).Error
+	if err != nil {
+		t.Fatalf("Setup error: %s", err)
+	}
+	err = handler.Db.Table("quotes").Where("is_icelandic").Limit(3).Find(&icelandicQuotes).Error
+	if err != nil {
+		t.Fatalf("Setup error: %s", err)
+	}
+
+	// Insert AODs and AODICEs for 2021-06-16, 2021-06-16,2019-06-16
+	dates := []string{"2021-06-16", "2020-06-16", "2019-06-16"}
+	var QODs []structs.QodDBModel
+	var QODICEs []structs.QodDBModel
+	for idx, date := range dates {
+		QODs = append(QODs, englishQuotes[idx].ConvertToQODDBModel(date))
+		QODICEs = append(QODICEs, icelandicQuotes[idx].ConvertToQODDBModel(date))
+	}
+	err = handler.Db.Table("qods").Create(&QODs).Error
+	if err != nil {
+		t.Fatalf("Setup error 2: %s", err)
+	}
+	err = handler.Db.Table("qodices").Create(&QODICEs).Error
+	if err != nil {
+		t.Fatalf("Setup error 2: %s", err)
+	}
+
+	//CleanUp
+	t.Cleanup(func() {
+		handler.Db.Exec("delete from qods")
+		handler.Db.Exec("delete from qodices")
+	})
+
+	return QODs, QODICEs
+}
 func TestHandler(t *testing.T) {
+	var testingHandler = RequestHandler{}
+	QODs, QODICEs := Setup(&testingHandler, t)
+
+	t.Run("Time Test for getting qod history", func(t *testing.T) {
+		maxTime := 50
+		t.Run("Time: Should get complete history of QODs", func(t *testing.T) {
+			start := time.Now()
+			//Get History:
+			jsonStr := []byte(fmt.Sprintf(`{"language":"%s"}`, "english"))
+			_, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
+			if err != nil {
+				t.Fatalf("Expected the history of QOD but got an error: %+v", err)
+			}
+			end := time.Now()
+			duration := end.Sub(start)
+			if duration.Milliseconds() > int64(maxTime) {
+				t.Fatalf("Expected getting history of quotes to take less than %dms but it took %dms", maxTime, duration.Milliseconds())
+			}
+		})
+	})
+
+	t.Run("Get quotes", func(t *testing.T) {
+		t.Run("Should get complete history of QODs", func(t *testing.T) {
+			//Get History:
+			jsonStr := []byte(fmt.Sprintf(`{"language":"%s"}`, "english"))
+			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
+			if err != nil {
+				t.Fatalf("Expected the history of QOD but got an error: %+v", err)
+			}
+
+			for _, qod := range QODs {
+				reg := regexp.MustCompile(qod.Date)
+				if !reg.MatchString(response.Body) {
+					t.Fatalf("Missing Qod for date: %s, got response %s", qod.Date, response.Body)
+				}
+			}
+		})
+
+		t.Run("Should get complete history of QODICEs", func(t *testing.T) {
+			//Get History:
+			jsonStr := []byte(fmt.Sprintf(`{"language":"%s"}`, "icelandic"))
+			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
+			if err != nil {
+				t.Fatalf("Expected the history of AODICE but got an error: %+v", err)
+			}
+
+			for _, qod := range QODICEs {
+				reg := regexp.MustCompile(qod.Date)
+				if !reg.MatchString(response.Body) {
+					t.Fatalf("Missing Qodice for date: %s, got response: %s", qod.Date, response.Body)
+				}
+			}
+
+		})
+
+		t.Run("Should get complete history of QODs from 2020-01-01", func(t *testing.T) {
+			//Get History:
+			jsonStr := []byte(fmt.Sprintf(`{"language":"%s","minimum":"%s"}`, "english", "2020-01-01"))
+			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
+			if err != nil {
+				t.Fatalf("Expected the history of QOD but got an error: %+v", err)
+			}
+
+			shouldMatchReg := regexp.MustCompile(QODs[1].Date) //Regex for 2020-06-16 QODs
+			if !shouldMatchReg.MatchString(response.Body) {
+				t.Fatalf("Expected the history of QODs to contain date %s but got body %s", QODs[1].Date, response.Body)
+			}
+			shouldNotMatchReg := regexp.MustCompile(QODs[2].Date) //Regex for 2019-06-16 QODs
+			if shouldNotMatchReg.MatchString(response.Body) {
+				t.Fatalf("Expected the hisory of QODs only from 2020-01-01 but got body %s", response.Body)
+			}
+
+		})
+
+		t.Run("Should get complete history of QODICEs from 2020-01-01", func(t *testing.T) {
+			//Get History:
+			jsonStr := []byte(fmt.Sprintf(`{"language":"%s","minimum":"%s"}`, "icelandic", "2020-01-01"))
+			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
+			if err != nil {
+				t.Fatalf("Expected the history of QODICE but got an error: %+v", err)
+			}
+
+			shouldMatchReg := regexp.MustCompile(QODICEs[1].Date) //Regex for 2020-06-16 AODICE
+			if !shouldMatchReg.MatchString(response.Body) {
+				t.Fatalf("Expected the history of QODICEs to contain input AODICE for date %s but got body %s", QODICEs[1].Date, response.Body)
+			}
+			shouldNotMatchReg := regexp.MustCompile(QODICEs[2].Date) //Regex for 2019-06-16 AODICE
+			if shouldNotMatchReg.MatchString(response.Body) {
+				t.Fatalf("Expected the hisory of QODICEs only from 2020-01-01 but got body %s", response.Body)
+			}
+
+		})
+
+	})
 
 }

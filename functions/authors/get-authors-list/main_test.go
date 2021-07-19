@@ -33,6 +33,7 @@ func TestHandler(t *testing.T) {
 	t.Run("Time Test for getting authors", func(t *testing.T) {
 
 		maxTime := 50
+		longTime := 100
 		t.Run("Should return first authors starting from 'F' (i.e. greater than or equal to 'F' alphabetically)", func(t *testing.T) {
 			start := time.Now()
 			minimum := "f"
@@ -44,8 +45,8 @@ func TestHandler(t *testing.T) {
 			}
 			end := time.Now()
 			duration := end.Sub(start)
-			if duration.Milliseconds() > int64(maxTime) {
-				t.Fatalf("Expected getting authors to take less than %dms but it took %dms", maxTime, duration.Milliseconds())
+			if duration.Milliseconds() > int64(longTime) {
+				t.Fatalf("Expected getting authors to take less than %dms but it took %dms", longTime, duration.Milliseconds())
 			}
 
 		})

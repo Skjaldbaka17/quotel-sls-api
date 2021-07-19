@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
 	"github.com/aws/aws-lambda-go/events"
@@ -16,11 +17,11 @@ func Setup(handler *RequestHandler, t *testing.T) ([]structs.AodDBModel, []struc
 	//Get the first 3 english- and icelandic-authors to be set as AODs/AODICEs
 	var englishAuthors []structs.AuthorDBModel
 	var icelandicAuthors []structs.AuthorDBModel
-	err := handler.Db.Table("authors").Where("nr_of_english_quotes > 0").Find(&englishAuthors).Limit(3).Error
+	err := handler.Db.Table("authors").Where("nr_of_english_quotes > 0").Limit(3).Find(&englishAuthors).Error
 	if err != nil {
 		t.Fatalf("Setup error: %s", err)
 	}
-	err = handler.Db.Table("authors").Where("nr_of_icelandic_quotes > 0").Find(&icelandicAuthors).Limit(3).Error
+	err = handler.Db.Table("authors").Where("nr_of_icelandic_quotes > 0").Limit(3).Find(&icelandicAuthors).Error
 	if err != nil {
 		t.Fatalf("Setup error: %s", err)
 	}
@@ -44,8 +45,8 @@ func Setup(handler *RequestHandler, t *testing.T) ([]structs.AodDBModel, []struc
 
 	//CleanUp
 	t.Cleanup(func() {
-		handler.Db.Unscoped().Table("aods").Delete(&AODs)
-		handler.Db.Unscoped().Table("aodices").Delete(&AODICEs)
+		handler.Db.Exec("delete from aods")
+		handler.Db.Exec("delete from aodices")
 	})
 
 	return AODs, AODICEs
@@ -53,6 +54,24 @@ func Setup(handler *RequestHandler, t *testing.T) ([]structs.AodDBModel, []struc
 func TestHandler(t *testing.T) {
 	var testingHandler = RequestHandler{}
 	AODs, AODICEs := Setup(&testingHandler, t)
+	t.Run("Time test History", func(t *testing.T) {
+		t.Run("Should get history, when there is no history i.e. need to create AOD for today at least, in less than 50ms", func(t *testing.T) {
+			start := time.Now()
+			//Get History:
+			jsonStr := []byte(fmt.Sprintf(`{"language":"%s"}`, "english"))
+			_, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
+			if err != nil {
+				t.Fatalf("Expected the history of AOD but got an error: %+v", err)
+			}
+
+			end := time.Now()
+			duration := end.Sub(start)
+			maxTime := int64(50)
+			if duration.Milliseconds() > maxTime {
+				t.Fatalf("Expected getting history of AODS to take less than %dms but it took %dms", maxTime, duration.Milliseconds())
+			}
+		})
+	})
 	t.Run("AOD/AODICE History", func(t *testing.T) {
 
 		t.Run("Should get complete history of AODs", func(t *testing.T) {

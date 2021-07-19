@@ -13,13 +13,40 @@ import (
 )
 
 //Returns AODs and AODICEs, in that order, put into the DB
-func Setup(handler *RequestHandler, t *testing.T) {
+func Setup(handler *RequestHandler, t *testing.T) (structs.AodDBModel, structs.AodDBModel) {
 	handler.InitializeDB()
+
+	var englishAuthor structs.AuthorDBModel
+	var icelandicAuthor structs.AuthorDBModel
+	err := handler.Db.Table("authors").Where("nr_of_english_quotes > 0").Limit(1).Find(&englishAuthor).Error
+	if err != nil {
+		t.Fatalf("Setup error: %s", err)
+	}
+	err = handler.Db.Table("authors").Where("nr_of_icelandic_quotes > 0").Limit(3).Find(&icelandicAuthor).Error
+	if err != nil {
+		t.Fatalf("Setup error: %s", err)
+	}
+
+	year, month, day := time.Now().Date()
+	today := fmt.Sprintf("%d-%d-%d", year, month, day)
+	AOD := englishAuthor.ConvertToAODDBModel(today)
+	AODICE := icelandicAuthor.ConvertToAODDBModel(today)
+	err = handler.Db.Table("aods").Create(&AOD).Error
+	if err != nil {
+		t.Fatalf("Setup error 2: %s", err)
+	}
+	err = handler.Db.Table("aodices").Create(&AODICE).Error
+	if err != nil {
+		t.Fatalf("Setup error 2: %s", err)
+	}
+
 	//CleanUp
 	t.Cleanup(func() {
-		handler.Db.Unscoped().Exec("delete from aods")
-		handler.Db.Unscoped().Exec("delete from aodices")
+		handler.Db.Exec("delete from aods")
+		handler.Db.Exec("delete from aodices")
 	})
+
+	return AOD, AODICE
 }
 func TestHandler(t *testing.T) {
 	var testingHandler = RequestHandler{}

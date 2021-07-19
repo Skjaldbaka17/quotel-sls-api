@@ -36,8 +36,15 @@ type authorsListWrapper struct {
 		// quotes the author has in the given language counts towards the final ordering.
 		// Example: English
 		Language string `json:"language"`
+		// Only return the author's in any of the given professions
+		// Example: Designer
+		Professions []string `json:"professions"`
+		// Only return the author's with any of the given nationalities
+		// Example: American
+		Nationalities []string `json:"nationalities"`
 		//Model
 		OrderConfig orderConfigListAuthorsModel `json:"orderConfig"`
+		Time        timeModel                   `json:"time"`
 	}
 }
 
@@ -175,10 +182,10 @@ type getRandomQuoteResponseWrapper struct {
 		//
 		// Example: float
 		SearchString string `json:"searchString"`
-		// The random quote returned must be a part of the topic with the given topicId
+		// The random quote returned must be a part of one of the topics with id in the topicIds array
 		//
-		// Example: 10
-		TopicId int `json:"topicId"`
+		// Example: [10,11]
+		TopicIds []int `json:"topicIds"`
 		// The random quote returned must be from the author with the given authorId
 		//
 		//example: 24952
@@ -212,10 +219,10 @@ type getSearchByStringWrapper struct {
 		// The particular language that the quote should be in
 		// example: English
 		Language string `json:"language"`
-		// Should search in the specified topic for the searchString
+		// Should search in the specified topics for the searchString
 		//
 		// Example: 10
-		TopicId int `json:"topicId"`
+		TopicIds int `json:"topicIds"`
 	}
 }
 

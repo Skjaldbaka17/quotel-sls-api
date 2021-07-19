@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"regexp"
 	"time"
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
@@ -99,26 +98,6 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 			Body:       errResponse.ToString(),
 			StatusCode: http.StatusInternalServerError,
 		}, nil
-	}
-
-	reg := regexp.MustCompile(time.Now().Format("2006-01-02"))
-
-	if (len(authors) == 0 || !reg.Match([]byte(authors[0].Date))) && !requestBody.StopRecursion {
-		err = requestHandler.SetNewRandomAOD(requestBody.Language)
-		if err != nil {
-			log.Printf("Got error when setting newRandomAOD in getAODHistory: %s", err)
-			errResponse := structs.ErrorResponse{
-				Message: utils.InternalServerError,
-			}
-			return events.APIGatewayProxyResponse{
-				Body:       errResponse.ToString(),
-				StatusCode: http.StatusInternalServerError,
-			}, nil
-		}
-		requestBody.StopRecursion = true
-		bod, _ := json.Marshal(requestBody)
-		request.Body = string(bod)
-		return requestHandler.handler(request)
 	}
 
 	authorsAPI := structs.ConvertToAodAPIModel(authors)

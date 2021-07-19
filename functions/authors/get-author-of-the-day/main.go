@@ -70,22 +70,6 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	if (structs.AodDBModel{}) == author {
-		err = requestHandler.SetNewRandomAOD(requestBody.Language)
-		if err != nil {
-			log.Printf("Got error when setting new random AOD in GetAuthorOfTheDay: %s", err)
-			errResponse := structs.ErrorResponse{
-				Message: utils.InternalServerError,
-			}
-			return events.APIGatewayProxyResponse{
-				Body:       errResponse.ToString(),
-				StatusCode: http.StatusInternalServerError,
-			}, nil
-		}
-
-		return requestHandler.handler(request) //Dangerous? possibility of endless cycle? Only iff the setNewRandomAOD fails in some way. Or the date is not saved correctly into the DB?
-	}
-
 	out, _ := json.Marshal(author)
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),
