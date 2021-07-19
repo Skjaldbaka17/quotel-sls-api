@@ -19,7 +19,6 @@ type Request struct {
 	Minimum      string      `json:"minimum,omitempty"`
 	Maximum      string      `json:"maximum,omitempty"`
 	Qods         []Qod       `json:"qods,omitempty"`
-	Aods         []Qod       `json:"aods,omitempty"`
 }
 
 type OrderConfig struct {

@@ -100,15 +100,6 @@ type historyAODWrapper struct {
 	}
 }
 
-// swagger:parameters SetAuthorOfTheDay
-type setAODWrapper struct {
-	// The structure of the request for setting AODs
-	// in: body
-	Body []struct {
-		Aods []ofTheDayModel `json:"aods"`
-	}
-}
-
 // swagger:parameters SetQuoteOfTheDay
 type setQuoteOfTheDayWrapper struct {
 	// The structure of the request for setting the QOD

@@ -63,8 +63,8 @@ func TestHandler(t *testing.T) {
 				t.Fatalf("Expected %d authors, but got %d authors", 1, len(respAuthors))
 			}
 			firstAuthor := respAuthors[0]
-			if firstAuthor.Id != authors[0].ID {
-				t.Fatalf("got %d, want %d", firstAuthor.Id, authors[0].ID)
+			if firstAuthor.AuthorId != authors[0].ID {
+				t.Fatalf("got %d, want %d", firstAuthor.AuthorId, authors[0].ID)
 			}
 		})
 
@@ -79,7 +79,7 @@ func TestHandler(t *testing.T) {
 			//Check that all the authors we wanted are returned
 			for _, author := range authors {
 				for i, re := range respAuthors {
-					if re.Id == author.ID {
+					if re.AuthorId == author.ID {
 						break
 					}
 					if i == len(respAuthors)-1 {

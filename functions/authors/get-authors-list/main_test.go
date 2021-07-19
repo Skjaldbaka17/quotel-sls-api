@@ -349,7 +349,7 @@ func TestHandler(t *testing.T) {
 
 			GetRequest(jsonStr, &authors, t)
 
-			if objToFetch.Id != authors[0].Id {
+			if objToFetch.AuthorId != authors[0].AuthorId {
 				t.Fatalf("got %+v, but expected %+v", authors[0], objToFetch)
 			}
 

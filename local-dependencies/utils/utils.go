@@ -34,7 +34,7 @@ func (requestHandler *RequestHandler) InitializeDB() structs.ErrorResponse {
 
 		dsn := os.Getenv(DATABASE_URL)
 		requestHandler.Db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-			Logger: logger.Default.LogMode(logger.Info),
+			Logger: logger.Default.LogMode(logger.Silent),
 		})
 		if err != nil {
 			log.Printf("Could not connect to DB, got error: %s", err)
@@ -127,46 +127,6 @@ func (requestHandler *RequestHandler) ValidateRequest(request events.APIGatewayP
 	}
 
 	const layout = "2006-01-02"
-	//Set date into correct format, if supplied, otherwise input today's date in the correct format for all qods
-	if len(requestBody.Qods) != 0 {
-		for idx, _ := range requestBody.Qods {
-			if requestBody.Qods[idx].Date == "" {
-				requestBody.Qods[idx].Date = time.Now().UTC().Format(layout)
-			} else {
-				var parsedDate time.Time
-				parsedDate, err := time.Parse(layout, requestBody.Qods[idx].Date)
-				if err != nil {
-					log.Printf("Got error when decoding: %s", err)
-					return structs.Request{}, structs.ErrorResponse{
-						Message:    fmt.Sprintf("the date is not structured correctly, should be in %s format", layout),
-						StatusCode: http.StatusBadRequest}
-				}
-
-				requestBody.Qods[idx].Date = parsedDate.UTC().Format(layout)
-			}
-		}
-	}
-
-	//Set date into correct format, if supplied, otherwise input today's date in the correct format for all qods
-	if len(requestBody.Aods) != 0 {
-		for idx, _ := range requestBody.Aods {
-			if requestBody.Aods[idx].Date == "" {
-				requestBody.Aods[idx].Date = time.Now().UTC().Format(layout)
-			} else {
-				var parsedDate time.Time
-				parsedDate, err := time.Parse(layout, requestBody.Aods[idx].Date)
-				if err != nil {
-					log.Printf("Got error when decoding: %s", err)
-					return structs.Request{}, structs.ErrorResponse{
-						Message:    fmt.Sprintf("the date is not structured correctly, should be in %s format", layout),
-						StatusCode: http.StatusBadRequest}
-				}
-
-				requestBody.Aods[idx].Date = parsedDate.UTC().Format(layout)
-			}
-		}
-	}
-
 	if requestBody.Minimum != "" {
 
 		_, err := time.Parse(layout, requestBody.Minimum)

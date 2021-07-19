@@ -179,15 +179,15 @@ func TestHandler(t *testing.T) {
 			var firstRespQuote structs.QuoteAPIModel
 			GetRequest(jsonStr, &firstRespQuote, t)
 
-			if firstRespQuote.Id != teddy.ID {
+			if firstRespQuote.AuthorId != teddy.ID {
 				t.Fatalf("Expected author from %s but got author from %s", teddy.Name, firstRespQuote.Name)
 			}
 
 			var secondRespQuote structs.QuoteAPIModel
 			GetRequest(jsonStr, &secondRespQuote, t)
 
-			if secondRespQuote.Id != firstRespQuote.Id {
-				t.Fatalf("got author with id %d, expected author with id %d", secondRespQuote.Id, firstRespQuote.Id)
+			if secondRespQuote.AuthorId != firstRespQuote.AuthorId {
+				t.Fatalf("got author with id %d, expected author with id %d", secondRespQuote.AuthorId, firstRespQuote.AuthorId)
 			}
 
 			if secondRespQuote.QuoteId == firstRespQuote.QuoteId {

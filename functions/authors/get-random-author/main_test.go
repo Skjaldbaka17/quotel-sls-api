@@ -59,13 +59,13 @@ func TestHandler(t *testing.T) {
 				t.Fatalf("Expected only a single quote from the random author but got %d", len(authors))
 			}
 			firstAuthor := authors[0]
-			if firstAuthor.Id == 0 {
+			if firstAuthor.AuthorId == 0 {
 				t.Fatal("got an author with id 0, want author with valid id")
 			}
 
 			GetRequest("{}", &authors, t)
-			if firstAuthor.Id == authors[0].Id {
-				t.Fatalf("Expected two different authors but got the same author twice which is higly improbable, got author with id %d and name %s", firstAuthor.Id, firstAuthor.Name)
+			if firstAuthor.AuthorId == authors[0].AuthorId {
+				t.Fatalf("Expected two different authors but got the same author twice which is higly improbable, got author with id %d and name %s", firstAuthor.AuthorId, firstAuthor.Name)
 			}
 
 		})
@@ -86,8 +86,8 @@ func TestHandler(t *testing.T) {
 
 			GetRequest(jsonStr, &authors, t)
 			secondAuthor := authors[0]
-			if firstAuthor.Id == secondAuthor.Id {
-				t.Fatalf("Expected two different authors but got the same author twice which is higly improbable, got author with id %d and name %s", firstAuthor.Id, firstAuthor.Name)
+			if firstAuthor.AuthorId == secondAuthor.AuthorId {
+				t.Fatalf("Expected two different authors but got the same author twice which is higly improbable, got author with id %d and name %s", firstAuthor.AuthorId, firstAuthor.Name)
 			}
 		})
 
@@ -108,8 +108,8 @@ func TestHandler(t *testing.T) {
 
 			GetRequest(jsonStr, &authors, t)
 			secondAuthor := authors[0]
-			if firstAuthor.Id == secondAuthor.Id {
-				t.Fatalf("Expected two different authors but got the same author twice which is higly improbable, got author with id %d and name %s", firstAuthor.Id, firstAuthor.Name)
+			if firstAuthor.AuthorId == secondAuthor.AuthorId {
+				t.Fatalf("Expected two different authors but got the same author twice which is higly improbable, got author with id %d and name %s", firstAuthor.AuthorId, firstAuthor.Name)
 			}
 
 		})

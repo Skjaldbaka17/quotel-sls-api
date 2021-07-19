@@ -116,7 +116,7 @@ func TestHandler(t *testing.T) {
 				t.Fatalf("got list of length %d but expected %d", len(respAuthors), pageSize)
 			}
 
-			if respAuthors[0].Id != obj26.Id {
+			if respAuthors[0].AuthorId != obj26.AuthorId {
 				t.Fatalf("got %+v, want %+v", respAuthors[0], obj26)
 			}
 		})

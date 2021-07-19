@@ -107,8 +107,8 @@ func TestHandler(t *testing.T) {
 				t.Fatalf("got list of length 0 but expected some quotes, response : %s", responseBod)
 			}
 
-			if respQuotes[0].Id != authors[0].ID {
-				t.Fatalf("got quotes for author with id %d but expected quotes for the author with id %d, respObj: %s", respQuotes[0].Id, authors[0].ID, responseBod)
+			if respQuotes[0].AuthorId != authors[0].ID {
+				t.Fatalf("got quotes for author with id %d but expected quotes for the author with id %d, respObj: %s", respQuotes[0].AuthorId, authors[0].ID, responseBod)
 			}
 		})
 

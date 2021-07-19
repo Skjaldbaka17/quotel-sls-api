@@ -77,23 +77,3 @@ func (requestHandler *RequestHandler) TopicViewAppearInSearchCountIncrement(quot
 	err = requestHandler.Db.Exec("UPDATE quotes SET count = count + ? where id in (?) returning *", incrementAppearInSearchList, quoteIds).Error
 	return err
 }
-
-//AppearInSearchCountIncrement increments the popularity count of the Authors and quotes from a listing in a search
-func (requestHandler *RequestHandler) SearchViewAppearInSearchCountIncrement(quotes []structs.SearchViewDBModel) error {
-	if len(quotes) == 0 {
-		return nil
-	}
-	authorIds := []int{}
-	quoteIds := []int{}
-	for _, quote := range quotes {
-		authorIds = append(authorIds, quote.AuthorId)
-		quoteIds = append(quoteIds, quote.QuoteId)
-	}
-
-	err := requestHandler.Db.Exec("UPDATE authors SET count = count + ? where id in (?) returning *", incrementAppearInSearchList, authorIds).Error
-	if err != nil {
-		return err
-	}
-	err = requestHandler.Db.Exec("UPDATE quotes SET count = count + ? where id in (?) returning *", incrementAppearInSearchList, quoteIds).Error
-	return err
-}
