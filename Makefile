@@ -45,15 +45,21 @@ test-topics:
 	cd ./functions/topics/get-topic && go test
 	cd ./functions/topics/get-topics && go test
 
+test-meta:
+	cd ./functions/meta/list-languages-supported && go test
+	cd ./functions/meta/list-professions && go test
+	cd ./functions/meta/list-nationalities && go test
+
 test-daily:
 #Test cron jobs
-	cd ./functions/daily/set-of-the-day && go test -v
+	cd ./functions/daily/set-of-the-day && go test
 
-test-all-modules:
+test-all:
 	make test-authors
 	make test-quotes
 	make test-quotes
 	make test-search
 	make test-topics
 	make test-daily
+	make test-meta
 	

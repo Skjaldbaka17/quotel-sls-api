@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
@@ -17,15 +16,14 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /quotes/qod QUOTES GetQuoteOfTheDay
-// gets the quote of the day
+// swagger:route GET /languages META GetLanguages
+// Get languages supported by the api
 // responses:
-//	200: qodResponse
-//  400: incorrectBodyStructureResponse
-//  500: internalServerErrorResponse
+//	200: listOfStrings
 
-//GetQuoteOfTheyDay gets the quote of the day
+// ListLanguages handles GET requests for getting the languages supported by the api
 func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
 	//Initialize DB if requestHandler.Db = nil
 	if errResponse := requestHandler.InitializeDB(); errResponse != (structs.ErrorResponse{}) {
 		return events.APIGatewayProxyResponse{
@@ -34,33 +32,9 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	requestBody, errResponse := requestHandler.ValidateRequest(request)
-
-	if errResponse != (structs.ErrorResponse{}) {
-		return events.APIGatewayProxyResponse{
-			Body:       errResponse.ToString(),
-			StatusCode: errResponse.StatusCode,
-		}, nil
-	}
-
-	if requestBody.Language == "" {
-		requestBody.Language = "English"
-	}
-
-	var quote structs.QodDBModel
-	var err error
-	//** ---------- Paramatere configuratino for DB query begins ---------- **//
-	dbPointer := requestHandler.QodLanguageSQL(requestBody.Language).Where("date = current_date")
-	//** ---------- Paramatere configuratino for DB query ends ---------- **//
-	err = dbPointer.Scan(&quote).Error
-
-	// if quote == (structs.QodDBModel{}) {
-	// 	err = requestHandler.QodLanguageSQL(requestBody.Language).
-	// 		Order("date desc").Limit(1).Scan(&quote).Error
-	// }
-
+	nationalities := []string{}
+	err := requestHandler.Db.Table("authors").Select("distinct nationality").Find(&nationalities).Error
 	if err != nil {
-		log.Printf("Got error when querying DB in GetQODs: %s", err)
 		errResponse := structs.ErrorResponse{
 			Message: utils.InternalServerError,
 		}
@@ -70,12 +44,16 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	out, _ := json.Marshal(quote.ConvertToAPIModel())
+	type Response struct {
+		Nationalities []string
+	}
+	out, _ := json.Marshal(&Response{
+		Nationalities: nationalities,
+	})
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),
 		StatusCode: http.StatusOK,
 	}, nil
-
 }
 
 func main() {

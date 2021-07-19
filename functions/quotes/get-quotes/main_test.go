@@ -10,6 +10,8 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
+var testingHandler = RequestHandler{}
+
 //Returns AODs and AODICEs, in that order, put into the DB
 func Setup(handler *RequestHandler, t *testing.T) ([]structs.AuthorDBModel, []structs.QuoteDBModel) {
 	handler.InitializeDB()
@@ -33,8 +35,17 @@ func Setup(handler *RequestHandler, t *testing.T) ([]structs.AuthorDBModel, []st
 
 	return authors, quotes
 }
+
+func GetRequest(jsonStr string, obj interface{}, t *testing.T) string {
+	response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
+	if err != nil {
+		t.Fatalf("Expected 3 quotes but got an error: %+v", err)
+	}
+	json.Unmarshal([]byte(response.Body), &obj)
+	return response.Body
+}
 func TestHandler(t *testing.T) {
-	var testingHandler = RequestHandler{}
+
 	authors, quotes := Setup(&testingHandler, t)
 
 	t.Run("Time Test for getting quotes", func(t *testing.T) {
@@ -42,10 +53,7 @@ func TestHandler(t *testing.T) {
 		t.Run("should return Quotes by ids", func(t *testing.T) {
 			start := time.Now()
 			var jsonStr = fmt.Sprintf(`{"ids":  [%d,%d,%d]}`, quotes[0].Id, quotes[1].Id, quotes[2].Id)
-			_, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-			if err != nil {
-				t.Fatalf("Expected 3 quotes but got an error: %+v", err)
-			}
+			GetRequest(jsonStr, nil, t)
 
 			end := time.Now()
 			duration := end.Sub(start)
@@ -57,10 +65,7 @@ func TestHandler(t *testing.T) {
 		t.Run("should get Quotes for author by his id", func(t *testing.T) {
 			start := time.Now()
 			var jsonStr = fmt.Sprintf(`{"authorId":  %d}`, authors[0].ID)
-			_, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-			if err != nil {
-				t.Fatalf("Expected 3 quotes but got an error: %+v", err)
-			}
+			GetRequest(jsonStr, nil, t)
 			end := time.Now()
 			duration := end.Sub(start)
 			if duration.Milliseconds() > int64(maxTime) {
@@ -74,13 +79,8 @@ func TestHandler(t *testing.T) {
 
 		t.Run("should return Quotes by ids", func(t *testing.T) {
 			var jsonStr = fmt.Sprintf(`{"ids":  [%d,%d,%d]}`, quotes[0].Id, quotes[1].Id, quotes[2].Id)
-			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-			if err != nil {
-				t.Fatalf("Expected 3 quotes but got an error: %+v", err)
-			}
-
 			var respQuotes []structs.QuoteAPIModel
-			json.Unmarshal([]byte(response.Body), &respQuotes)
+			GetRequest(jsonStr, &respQuotes, t)
 
 			if len(respQuotes) != len(quotes) {
 				t.Fatalf("got list of length %d but expected list of length %d", len(respQuotes), len(quotes))
@@ -100,20 +100,15 @@ func TestHandler(t *testing.T) {
 
 		t.Run("should get Quotes for author by his id", func(t *testing.T) {
 			var jsonStr = fmt.Sprintf(`{"authorId":  %d}`, authors[0].ID)
-			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-			if err != nil {
-				t.Fatalf("Expected 3 quotes but got an error: %+v", err)
-			}
-
 			var respQuotes []structs.QuoteAPIModel
-			json.Unmarshal([]byte(response.Body), &respQuotes)
+			responseBod := GetRequest(jsonStr, &respQuotes, t)
 
 			if len(respQuotes) == 0 {
-				t.Fatalf("got list of length 0 but expected some quotes, response : %s", response.Body)
+				t.Fatalf("got list of length 0 but expected some quotes, response : %s", responseBod)
 			}
 
 			if respQuotes[0].Id != authors[0].ID {
-				t.Fatalf("got quotes for author with id %d but expected quotes for the author with id %d, respObj: %s", respQuotes[0].Id, authors[0].ID, response.Body)
+				t.Fatalf("got quotes for author with id %d but expected quotes for the author with id %d, respObj: %s", respQuotes[0].Id, authors[0].ID, responseBod)
 			}
 		})
 

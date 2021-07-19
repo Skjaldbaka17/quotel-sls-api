@@ -10,6 +10,8 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
+var testingHandler = RequestHandler{}
+
 func Setup(handler *RequestHandler, t *testing.T) structs.QuoteDBModel {
 	handler.InitializeDB()
 	var quote structs.QuoteDBModel
@@ -28,19 +30,29 @@ func Setup(handler *RequestHandler, t *testing.T) structs.QuoteDBModel {
 	})
 	return quote
 }
+
+func GetRequest(jsonStr string, obj interface{}, t *testing.T) string {
+	response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
+	if err != nil {
+		t.Fatalf("Expected 3 quotes but got an error: %+v", err)
+	}
+	json.Unmarshal([]byte(response.Body), &obj)
+	return response.Body
+}
 func TestHandler(t *testing.T) {
-	var testingHandler = RequestHandler{}
+
 	quote := Setup(&testingHandler, t)
 	t.Run("Time Test for getting quotes", func(t *testing.T) {
 		maxTime := 25
 		longTime := 230
 		fkkingTooLong := 1000
+		fkkingWAAAAYTOOOLONG := 10000
 		t.Run("Should return first 50 quotes (by quoteId)", func(t *testing.T) {
 			start := time.Now()
 			pageSize := 50
 			var jsonStr = fmt.Sprintf(`{"pageSize": %d}`, pageSize)
 
-			testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
+			GetRequest(jsonStr, nil, t)
 
 			end := time.Now()
 			duration := end.Sub(start)
@@ -52,8 +64,7 @@ func TestHandler(t *testing.T) {
 			start := time.Now()
 			var jsonStr = fmt.Sprintf(`{"orderConfig":{"reverse":%s}}`, "true")
 
-			testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-
+			GetRequest(jsonStr, nil, t)
 			end := time.Now()
 			duration := end.Sub(start)
 			if duration.Milliseconds() > int64(maxTime) {
@@ -66,7 +77,7 @@ func TestHandler(t *testing.T) {
 			orderBy := "id"
 			var jsonStr = fmt.Sprintf(`{"orderConfig":{"orderBy":"%s","minimum":"%d"}}`, orderBy, minimum)
 
-			testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
+			GetRequest(jsonStr, nil, t)
 			end := time.Now()
 			duration := end.Sub(start)
 			if duration.Milliseconds() > int64(maxTime) {
@@ -81,18 +92,18 @@ func TestHandler(t *testing.T) {
 			maximum := 11
 			var jsonStr = fmt.Sprintf(`{"orderConfig":{"orderBy":"length","maximum":"%d", "minimum":"%d"}}`, maximum, minimum)
 
-			testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
+			GetRequest(jsonStr, nil, t)
 			end := time.Now()
 			duration := end.Sub(start)
-			if duration.Milliseconds() > int64(fkkingTooLong) {
-				t.Fatalf("Expected getting history of quotes to take less than %dms but it took %dms", fkkingTooLong, duration.Milliseconds())
+			if duration.Milliseconds() > int64(fkkingWAAAAYTOOOLONG) {
+				t.Fatalf("Expected getting history of quotes to take less than %dms but it took %dms", fkkingWAAAAYTOOOLONG, duration.Milliseconds())
 			}
 
 		})
 		t.Run("Should return first 50 quotes (ordered by most popular, i.e. DESC count)", func(t *testing.T) {
 			start := time.Now()
 			var jsonStr = fmt.Sprintf(`{"orderConfig":{"orderBy":"%s"}}`, "popularity")
-			testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
+			GetRequest(jsonStr, nil, t)
 			end := time.Now()
 			duration := end.Sub(start)
 			if duration.Milliseconds() > int64(longTime) {
@@ -103,11 +114,11 @@ func TestHandler(t *testing.T) {
 			start := time.Now()
 			var jsonStr = fmt.Sprintf(`{"orderConfig":{"orderBy":"%s","reverse":true}}`, "popularity")
 
-			testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
+			GetRequest(jsonStr, nil, t)
 			end := time.Now()
 			duration := end.Sub(start)
-			if duration.Milliseconds() > int64(longTime) {
-				t.Fatalf("Expected getting history of quotes to take less than %dms but it took %dms", maxTime, duration.Milliseconds())
+			if duration.Milliseconds() > int64(fkkingTooLong) {
+				t.Fatalf("Expected getting history of quotes to take less than %dms but it took %dms", fkkingTooLong, duration.Milliseconds())
 			}
 
 		})
@@ -121,14 +132,8 @@ func TestHandler(t *testing.T) {
 			t.Run("Should return first 50 quotes (by quoteId)", func(t *testing.T) {
 				pageSize := 50
 				var jsonStr = fmt.Sprintf(`{"pageSize": %d}`, pageSize)
-
-				response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-				if err != nil {
-					t.Fatalf("Expected 3 quotes but got an error: %+v", err)
-				}
-
 				var respQuotes []structs.QuoteAPIModel
-				json.Unmarshal([]byte(response.Body), &respQuotes)
+				GetRequest(jsonStr, &respQuotes, t)
 
 				if len(respQuotes) != 50 {
 					t.Fatalf("got list of length %d, but expected list of length %d", len(respQuotes), pageSize)
@@ -143,14 +148,8 @@ func TestHandler(t *testing.T) {
 			t.Run("Should return first quotes, in Icelandic", func(t *testing.T) {
 				language := "icelandic"
 				var jsonStr = fmt.Sprintf(`{"language": "%s"}`, language)
-
-				response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-				if err != nil {
-					t.Fatalf("Expected 3 quotes but got an error: %+v", err)
-				}
-
 				var respQuotes []structs.QuoteAPIModel
-				json.Unmarshal([]byte(response.Body), &respQuotes)
+				GetRequest(jsonStr, &respQuotes, t)
 
 				firstQuote := respQuotes[0]
 
@@ -162,14 +161,8 @@ func TestHandler(t *testing.T) {
 			t.Run("Should return first quotes in reverse quoteId order (i.e. first quote has id larger than 639.028)", func(t *testing.T) {
 
 				var jsonStr = fmt.Sprintf(`{"orderConfig":{"reverse":%s}}`, "true")
-
-				response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-				if err != nil {
-					t.Fatalf("Expected 3 quotes but got an error: %+v", err)
-				}
-
 				var respQuotes []structs.QuoteAPIModel
-				json.Unmarshal([]byte(response.Body), &respQuotes)
+				GetRequest(jsonStr, &respQuotes, t)
 
 				firstQuote := respQuotes[0]
 
@@ -182,14 +175,8 @@ func TestHandler(t *testing.T) {
 				minimum := 300000
 				orderBy := "id"
 				var jsonStr = fmt.Sprintf(`{"orderConfig":{"orderBy":"%s","minimum":"%d"}}`, orderBy, minimum)
-
-				response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-				if err != nil {
-					t.Fatalf("Expected 3 quotes but got an error: %+v", err)
-				}
-
 				var respQuotes []structs.QuoteAPIModel
-				json.Unmarshal([]byte(response.Body), &respQuotes)
+				GetRequest(jsonStr, &respQuotes, t)
 
 				firstQuote := respQuotes[0]
 
@@ -202,14 +189,8 @@ func TestHandler(t *testing.T) {
 
 				maximum := 5
 				var jsonStr = fmt.Sprintf(`{"orderConfig":{"orderBy":"length","maximum":"%d"}}`, maximum)
-
-				response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-				if err != nil {
-					t.Fatalf("Expected 3 quotes but got an error: %+v", err)
-				}
-
 				var respQuotes []structs.QuoteAPIModel
-				json.Unmarshal([]byte(response.Body), &respQuotes)
+				GetRequest(jsonStr, &respQuotes, t)
 
 				firstQuote := respQuotes[0]
 
@@ -223,14 +204,8 @@ func TestHandler(t *testing.T) {
 				minimum := 10
 				maximum := 11
 				var jsonStr = fmt.Sprintf(`{"orderConfig":{"orderBy":"length","maximum":"%d", "minimum":"%d"}}`, maximum, minimum)
-
-				response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-				if err != nil {
-					t.Fatalf("Expected 3 quotes but got an error: %+v", err)
-				}
-
 				var respQuotes []structs.QuoteAPIModel
-				json.Unmarshal([]byte(response.Body), &respQuotes)
+				GetRequest(jsonStr, &respQuotes, t)
 
 				firstQuote := respQuotes[0]
 
@@ -243,14 +218,8 @@ func TestHandler(t *testing.T) {
 
 				maximum := 10
 				var jsonStr = fmt.Sprintf(`{"orderConfig":{"orderBy":"length","maximum":"%d","reverse":true}}`, maximum)
-
-				response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-				if err != nil {
-					t.Fatalf("Expected 3 quotes but got an error: %+v", err)
-				}
-
 				var respQuotes []structs.QuoteAPIModel
-				json.Unmarshal([]byte(response.Body), &respQuotes)
+				GetRequest(jsonStr, &respQuotes, t)
 
 				firstQuote := respQuotes[0]
 
@@ -261,13 +230,8 @@ func TestHandler(t *testing.T) {
 			})
 			t.Run("Should return first 50 quotes (ordered by most popular, i.e. DESC count)", func(t *testing.T) {
 				var jsonStr = fmt.Sprintf(`{"orderConfig":{"orderBy":"%s"}}`, "popularity")
-				response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-				if err != nil {
-					t.Fatalf("Expected 3 quotes but got an error: %+v", err)
-				}
-
 				var respQuotes []structs.QuoteAPIModel
-				json.Unmarshal([]byte(response.Body), &respQuotes)
+				GetRequest(jsonStr, &respQuotes, t)
 
 				firstQuote := respQuotes[0]
 
@@ -278,14 +242,8 @@ func TestHandler(t *testing.T) {
 			t.Run("Should return first 50 quotes in reverse popularity order (i.e. least popular first i.e. ASC count)", func(t *testing.T) {
 
 				var jsonStr = fmt.Sprintf(`{"orderConfig":{"orderBy":"%s","reverse":true}}`, "popularity")
-
-				response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-				if err != nil {
-					t.Fatalf("Expected 3 quotes but got an error: %+v", err)
-				}
-
 				var respQuotes []structs.QuoteAPIModel
-				json.Unmarshal([]byte(response.Body), &respQuotes)
+				GetRequest(jsonStr, &respQuotes, t)
 
 				firstQuote := respQuotes[0]
 
@@ -298,14 +256,8 @@ func TestHandler(t *testing.T) {
 			t.Run("Should return first 100 Quotes", func(t *testing.T) {
 				pageSize := 100
 				var jsonStr = fmt.Sprintf(`{"pageSize":%d}`, pageSize)
-
-				response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-				if err != nil {
-					t.Fatalf("Expected 3 quotes but got an error: %+v", err)
-				}
-
 				var respQuotes []structs.QuoteAPIModel
-				json.Unmarshal([]byte(response.Body), &respQuotes)
+				GetRequest(jsonStr, &respQuotes, t)
 
 				if len(respQuotes) != 100 {
 					t.Fatalf("got %d nr of quotes, but expected %d quotes", len(respQuotes), pageSize)
@@ -316,14 +268,8 @@ func TestHandler(t *testing.T) {
 				pageSize := 100
 				minimum := 250000
 				var jsonStr = fmt.Sprintf(`{"pageSize":%d, "orderConfig":{"minimum":"%d"}}`, pageSize, minimum)
-
-				response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-				if err != nil {
-					t.Fatalf("Expected quotes but got an error: %+v", err)
-				}
-
 				var respQuotes []structs.QuoteAPIModel
-				json.Unmarshal([]byte(response.Body), &respQuotes)
+				GetRequest(jsonStr, &respQuotes, t)
 
 				objToFetch := respQuotes[50]
 
@@ -334,12 +280,7 @@ func TestHandler(t *testing.T) {
 				pageSize = 50
 				page := 1
 				jsonStr = fmt.Sprintf(`{"pageSize":%d, "page":%d, "orderConfig":{"minimum":"%d"}}`, pageSize, page, minimum)
-
-				response, err = testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-				if err != nil {
-					t.Fatalf("Expected quotes but got an error: %+v", err)
-				}
-				json.Unmarshal([]byte(response.Body), &respQuotes)
+				GetRequest(jsonStr, &respQuotes, t)
 
 				if objToFetch.QuoteId != respQuotes[0].QuoteId {
 					t.Fatalf("got %+v, but expected %+v", respQuotes[0], objToFetch)

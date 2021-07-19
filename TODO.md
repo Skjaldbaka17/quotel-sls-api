@@ -1,10 +1,17 @@
-- [ ] Add 2-lambda functions and schedule them to run once daily inserting the QOD, QODICE, AOD and AODICES (and for QODs/QODICEs have it get random quote from topics for quality quotes)
-- [ ] Make all tests use 'GetRequest'
-- [ ] optimize queries (longTime in tests)
-- [ ] Add route in /meta for getting all distinct Professions and distinct Nationalities
+
+
+- [ ] Add get QOD for topics to /quotes/qod route
 - [ ] Get qod/aod and histories by getting the newest inserted qod not by using current_date in postgres!
 - [ ] Set all .ID that refer to AuthorIds to AuthorId (i.e. seen from API)
-- [ ] Add get QOD for topics to /quotes/qod route
+- [ ] Add 2-lambda functions and schedule them to run once daily inserting the QOD, QODICE, AOD and AODICES (and for QODs/QODICEs have it get random quote from topics for quality quotes)
+- [ ] Put new DB on AWS
+- [ ] Put new version of API on AWS
+- [ ] Create new swagger based on newest version on AWS
+- [ ] Put new API on RapidAPI
+- [ ] Make README for future me better -- also readme for setup-quotel-db and old quotel-api (not serverless) and crawler
+- [ ] Make new/Better README for RAPIDAPI
+- [ ] optimize queries (longTime in tests)
+
 
 - [ ] Explain how the searchin works in README (i.e. first plainto_ts then check fuzzy search if user had )
 - [ ] Always order returned Quotes/Authors in /search by Popularity also (i.e. count desc)
@@ -23,3 +30,7 @@
 - [x] Setup A testing structure and test all functions already created + TDD after that
 - [x] Add swagger and docs route
 - [x] Adapt to new data + add tests for all
+- [x] Add route in /meta for getting all distinct Professions and distinct Nationalities
+- [x] Make all tests use 'GetRequest'
+
+

@@ -10,18 +10,24 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
+var testingHandler = RequestHandler{}
+
+func GetRequest(jsonStr string, obj interface{}, t *testing.T) string {
+	response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
+	if err != nil {
+		t.Fatalf("Expected 3 quotes but got an error: %+v", err)
+	}
+	json.Unmarshal([]byte(response.Body), &obj)
+	return response.Body
+}
 func TestHandler(t *testing.T) {
-	var testingHandler = RequestHandler{}
 
 	t.Run("Time Test for getting authors by ids", func(t *testing.T) {
 		maxTime := 60
 
 		t.Run("Should return a random author with only a single quote (i.e. default)", func(t *testing.T) {
 			start := time.Now()
-			_, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: "{}"})
-			if err != nil {
-				t.Fatalf("Expected given author but got an error: %+v", err)
-			}
+			GetRequest("{}", nil, t)
 			end := time.Now()
 			duration := end.Sub(start)
 			if duration.Milliseconds() > int64(maxTime/2) {
@@ -33,10 +39,7 @@ func TestHandler(t *testing.T) {
 			start := time.Now()
 			language := "english"
 			var jsonStr = fmt.Sprintf(`{"language":"%s"}`, language)
-			_, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-			if err != nil {
-				t.Fatalf("Expected given author but got an error: %+v", err)
-			}
+			GetRequest(jsonStr, nil, t)
 			end := time.Now()
 			duration := end.Sub(start)
 			if duration.Milliseconds() > int64(maxTime) {
@@ -49,12 +52,8 @@ func TestHandler(t *testing.T) {
 
 		t.Run("Should return a random author with only a single quote (i.e. default)", func(t *testing.T) {
 
-			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: "{}"})
-			if err != nil {
-				t.Fatalf("Expected given author but got an error: %+v", err)
-			}
 			var authors []structs.QuoteAPIModel
-			json.Unmarshal([]byte(response.Body), &authors)
+			GetRequest("{}", &authors, t)
 
 			if len(authors) != 1 {
 				t.Fatalf("Expected only a single quote from the random author but got %d", len(authors))
@@ -64,11 +63,7 @@ func TestHandler(t *testing.T) {
 				t.Fatal("got an author with id 0, want author with valid id")
 			}
 
-			response, err = testingHandler.handler(events.APIGatewayProxyRequest{Body: "{}"})
-			if err != nil {
-				t.Fatalf("Expected given author, second request, but got an error: %+v", err)
-			}
-			json.Unmarshal([]byte(response.Body), &authors)
+			GetRequest("{}", &authors, t)
 			if firstAuthor.Id == authors[0].Id {
 				t.Fatalf("Expected two different authors but got the same author twice which is higly improbable, got author with id %d and name %s", firstAuthor.Id, firstAuthor.Name)
 			}
@@ -78,12 +73,8 @@ func TestHandler(t *testing.T) {
 		t.Run("Should return a random Author with only quotes from him in Icelandic", func(t *testing.T) {
 			language := "icelandic"
 			var jsonStr = fmt.Sprintf(`{"language":"%s"}`, language)
-			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-			if err != nil {
-				t.Fatalf("Expected given author but got an error: %+v", err)
-			}
 			var authors []structs.QuoteAPIModel
-			json.Unmarshal([]byte(response.Body), &authors)
+			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
 			if firstAuthor.Name == "" {
 				t.Fatalf("Expected a random firstauthor but got an empty name for author")
@@ -93,11 +84,7 @@ func TestHandler(t *testing.T) {
 				t.Fatalf("Expected the quotes returned to be in icelandic")
 			}
 
-			response, err = testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-			if err != nil {
-				t.Fatalf("Expected given author but got an error: %+v", err)
-			}
-			json.Unmarshal([]byte(response.Body), &authors)
+			GetRequest(jsonStr, &authors, t)
 			secondAuthor := authors[0]
 			if firstAuthor.Id == secondAuthor.Id {
 				t.Fatalf("Expected two different authors but got the same author twice which is higly improbable, got author with id %d and name %s", firstAuthor.Id, firstAuthor.Name)
@@ -108,12 +95,8 @@ func TestHandler(t *testing.T) {
 
 			language := "english"
 			var jsonStr = fmt.Sprintf(`{"language":"%s"}`, language)
-			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-			if err != nil {
-				t.Fatalf("Expected given author but got an error: %+v", err)
-			}
 			var authors []structs.QuoteAPIModel
-			json.Unmarshal([]byte(response.Body), &authors)
+			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
 			if firstAuthor.Name == "" {
 				t.Fatalf("Expected a random firstauthor but got an empty name for author")
@@ -123,11 +106,7 @@ func TestHandler(t *testing.T) {
 				t.Fatalf("Expected the quotes returned to not be in icelandic")
 			}
 
-			response, err = testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-			if err != nil {
-				t.Fatalf("Expected given author but got an error: %+v", err)
-			}
-			json.Unmarshal([]byte(response.Body), &authors)
+			GetRequest(jsonStr, &authors, t)
 			secondAuthor := authors[0]
 			if firstAuthor.Id == secondAuthor.Id {
 				t.Fatalf("Expected two different authors but got the same author twice which is higly improbable, got author with id %d and name %s", firstAuthor.Id, firstAuthor.Name)
@@ -138,12 +117,8 @@ func TestHandler(t *testing.T) {
 		t.Run("Should return author with a maximum of 2 of his quotes", func(t *testing.T) {
 			maxQuotes := 2
 			var jsonStr = fmt.Sprintf(`{"maxQuotes":%d}`, maxQuotes)
-			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
-			if err != nil {
-				t.Fatalf("Expected given author but got an error: %+v", err)
-			}
 			var authors []structs.QuoteAPIModel
-			json.Unmarshal([]byte(response.Body), &authors)
+			GetRequest(jsonStr, &authors, t)
 
 			firstAuthor := authors[0]
 			if firstAuthor.Name == "" {

@@ -53,6 +53,7 @@ func TestHandler(t *testing.T) {
 
 	t.Run("Time Test for searching by string", func(t *testing.T) {
 		maxTime := 25
+		longTime := 200
 
 		t.Run("Should return the first 25 quotes from a topic 'nameOfTopic'", func(t *testing.T) {
 			start := time.Now()
@@ -62,8 +63,8 @@ func TestHandler(t *testing.T) {
 
 			end := time.Now()
 			duration := end.Sub(start)
-			if duration.Milliseconds() > int64(maxTime) {
-				t.Fatalf("Expected search for author to take less than %dms but it took %dms", maxTime, duration.Milliseconds())
+			if duration.Milliseconds() > int64(longTime) {
+				t.Fatalf("Expected search for author to take less than %dms but it took %dms", longTime, duration.Milliseconds())
 			}
 
 		})

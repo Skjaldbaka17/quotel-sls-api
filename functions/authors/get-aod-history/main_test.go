@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"testing"
@@ -9,6 +10,17 @@ import (
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
 	"github.com/aws/aws-lambda-go/events"
 )
+
+var testingHandler = RequestHandler{}
+
+func GetRequest(jsonStr string, obj interface{}, t *testing.T) string {
+	response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
+	if err != nil {
+		t.Fatalf("Expected 3 quotes but got an error: %+v", err)
+	}
+	json.Unmarshal([]byte(response.Body), &obj)
+	return response.Body
+}
 
 //Returns AODs and AODICEs, in that order, put into the DB
 func Setup(handler *RequestHandler, t *testing.T) ([]structs.AodDBModel, []structs.AodDBModel) {
@@ -31,14 +43,11 @@ func Setup(handler *RequestHandler, t *testing.T) ([]structs.AodDBModel, []struc
 	var AODs []structs.AodDBModel
 	var AODICEs []structs.AodDBModel
 	for idx, date := range dates {
-		AODs = append(AODs, englishAuthors[idx].ConvertToAODDBModel(date))
-		AODICEs = append(AODICEs, icelandicAuthors[idx].ConvertToAODDBModel(date))
+		AODs = append(AODs, englishAuthors[idx].ConvertToAODDBModel(date, false))
+		AODICEs = append(AODICEs, icelandicAuthors[idx].ConvertToAODDBModel(date, true))
 	}
-	err = handler.Db.Table("aods").Create(&AODs).Error
-	if err != nil {
-		t.Fatalf("Setup error 2: %s", err)
-	}
-	err = handler.Db.Table("aodices").Create(&AODICEs).Error
+	createAOD := append(AODs, AODICEs...)
+	err = handler.Db.Table("aods").Create(&createAOD).Error
 	if err != nil {
 		t.Fatalf("Setup error 2: %s", err)
 	}
@@ -46,28 +55,23 @@ func Setup(handler *RequestHandler, t *testing.T) ([]structs.AodDBModel, []struc
 	//CleanUp
 	t.Cleanup(func() {
 		handler.Db.Exec("delete from aods")
-		handler.Db.Exec("delete from aodices")
 	})
 
 	return AODs, AODICEs
 }
 func TestHandler(t *testing.T) {
-	var testingHandler = RequestHandler{}
 	AODs, AODICEs := Setup(&testingHandler, t)
 	t.Run("Time test History", func(t *testing.T) {
+		maxTime := 50
 		t.Run("Should get history, when there is no history i.e. need to create AOD for today at least, in less than 50ms", func(t *testing.T) {
 			start := time.Now()
 			//Get History:
 			jsonStr := []byte(fmt.Sprintf(`{"language":"%s"}`, "english"))
-			_, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
-			if err != nil {
-				t.Fatalf("Expected the history of AOD but got an error: %+v", err)
-			}
+			GetRequest(string(jsonStr), nil, t)
 
 			end := time.Now()
 			duration := end.Sub(start)
-			maxTime := int64(50)
-			if duration.Milliseconds() > maxTime {
+			if duration.Milliseconds() > int64(maxTime) {
 				t.Fatalf("Expected getting history of AODS to take less than %dms but it took %dms", maxTime, duration.Milliseconds())
 			}
 		})
@@ -77,14 +81,11 @@ func TestHandler(t *testing.T) {
 		t.Run("Should get complete history of AODs", func(t *testing.T) {
 			//Get History:
 			jsonStr := []byte(fmt.Sprintf(`{"language":"%s"}`, "english"))
-			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
-			if err != nil {
-				t.Fatalf("Expected the history of AOD but got an error: %+v", err)
-			}
+			responseBod := GetRequest(string(jsonStr), nil, t)
 
 			for _, author := range AODs {
 				reg := regexp.MustCompile(author.Date)
-				if !reg.MatchString(response.Body) {
+				if !reg.MatchString(responseBod) {
 					t.Fatalf("Missing Aod for date: %s", author.Date)
 				}
 			}
@@ -94,14 +95,11 @@ func TestHandler(t *testing.T) {
 		t.Run("Should get complete history of AODICEs", func(t *testing.T) {
 			//Get History:
 			jsonStr := []byte(fmt.Sprintf(`{"language":"%s"}`, "icelandic"))
-			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
-			if err != nil {
-				t.Fatalf("Expected the history of AODICE but got an error: %+v", err)
-			}
+			responseBod := GetRequest(string(jsonStr), nil, t)
 
 			for _, author := range AODICEs {
 				reg := regexp.MustCompile(author.Date)
-				if !reg.MatchString(response.Body) {
+				if !reg.MatchString(responseBod) {
 					t.Fatalf("Missing Aodice for date: %s", author.Date)
 				}
 			}
@@ -111,18 +109,15 @@ func TestHandler(t *testing.T) {
 		t.Run("Should get complete history of AODs from 2020-01-01", func(t *testing.T) {
 			//Get History:
 			jsonStr := []byte(fmt.Sprintf(`{"language":"%s","minimum":"%s"}`, "english", "2020-01-01"))
-			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
-			if err != nil {
-				t.Fatalf("Expected the history of AOD but got an error: %+v", err)
-			}
+			responseBod := GetRequest(string(jsonStr), nil, t)
 
 			shouldMatchReg := regexp.MustCompile(AODs[1].Date) //Regex for 2020-06-16 AODICE
-			if !shouldMatchReg.MatchString(response.Body) {
-				t.Fatalf("Expected the history of AODs to contain input AODICE for date %s but got body %s", AODs[1].Date, response.Body)
+			if !shouldMatchReg.MatchString(responseBod) {
+				t.Fatalf("Expected the history of AODs to contain input AODICE for date %s but got body %s", AODs[1].Date, responseBod)
 			}
 			shouldNotMatchReg := regexp.MustCompile(AODs[2].Date) //Regex for 2019-06-16 AODICE
-			if shouldNotMatchReg.MatchString(response.Body) {
-				t.Fatalf("Expected the hisory of AODs only from 2020-01-01 but got body %s", response.Body)
+			if shouldNotMatchReg.MatchString(responseBod) {
+				t.Fatalf("Expected the hisory of AODs only from 2020-01-01 but got body %s", responseBod)
 			}
 
 		})
@@ -130,18 +125,15 @@ func TestHandler(t *testing.T) {
 		t.Run("Should get complete history of AODICEs from 2020-01-01", func(t *testing.T) {
 			//Get History:
 			jsonStr := []byte(fmt.Sprintf(`{"language":"%s","minimum":"%s"}`, "icelandic", "2020-01-01"))
-			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
-			if err != nil {
-				t.Fatalf("Expected the history of AODICE but got an error: %+v", err)
-			}
+			responseBod := GetRequest(string(jsonStr), nil, t)
 
 			shouldMatchReg := regexp.MustCompile(AODICEs[1].Date) //Regex for 2020-06-16 AODICE
-			if !shouldMatchReg.MatchString(response.Body) {
-				t.Fatalf("Expected the history of AODICEs to contain input AODICE for date %s but got body %s", AODICEs[1].Date, response.Body)
+			if !shouldMatchReg.MatchString(responseBod) {
+				t.Fatalf("Expected the history of AODICEs to contain input AODICE for date %s but got body %s", AODICEs[1].Date, responseBod)
 			}
 			shouldNotMatchReg := regexp.MustCompile(AODICEs[2].Date) //Regex for 2019-06-16 AODICE
-			if shouldNotMatchReg.MatchString(response.Body) {
-				t.Fatalf("Expected the hisory of AODICEs only from 2020-01-01 but got body %s", response.Body)
+			if shouldNotMatchReg.MatchString(responseBod) {
+				t.Fatalf("Expected the hisory of AODICEs only from 2020-01-01 but got body %s", responseBod)
 			}
 
 		})

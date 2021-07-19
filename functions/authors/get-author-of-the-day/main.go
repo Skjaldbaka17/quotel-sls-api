@@ -48,16 +48,18 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	}
 
 	var author structs.AodDBModel
-	var err error
 
 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
 
 	//Which table to look for quotes (ice table has icelandic quotes)
-	dbPointer := utils.AodLanguageSQL(requestBody.Language, requestHandler.Db).
-		Where("date = current_date")
+	err := utils.AodLanguageSQL(requestBody.Language, requestHandler.Db).
+		Where("date = current_date").Limit(1).Scan(&author).Error
 	//** ---------- Paramatere configuratino for DB query ends ---------- **//
 
-	err = dbPointer.Scan(&author).Error
+	if author == (structs.AodDBModel{}) {
+		err = utils.AodLanguageSQL(requestBody.Language, requestHandler.Db).
+			Order("date desc").Limit(1).Scan(&author).Error
+	}
 
 	if err != nil {
 		log.Printf("Got error when querying DB in GetAuthorOfTheDay: %s", err)
@@ -70,7 +72,8 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	out, _ := json.Marshal(author)
+	authorApi := author.ConvertToAPIModel()
+	out, _ := json.Marshal(authorApi)
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),
 		StatusCode: http.StatusOK,

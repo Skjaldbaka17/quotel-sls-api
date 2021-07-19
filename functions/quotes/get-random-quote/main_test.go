@@ -75,7 +75,7 @@ func TestHandler(t *testing.T) {
 	authors, topics := Setup(&testingHandler, t)
 	t.Run("Time Test for getting quotes", func(t *testing.T) {
 		maxTime := 25
-		longTime := 200
+		longTime := 250
 
 		t.Run("Should return a random quote", func(t *testing.T) {
 			start := time.Now()

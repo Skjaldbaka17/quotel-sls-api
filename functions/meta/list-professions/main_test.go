@@ -20,13 +20,13 @@ func GetRequest(jsonStr string, obj interface{}, t *testing.T) string {
 }
 func TestHandler(t *testing.T) {
 	type Response struct {
-		Languages []string
+		Professions []string
 	}
 
 	t.Run("Time Test for getting quotes", func(t *testing.T) {
-		// maxTime := 20
+		// maxTime := 25
 		longTime := 100
-		t.Run("Get all Languages", func(t *testing.T) {
+		t.Run("Get all professions", func(t *testing.T) {
 			start := time.Now()
 
 			var response Response
@@ -40,11 +40,12 @@ func TestHandler(t *testing.T) {
 
 	})
 
-	t.Run("Get all Languages", func(t *testing.T) {
+	t.Run("Get all professions", func(t *testing.T) {
 		var response Response
 		GetRequest(`{}`, &response, t)
-		if len(response.Languages) != 2 {
-			t.Fatalf("expected %d Languages but got %d", 2, len(response.Languages))
+
+		if len(response.Professions) != 89 {
+			t.Fatalf("expected %d professions but got %d", 89, len(response.Professions))
 		}
 	})
 

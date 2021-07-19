@@ -224,11 +224,12 @@ func SetMaxMinNumber(orderConfig structs.OrderConfig, column string, orderDirect
 
 //qodLanguageSQL adds to the sql query for the quotes db a condition of whether the quotes to be fetched are quotes in a particular language
 func (requestHandler *RequestHandler) QodLanguageSQL(language string) *gorm.DB {
+	dbPointer := requestHandler.Db.Table("qods")
 	switch strings.ToLower(language) {
 	case "icelandic":
-		return requestHandler.Db.Table("qodices")
+		return dbPointer.Where("is_icelandic")
 	default:
-		return requestHandler.Db.Table("qods")
+		return dbPointer.Not("is_icelandic")
 	}
 }
 
@@ -247,11 +248,12 @@ func AuthorLanguageSQL(language string, dbPointer *gorm.DB) *gorm.DB {
 
 //aodLanguageSQL adds to the sql query for the authors db a condition of whether the authors to be fetched have quotes in a particular language
 func AodLanguageSQL(language string, dbPointer *gorm.DB) *gorm.DB {
+	dbPointer = dbPointer.Table("aods")
 	switch strings.ToLower(language) {
 	case "icelandic":
-		return dbPointer.Table("aodices")
+		return dbPointer.Where("is_icelandic")
 	default:
-		return dbPointer.Table("aods")
+		return dbPointer.Not("is_icelandic")
 	}
 }
 

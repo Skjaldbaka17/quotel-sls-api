@@ -126,7 +126,8 @@ type AodDBModel struct {
 	DeathDate   int    `json:"death_date,omitempty"`
 	Name        string `json:"name,omitempty"`
 
-	Date string `json:"date,omitempty"`
+	AuthorId uint   `json:"author_id,omitempty"`
+	Date     string `json:"date,omitempty"`
 
 	IsIcelandic bool `json:"is_icelandic,OMITEMPTY"`
 }
@@ -157,11 +158,13 @@ type AodAPIModel struct {
 	IsIcelandic bool   `json:"isIcelandic,OMITEMPTY"`
 	TopicId     uint   `json:"topicId,OMITEMPTY"`
 	TopicName   string `json:"topicName,OMITEMPTY"`
+	AuthorId    uint   `json:"authorId,OMITEMPTY"`
 }
 
 func (dbModel *AodDBModel) ConvertToAPIModel() AodAPIModel {
 	return AodAPIModel{
 		Id:          dbModel.ID,
+		AuthorId:    dbModel.AuthorId,
 		Name:        dbModel.Name,
 		BirthDate:   getDate(dbModel.BirthYear, dbModel.BirthMonth, dbModel.BirthDate),
 		DeathDate:   getDate(dbModel.DeathYear, dbModel.DeathMonth, dbModel.DeathDate),
@@ -193,7 +196,7 @@ func (dbModel *AuthorDBModel) ConvertToAODDBModel(date string, isIcelandic bool)
 		Nationality: dbModel.Nationality,
 		Date:        date,
 		IsIcelandic: isIcelandic,
+		AuthorId:    dbModel.ID,
 	}
-	model.ID = dbModel.ID
 	return model
 }

@@ -10,6 +10,8 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
+var testingHandler = RequestHandler{}
+
 //Returns AODs and AODICEs, in that order, put into the DB
 func Setup(handler *RequestHandler, t *testing.T) (structs.QodDBModel, structs.QodDBModel) {
 	handler.InitializeDB()
@@ -29,11 +31,11 @@ func Setup(handler *RequestHandler, t *testing.T) (structs.QodDBModel, structs.Q
 	today := fmt.Sprintf("%d-%d-%d", year, month, day)
 	QOD := englishQuote.ConvertToQODDBModel(today)
 	QODICE := icelandicQuote.ConvertToQODDBModel(today)
-	err = handler.Db.Table("qods").Create(&QOD).Error
-	if err != nil {
-		t.Fatalf("Setup error 2: %s", err)
+	createQODs := []structs.QodDBModel{
+		QOD,
+		QODICE,
 	}
-	err = handler.Db.Table("qodices").Create(&QODICE).Error
+	err = handler.Db.Table("qods").Create(&createQODs).Error
 	if err != nil {
 		t.Fatalf("Setup error 2: %s", err)
 	}
@@ -41,13 +43,20 @@ func Setup(handler *RequestHandler, t *testing.T) (structs.QodDBModel, structs.Q
 	//CleanUp
 	t.Cleanup(func() {
 		handler.Db.Exec("delete from qods")
-		handler.Db.Exec("delete from qodices")
 	})
 
 	return QOD, QODICE
 }
+
+func GetRequest(jsonStr string, obj interface{}, t *testing.T) string {
+	response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: jsonStr})
+	if err != nil {
+		t.Fatalf("Expected 3 quotes but got an error: %+v", err)
+	}
+	json.Unmarshal([]byte(response.Body), &obj)
+	return response.Body
+}
 func TestHandler(t *testing.T) {
-	var testingHandler = RequestHandler{}
 	QOD, QODICE := Setup(&testingHandler, t)
 
 	t.Run("Time Test for getting qod", func(t *testing.T) {
@@ -55,11 +64,8 @@ func TestHandler(t *testing.T) {
 		t.Run("Time: Should get QOD", func(t *testing.T) {
 			start := time.Now()
 			//Get History:
-			jsonStr := []byte(fmt.Sprintf(`{"language":"%s"}`, "english"))
-			_, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
-			if err != nil {
-				t.Fatalf("Expected the QOD but got an error: %+v", err)
-			}
+			jsonStr := fmt.Sprintf(`{"language":"%s"}`, "english")
+			GetRequest(jsonStr, nil, t)
 			end := time.Now()
 			duration := end.Sub(start)
 			if duration.Milliseconds() > int64(maxTime) {
@@ -70,13 +76,8 @@ func TestHandler(t *testing.T) {
 
 	t.Run("Get quotes", func(t *testing.T) {
 		t.Run("Should get Quote of the day", func(t *testing.T) {
-			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: "{}"})
-			if err != nil {
-				t.Fatalf("Expected the QOD but got an error: %+v", err)
-			}
-
 			var quote structs.QodAPIModel
-			json.Unmarshal([]byte(response.Body), &quote)
+			GetRequest("{}", &quote, t)
 
 			if quote.QuoteId != QOD.QuoteId {
 				t.Fatalf("Expected the quote for today that setup just inserted, i.e. id %d but got quote with id %d", QOD.QuoteId, quote.QuoteId)
@@ -85,14 +86,9 @@ func TestHandler(t *testing.T) {
 		})
 
 		t.Run("Should get English Quote of the day", func(t *testing.T) {
-			var jsonStr = []byte(fmt.Sprintf(`{"language":"%s"}`, "english"))
-			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
-			if err != nil {
-				t.Fatalf("Expected the QOD but got an error: %+v", err)
-			}
-
+			var jsonStr = fmt.Sprintf(`{"language":"%s"}`, "english")
 			var quote structs.QodAPIModel
-			json.Unmarshal([]byte(response.Body), &quote)
+			GetRequest(jsonStr, &quote, t)
 
 			if quote.QuoteId != QOD.QuoteId {
 				t.Fatalf("Expected the quote for today that setup just inserted, i.e. id %d but got quote with id %d", QOD.QuoteId, quote.QuoteId)
@@ -101,14 +97,9 @@ func TestHandler(t *testing.T) {
 		})
 
 		t.Run("Should get Icelandic Quote of the day", func(t *testing.T) {
-			var jsonStr = []byte(fmt.Sprintf(`{"language":"%s"}`, "icelandic"))
-			response, err := testingHandler.handler(events.APIGatewayProxyRequest{Body: string(jsonStr)})
-			if err != nil {
-				t.Fatalf("Expected the QODICE but got an error: %+v", err)
-			}
-
+			var jsonStr = fmt.Sprintf(`{"language":"%s"}`, "icelandic")
 			var quote structs.QodAPIModel
-			json.Unmarshal([]byte(response.Body), &quote)
+			GetRequest(jsonStr, &quote, t)
 
 			if quote.QuoteId != QODICE.QuoteId {
 				t.Fatalf("Expected the icelandic quote for today that setup just inserted, i.e. id %d but got quote with id %d", QODICE.QuoteId, quote.QuoteId)
