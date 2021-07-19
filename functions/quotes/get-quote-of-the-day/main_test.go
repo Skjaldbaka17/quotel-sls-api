@@ -13,16 +13,21 @@ import (
 var testingHandler = RequestHandler{}
 
 //Returns AODs and AODICEs, in that order, put into the DB
-func Setup(handler *RequestHandler, t *testing.T) (structs.QodDBModel, structs.QodDBModel) {
+func Setup(handler *RequestHandler, t *testing.T) (structs.QodDBModel, structs.QodDBModel, structs.QodDBModel) {
 	handler.InitializeDB()
 
 	var englishQuote structs.QuoteDBModel
 	var icelandicQuote structs.QuoteDBModel
+	var topicQuote structs.QuoteDBModel
 	err := handler.Db.Table("quotes").Not("is_icelandic").Limit(1).Find(&englishQuote).Error
 	if err != nil {
 		t.Fatalf("Setup error: %s", err)
 	}
-	err = handler.Db.Table("quotes").Where("is_icelandic").Limit(3).Find(&icelandicQuote).Error
+	err = handler.Db.Table("quotes").Where("is_icelandic").Limit(1).Find(&icelandicQuote).Error
+	if err != nil {
+		t.Fatalf("Setup error: %s", err)
+	}
+	err = handler.Db.Table("topicsview").Where("random() < 0.001").Limit(1).Find(&topicQuote).Error
 	if err != nil {
 		t.Fatalf("Setup error: %s", err)
 	}
@@ -31,9 +36,11 @@ func Setup(handler *RequestHandler, t *testing.T) (structs.QodDBModel, structs.Q
 	today := fmt.Sprintf("%d-%d-%d", year, month, day)
 	QOD := englishQuote.ConvertToQODDBModel(today)
 	QODICE := icelandicQuote.ConvertToQODDBModel(today)
+	QODtopic := topicQuote.ConvertToQODDBModel(today)
 	createQODs := []structs.QodDBModel{
 		QOD,
 		QODICE,
+		QODtopic,
 	}
 	err = handler.Db.Table("qods").Create(&createQODs).Error
 	if err != nil {
@@ -45,7 +52,7 @@ func Setup(handler *RequestHandler, t *testing.T) (structs.QodDBModel, structs.Q
 		handler.Db.Exec("delete from qods")
 	})
 
-	return QOD, QODICE
+	return QOD, QODICE, QODtopic
 }
 
 func GetRequest(jsonStr string, obj interface{}, t *testing.T) string {
@@ -57,7 +64,7 @@ func GetRequest(jsonStr string, obj interface{}, t *testing.T) string {
 	return response.Body
 }
 func TestHandler(t *testing.T) {
-	QOD, QODICE := Setup(&testingHandler, t)
+	QOD, QODICE, QODtopic := Setup(&testingHandler, t)
 
 	t.Run("Time Test for getting qod", func(t *testing.T) {
 		maxTime := 50
@@ -104,6 +111,20 @@ func TestHandler(t *testing.T) {
 			if quote.QuoteId != QODICE.QuoteId {
 				t.Fatalf("Expected the icelandic quote for today that setup just inserted, i.e. id %d but got quote with id %d", QODICE.QuoteId, quote.QuoteId)
 			}
+		})
+
+		t.Run("Should get quote of the day for topic "+QODtopic.TopicName, func(t *testing.T) {
+			var jsonStr = fmt.Sprintf(`{"topicId":%d}`, QODtopic.TopicId)
+			var quote structs.QodAPIModel
+			GetRequest(jsonStr, &quote, t)
+			if quote.QuoteId != QODtopic.QuoteId {
+				t.Fatalf("Expected the quote for today for topic %s that setup just inserted, i.e. id %d but got quote with id %d", QODtopic.TopicName, QOD.QuoteId, quote.QuoteId)
+			}
+
+			if quote.TopicId != QODtopic.TopicId {
+				t.Fatalf("Expected the topicId for topic %s that setup just inserted, i.e. id %d but got quote with topicid %d", QODtopic.TopicName, QOD.QuoteId, quote.QuoteId)
+			}
+
 		})
 
 	})

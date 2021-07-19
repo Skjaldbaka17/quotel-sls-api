@@ -76,7 +76,11 @@ type ofTheDayWrapper struct {
 		//
 		// Default: English
 		// Example: English
+		// Get the author / quote of the day for the given topic by supplying its topicId
+		//
+		// Example: 1
 		Language string `json:"language"`
+		TopicId  int    `json:"topicId"`
 	}
 }
 

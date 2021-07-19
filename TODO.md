@@ -1,21 +1,19 @@
 
 
-- [ ] Add get QOD for topics to /quotes/qod route
-- [ ] Get qod/aod and histories by getting the newest inserted qod not by using current_date in postgres!
 - [ ] Set all .ID that refer to AuthorIds to AuthorId (i.e. seen from API)
 - [ ] Add 2-lambda functions and schedule them to run once daily inserting the QOD, QODICE, AOD and AODICES (and for QODs/QODICEs have it get random quote from topics for quality quotes)
-- [ ] Put new DB on AWS
+- [ ] Put new DB on AWS (Image/copy)
 - [ ] Put new version of API on AWS
-- [ ] Create new swagger based on newest version on AWS
+- [ ] Create new swagger based on newest version on AWS (Multiple Examples?)
 - [ ] Put new API on RapidAPI
 - [ ] Make README for future me better -- also readme for setup-quotel-db and old quotel-api (not serverless) and crawler
 - [ ] Make new/Better README for RAPIDAPI
+- [ ] Make examples for all Features RapidAPI (Maybe in SWAGGER?)
 - [ ] optimize queries (longTime in tests)
+- [ ] Use RapidAPI for WhoTheFuckSaidThat.com
 
 
 - [ ] Explain how the searchin works in README (i.e. first plainto_ts then check fuzzy search if user had )
-- [ ] Always order returned Quotes/Authors in /search by Popularity also (i.e. count desc)
-- [ ] Testing by mocking GORM: https://betterprogramming.pub/how-to-unit-test-a-gorm-application-with-sqlmock-97ee73e36526 
 
 
 - [x] set utils/structs as packages in their own module called 'handlers' or something like that
@@ -32,5 +30,10 @@
 - [x] Adapt to new data + add tests for all
 - [x] Add route in /meta for getting all distinct Professions and distinct Nationalities
 - [x] Make all tests use 'GetRequest'
+- [x] Testing by mocking GORM: https://betterprogramming.pub/how-to-unit-test-a-gorm-application-with-sqlmock-97ee73e36526  #I want to test the REAL db, full text search test etc
+- [x] Add get QOD for topics to /quotes/qod route
+- [x] Get qod/aod and histories by getting the newest inserted qod not by using current_date in postgres! (not exactly, am not using this method as fail safe just in case)
+ 
+
 
 

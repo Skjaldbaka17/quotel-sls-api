@@ -50,14 +50,21 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	var quote structs.QodDBModel
 	var err error
 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
-	dbPointer := requestHandler.QodLanguageSQL(requestBody.Language).Where("date = current_date")
+	if requestBody.TopicId > 0 {
+		err = requestHandler.Db.Table("qods").Where("topic_id = ?", requestBody.TopicId).Where("date = current_date").Limit(1).Scan(&quote).Error
+	} else {
+		err = requestHandler.QodLanguageSQL(requestBody.Language).Where("topic_id = 0").Where("date = current_date").Limit(1).Scan(&quote).Error
+	}
 	//** ---------- Paramatere configuratino for DB query ends ---------- **//
-	err = dbPointer.Scan(&quote).Error
 
-	// if quote == (structs.QodDBModel{}) {
-	// 	err = requestHandler.QodLanguageSQL(requestBody.Language).
-	// 		Order("date desc").Limit(1).Scan(&quote).Error
-	// }
+	//If date for today has not been set then just fetch the newest qod
+	if quote == (structs.QodDBModel{}) {
+		if requestBody.TopicId > 0 {
+			err = requestHandler.Db.Table("qods").Where("topic_id = ?", requestBody.TopicId).Order("date desc").Limit(1).Scan(&quote).Error
+		} else {
+			err = requestHandler.QodLanguageSQL(requestBody.Language).Where("topic_id = 0").Order("date desc").Limit(1).Scan(&quote).Error
+		}
+	}
 
 	if err != nil {
 		log.Printf("Got error when querying DB in GetQODs: %s", err)
