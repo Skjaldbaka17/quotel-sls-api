@@ -38,9 +38,9 @@ Resources:
         DailyTrigger:
           Type: Schedule
           Properties:
-            Description: Is triggered daily at 01:00AM
+            Description: Is triggered daily at 00:30AM
             Name: DailyTrigger
-            Schedule: cron(0 1 * * ? *) #cron(minute hour dayofmonth month dayofweek year)
+            Schedule: cron(30 0 * * ? *) #cron(minute hour dayofmonth month dayofweek year)
 #------------------- /quotes -------------------#
 
   GetQuotesFunction:
