@@ -1,16 +1,6 @@
 # TODOs
 
-
-- [ ] Use RapidAPI for WhoTheFuckSaidThat.com
-
 - [ ] Setup AURORA POSTGRES SERVERLESS with the new Data (pg_dump? https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Migrate.html -> https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html#AuroraPostgreSQL.Migrating.RDSPostgreSQL.Import.Console)
-
-
- ---------------------------- WHOTHEFUCKSAIDTHAT.COM ---------------------------- 
-- [ ] Google Analytics for the site (set it up on google)
-- [x] https certificate
-
-
 
  ---------------------------- CUSTOM FRONT END FOR API USERS ---------------------------- 
 
@@ -38,10 +28,13 @@
 - [ ] Look into payment for some privileges
 
 
-
+ ---------------------------- DONE WHOTHEFUCKSAIDTHAT.COM ---------------------------- 
+- [x] Google Analytics for the site (set it up on google)
+- [x] https certificate
 
  ---------------------------- DONE SERVERLESS ---------------------------- 
 
+- [x] Use RapidAPI for WhoTheFuckSaidThat.com
 - [x] Make new/Better README for RAPIDAPI
 - [x] Put new API on RapidAPI
 - [x] New crawler for new quotes / authors
@@ -149,6 +142,7 @@ to the S3 hosted website with the docs (even better let the link be specific to 
 
 
 Author api: https://quotes.rest
+
 
 
 
