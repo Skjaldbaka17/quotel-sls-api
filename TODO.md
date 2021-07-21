@@ -1,6 +1,6 @@
 # TODOs
-- [ ] Put new API on RapidAPI
-- [ ] Make new/Better README for RAPIDAPI
+
+
 - [ ] Use RapidAPI for WhoTheFuckSaidThat.com
 
 - [ ] Setup AURORA POSTGRES SERVERLESS with the new Data (pg_dump? https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Migrate.html -> https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html#AuroraPostgreSQL.Migrating.RDSPostgreSQL.Import.Console)
@@ -42,6 +42,8 @@
 
  ---------------------------- DONE SERVERLESS ---------------------------- 
 
+- [x] Make new/Better README for RAPIDAPI
+- [x] Put new API on RapidAPI
 - [x] New crawler for new quotes / authors
 - [x] is random truly random (i.e. does the "random" funcitonality truly return randomly or is it biased towards quotes in the "front" of the DB (i.e. in the front where postgres stores them)) -- now using `tablesample system(0.1)`if whole table otherwise using `order by random()`
 - [x] set utils/structs as packages in their own module called 'handlers' or something like that
