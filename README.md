@@ -1,6 +1,10 @@
 # quotel-sls-api
 
-This is the readme for the Quotel Serverless API hosted on AWS-lambda with the following endpoint https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1. Note you need an authorized API-key to access the API through that url. You can contact me at skjaldbaka17@gmail.com or https://www.linkedin.com/in/þórður-ágústsson/ to get an API key or you can use the rapidapi.com marketplace: https://rapidapi.com/skjaldbaka17/api/quotes-rest/ to get access to the API.
+This is the readme for the Quotel Serverless API hosted on AWS-lambda with the following endpoint 
+
+https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1. 
+
+Note you need an authorized API-key to access the API through that url. You can contact me at skjaldbaka17@gmail.com or https://www.linkedin.com/in/þórður-ágústsson/ to get an API key or you can use the rapidapi.com marketplace: https://rapidapi.com/skjaldbaka17/api/quotes-rest/ to get access to the API.
 
 ## About the API
 
