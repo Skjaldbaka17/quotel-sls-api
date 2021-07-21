@@ -17,8 +17,12 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /topics TOPICS GetTopics
-// List the available topics, english / icelandic or both
+// swagger:route POST /topics topics GetTopics
+//
+// List topics
+//
+// List all the available topics, english / icelandic or both
+//
 // responses:
 //	200: topicsResponse
 //  400: incorrectBodyStructureResponse

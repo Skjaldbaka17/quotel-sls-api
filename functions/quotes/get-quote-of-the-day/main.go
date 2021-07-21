@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -18,8 +17,12 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /quotes/qod QUOTES GetQuoteOfTheDay
-// gets the quote of the day
+// swagger:route POST /quotes/qod quotes GetQuoteOfTheDay
+//
+// Get the quote of the day (QOD)
+//
+// Use this route to get quote of the day for a language or for a topic -- starting from Middle of July 2021.
+//
 // responses:
 //	200: qodResponse
 //  400: incorrectBodyStructureResponse
@@ -48,12 +51,24 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		requestBody.Language = "English"
 	}
 
-	var quote structs.QodViewDBModel
+	var quote structs.QodDBModel
 	var err error
 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
-	dbPointer := requestHandler.QodLanguageSQL(requestBody.Language).Where("date = current_date")
+	if requestBody.TopicId > 0 {
+		err = requestHandler.Db.Table("qods").Where("topic_id = ?", requestBody.TopicId).Where("date = current_date").Limit(1).Scan(&quote).Error
+	} else {
+		err = requestHandler.QodLanguageSQL(requestBody.Language).Where("topic_id = 0").Where("date = current_date").Limit(1).Scan(&quote).Error
+	}
 	//** ---------- Paramatere configuratino for DB query ends ---------- **//
-	err = dbPointer.Scan(&quote).Error
+
+	//If date for today has not been set then just fetch the newest qod
+	if quote == (structs.QodDBModel{}) {
+		if requestBody.TopicId > 0 {
+			err = requestHandler.Db.Table("qods").Where("topic_id = ?", requestBody.TopicId).Order("date desc").Limit(1).Scan(&quote).Error
+		} else {
+			err = requestHandler.QodLanguageSQL(requestBody.Language).Where("topic_id = 0").Order("date desc").Limit(1).Scan(&quote).Error
+		}
+	}
 
 	if err != nil {
 		log.Printf("Got error when querying DB in GetQODs: %s", err)
@@ -64,23 +79,6 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 			Body:       errResponse.ToString(),
 			StatusCode: http.StatusInternalServerError,
 		}, nil
-	}
-
-	if (structs.QodViewDBModel{}) == quote {
-		fmt.Println("Setting a brand new QOD for today")
-		err = requestHandler.SetNewRandomQOD(&requestBody)
-		if err != nil {
-			log.Printf("Got error when setting new random qod: %s", err)
-			errResponse := structs.ErrorResponse{
-				Message: utils.InternalServerError,
-			}
-			return events.APIGatewayProxyResponse{
-				Body:       errResponse.ToString(),
-				StatusCode: http.StatusInternalServerError,
-			}, nil
-		}
-
-		return requestHandler.handler(request)
 	}
 
 	out, _ := json.Marshal(quote.ConvertToAPIModel())

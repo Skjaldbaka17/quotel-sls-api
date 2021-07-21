@@ -9,6 +9,6 @@ replace github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs => ../
 
 replace github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/utils => ../../../local-dependencies/utils
 
-module set-quote-of-the-day
+module set-of-the-day
 
 go 1.16

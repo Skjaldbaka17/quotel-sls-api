@@ -1,108 +1,154 @@
 package structs
 
 type QuoteDBModel struct {
-	Id          int    `json:"id,omitempty"`
-	AuthorId    int    `json:"author_id,omitempty"`
+	Id          uint   `json:"id,omitempty"`
+	AuthorId    uint   `json:"author_id,omitempty"`
 	Quote       string `json:"quote,omitempty"`
 	Count       int    `json:"count,omitempty"`
-	IsIcelandic string `json:"is_icelandic,omitempty"`
+	IsIcelandic bool   `json:"is_icelandic,omitempty"`
+
+	Nationality string `json:"nationality,omitempty"`
+	Profession  string `json:"profession,omitempty"`
+	BirthYear   int    `json:"birth_year,omitempty"`
+	BirthMonth  string `json:"birth_month,omitempty"`
+	BirthDate   int    `json:"birth_date,omitempty"`
+	DeathYear   int    `json:"death_year,omitempty"`
+	DeathMonth  string `json:"death_month,omitempty"`
+	DeathDate   int    `json:"death_date,omitempty"`
+	Name        string `json:"name,omitempty"`
+	TopicName   string `json:"topic_name,omitempty"`
+	TopicId     int    `json:"topic_id,omitempty"`
 }
 
 type QuoteAPIModel struct {
-	Id          int    `json:"id,omitempty"`
-	AuthorId    int    `json:"authorId,omitempty"`
+	QuoteId     uint   `json:"quoteId,omitempty"`
+	AuthorId    uint   `json:"authorId,omitempty"` //Author_id
 	Quote       string `json:"quote,omitempty"`
 	Count       int    `json:"count,omitempty"`
-	IsIcelandic string `json:"isIcelandic,omitempty"`
-}
+	IsIcelandic bool   `json:"isIcelandic,omitempty"`
 
-func (dbModel *QuoteDBModel) ConvertToAPIModel() QuoteAPIModel {
-	return QuoteAPIModel(*dbModel)
-}
-
-func (apiModel *QuoteAPIModel) ConvertToDBModel() QuoteDBModel {
-	return QuoteDBModel(*apiModel)
-}
-
-func ConvertToQuotesAPIModel(authors []QuoteDBModel) []QuoteAPIModel {
-	authorsAPI := []QuoteAPIModel{}
-	for _, author := range authors {
-		authorsAPI = append(authorsAPI, QuoteAPIModel(author))
-	}
-	return authorsAPI
-}
-
-func ConvertToQuotesDBModel(authors []QuoteAPIModel) []QuoteDBModel {
-	authorsDB := []QuoteDBModel{}
-	for _, author := range authors {
-		authorsDB = append(authorsDB, QuoteDBModel(author))
-	}
-	return authorsDB
-}
-
-type QodViewDBModel struct {
-	QuoteId     int    `json:"quote_id,omitempty"`
+	Nationality string `json:"nationality,omitempty"`
+	Profession  string `json:"profession,omitempty"`
+	Born        string `json:"born,omitempty"`
+	Died        string `json:"died,omitempty"`
 	Name        string `json:"name,omitempty"`
-	Quote       string `json:"quote,omitempty"`
-	AuthorId    int    `json:"author_id,omitempty"`
-	IsIcelandic bool   `json:"is_icelandic,omitempty"`
+	TopicName   string `json:"topicName,omitempty"`
+	TopicId     int    `json:"topicId,omitempty"`
+}
+
+type QodDBModel struct {
+	QuoteId  uint   `json:"quote_id,omitempty"`
+	Quote    string `json:"quote,omitempty"`
+	AuthorId uint   `json:"author_id,omitempty"`
+
+	Name        string `json:"name,omitempty"`
+	Nationality string `json:"nationality,omitempty"`
+	Profession  string `json:"profession,omitempty"`
+	BirthYear   int    `json:"birth_year,omitempty"`
+	BirthMonth  string `json:"birth_month,omitempty"`
+	BirthDate   int    `json:"birth_date,omitempty"`
+	DeathYear   int    `json:"death_year,omitempty"`
+	DeathMonth  string `json:"death_month,omitempty"`
+	DeathDate   int    `json:"death_date,omitempty"`
 	Date        string `json:"date,omitempty"`
+
+	IsIcelandic bool   `json:"is_icelandic,omitempty"`
+	TopicId     uint   `json:"topic_id,omitempty"`
+	TopicName   string `json:"topic_name,omitempty"`
 }
 
-type QodViewAPIModel struct {
-	// The quote's id
-	// example: 582676
-	QuoteId int `json:"quoteId,omitempty"`
-	// Name of the author
-	// example: Muhammad Ali
-	Name string `json:"name,omitempty"`
-	// The quote for the day
-	// example: Float like a butterfly, sting like a bee
-	Quote string `json:"quote,omitempty"`
-	// The author's id
-	AuthorId int `json:"authorId,omitempty"`
-	// Whether the quote is in icelandic
-	// false
-	IsIcelandic bool `json:"isIcelandic,omitempty"`
-	// The date when this quote was the quote of the day
-	// example: 2021-06-12T00:00:00Z
-	Date string `json:"date,omitempty"`
+type QodAPIModel struct {
+	QuoteId  uint   `json:"quoteId,omitempty"`
+	Quote    string `json:"quote,omitempty"`
+	AuthorId uint   `json:"authorId,omitempty"` //author_id
+
+	Name        string `json:"name,omitempty"`
+	Nationality string `json:"nationality,omitempty"`
+	Profession  string `json:"profession,omitempty"`
+	Born        string `json:"born,omitempty"`
+	Died        string `json:"died,omitempty"`
+	Date        string `json:"date,omitempty"`
+
+	IsIcelandic bool   `json:"isIcelandic,omitempty"`
+	TopicId     uint   `json:"topicId,omitempty"`
+	TopicName   string `json:"topicName,omitempty"`
 }
 
-func (dbModel *QodViewDBModel) ConvertToAPIModel() QodViewAPIModel {
-	return QodViewAPIModel(*dbModel)
-}
+//------------------- STRUCT CONVERSIONS -------------------//
 
-func (apiModel *QodViewAPIModel) ConvertToDBModel() QodViewDBModel {
-	return QodViewDBModel(*apiModel)
-}
-
-func ConvertToQodViewsAPIModel(authors []QodViewDBModel) []QodViewAPIModel {
-	authorsAPI := []QodViewAPIModel{}
-	for _, author := range authors {
-		authorsAPI = append(authorsAPI, QodViewAPIModel(author))
+/* quoteDB to quoteAPI conversion */
+func (dbModel *QuoteDBModel) ConvertToAPIModel() QuoteAPIModel {
+	return QuoteAPIModel{
+		QuoteId:     dbModel.Id,
+		AuthorId:    dbModel.AuthorId,
+		Quote:       dbModel.Quote,
+		IsIcelandic: dbModel.IsIcelandic,
+		Nationality: dbModel.Nationality,
+		Profession:  dbModel.Profession,
+		Born:        getDate(dbModel.BirthYear, dbModel.BirthMonth, dbModel.BirthDate),
+		Died:        getDate(dbModel.DeathYear, dbModel.DeathMonth, dbModel.DeathDate),
+		Name:        dbModel.Name,
+		TopicName:   dbModel.TopicName,
+		TopicId:     dbModel.TopicId,
 	}
-	return authorsAPI
 }
 
-func ConvertToQodViewsDBModel(authors []QodViewAPIModel) []QodViewDBModel {
-	authorsDB := []QodViewDBModel{}
-	for _, author := range authors {
-		authorsDB = append(authorsDB, QodViewDBModel(author))
+/* quoteDB to qodDB conversion */
+func (dbModel *QuoteDBModel) ConvertToQODDBModel(date string) QodDBModel {
+	return QodDBModel{
+		QuoteId:     dbModel.Id,
+		AuthorId:    dbModel.AuthorId,
+		Quote:       dbModel.Quote,
+		BirthYear:   dbModel.BirthYear,
+		BirthMonth:  dbModel.BirthMonth,
+		BirthDate:   dbModel.BirthDate,
+		DeathYear:   dbModel.DeathYear,
+		DeathMonth:  dbModel.DeathMonth,
+		DeathDate:   dbModel.DeathDate,
+		Nationality: dbModel.Nationality,
+		Profession:  dbModel.Profession,
+		Name:        dbModel.Name,
+		Date:        date,
+		IsIcelandic: dbModel.IsIcelandic,
+		TopicId:     uint(dbModel.TopicId),
+		TopicName:   dbModel.TopicName,
 	}
-	return authorsDB
 }
 
-type Qod struct {
-	// the date for which this quote is the QOD, if left empty this quote is today's QOD.
-	//
-	// Example: 12-22-2020
-	Date string `json:"date,omitempty"`
-	// The id of the quote to be set as this dates QOD
-	//
-	// Example: 1
-	Id int `json:"id,omitempty"`
-	// The language of the QOD
-	// Example: icelandic
-	Language string `json:"language,omitempty"`
+/* qodDB to qodAPI conversion */
+func (dbModel *QodDBModel) ConvertToAPIModel() QodAPIModel {
+	return QodAPIModel{
+		QuoteId:     dbModel.QuoteId,
+		AuthorId:    dbModel.AuthorId,
+		Quote:       dbModel.Quote,
+		Nationality: dbModel.Nationality,
+		Profession:  dbModel.Profession,
+		Born:        getDate(dbModel.BirthYear, dbModel.BirthMonth, dbModel.BirthDate),
+		Died:        getDate(dbModel.DeathYear, dbModel.DeathMonth, dbModel.DeathDate),
+		Name:        dbModel.Name,
+		Date:        dbModel.Date,
+		IsIcelandic: dbModel.IsIcelandic,
+		TopicId:     dbModel.TopicId,
+		TopicName:   dbModel.TopicName,
+	}
+}
+
+//------------------- SLICE CONVERSIONS -------------------//
+
+/* quoteDBs to quoteAPIs conversion */
+func ConvertToQuotesAPIModel(quotes []QuoteDBModel) []QuoteAPIModel {
+	quotesAPI := []QuoteAPIModel{}
+	for _, author := range quotes {
+		quotesAPI = append(quotesAPI, author.ConvertToAPIModel())
+	}
+	return quotesAPI
+}
+
+/* qodDBs to qodAPIs conversion */
+func ConvertToQodAPIModel(quotes []QodDBModel) []QodAPIModel {
+	quotesAPI := []QodAPIModel{}
+	for _, author := range quotes {
+		quotesAPI = append(quotesAPI, author.ConvertToAPIModel())
+	}
+	return quotesAPI
 }

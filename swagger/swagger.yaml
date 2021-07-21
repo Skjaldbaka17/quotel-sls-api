@@ -2,88 +2,74 @@ basePath: /v1/
 consumes:
 - application/json
 definitions:
-  AodAPIModel:
+  BeforeAfter:
     properties:
+      after:
+        description: The date the author should be born/or have died on or after (i.e.
+          >= 1998-06-16)
+        example: "1998-06-16"
+        type: string
+        x-go-name: After
+      before:
+        description: The date the author should be born/or have died on or before
+          (i.e. <= 1998-06-16)
+        example: "1998-06-16"
+        type: string
+        x-go-name: Before
       date:
-        description: The date when this author was the author of the day
-        example: "2021-06-12T00:00:00Z"
-        type: string
+        description: Only return authors that were born/died on the given date
+        example: 16
+        format: int64
+        type: integer
         x-go-name: Date
-      id:
-        description: The author's id
-        example: 24952
-        format: int64
-        type: integer
-        x-go-name: Id
-      name:
-        description: The name of the author
-        example: Muhammad Ali
+      month:
+        description: Only return authors that were born/died in the given month
+        example: June
         type: string
-        x-go-name: Name
-    type: object
-    x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
-  AuthorAPIModel:
-    properties:
-      count:
-        description: The popularity index of the author
-        example: 1111
+        x-go-name: Month
+      year:
+        description: Only return authors that were born/died in the given year
+        example: 1998
         format: int64
         type: integer
-        x-go-name: Count
-      hasIcelandicQuotes:
-        description: Whether or not this author has some icelandic quotes
+        x-go-name: Year
+    type: object
+    x-go-name: beforeAfterModel
+    x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
+  ListAuthorsOrderConfiguration:
+    properties:
+      maximum:
+        description: |-
+          Where to end the ordering (if empty it ends at the logical end, for example end at 'Z' for alphabetical ascending order).
+          Note this key is always a string, for example if ordering by nrOfQuotes (or popularity) of maximum 11 quotes you need to
+          set "maximum":"11" in the request body
+        example: "11"
+        type: string
+        x-go-name: Maximum
+      minimum:
+        description: |-
+          Where to start the ordering (if empty it starts from the beginning, for example start at 'A' for alphabetical ascending order).
+          Note this key is always a string, for example if ordering by nrOfQuotes (or popularity) of minimum 10 quotes you need to
+          set "minimum":"10" in the request body
+        example: "10"
+        type: string
+        x-go-name: Minimum
+      orderBy:
+        description: "What to order by: \t'alphabetical', 'popularity', 'nrOfQuotes',
+          'dateOfBirth', 'dateOfDeath' or 'age'"
+        example: popularity
+        type: string
+        x-go-name: OrderBy
+      reverse:
+        description: Whether to order the list in reverse or not (true is Descending
+          and false is Ascending, false is default)
         example: true
         type: boolean
-        x-go-name: HasIcelandicQuotes
-      id:
-        description: The author's id
-        example: 24952
-        format: int64
-        type: integer
-        uniqueItems: true
-        x-go-name: Id
-      name:
-        description: Name of the author
-        example: Muhammad Ali
-        type: string
-        x-go-name: Name
-      nrOfEnglishQuotes:
-        description: How many quotes in English this author has
-        example: 78
-        format: int64
-        type: integer
-        x-go-name: NrOfEnglishQuotes
-      nrOfIcelandicQuotes:
-        description: How many quotes in Icelandic this author has
-        example: 6
-        format: int64
-        type: integer
-        x-go-name: NrOfIcelandicQuotes
+        x-go-name: Reverse
     type: object
+    x-go-name: orderConfigListAuthorsModel
     x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
-  OfTheDayModel:
-    properties:
-      date:
-        description: The date when this author / quote should be 'of the day'
-        example: "2020-06-12"
-        type: string
-        x-go-name: Date
-      id:
-        description: The id of the author / quote
-        example: 1
-        format: int64
-        type: integer
-        x-go-name: Id
-      language:
-        default: English
-        description: The language of this author / quote
-        example: icelandic
-        type: string
-        x-go-name: Language
-    type: object
-    x-go-name: ofTheDayModel
-    x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
-  OrderConfiguration:
+  ListQuotesOrderConfiguration:
     properties:
       maximum:
         description: |-
@@ -113,76 +99,286 @@ definitions:
     type: object
     x-go-name: orderConfigListQuotesModel
     x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
-  QodViewAPIModel:
+  QodPIModel:
     properties:
       authorId:
         description: The author's id
+        example: 29333
         format: int64
         type: integer
         x-go-name: AuthorId
+      born:
+        description: The date this author was born
+        example: 1942-January-17
+        type: string
+        x-go-name: Born
       date:
         description: The date when this quote was the quote of the day
-        example: "2021-06-12T00:00:00Z"
+        example: "2021-06-12"
         type: string
         x-go-name: Date
-      isIcelandic:
-        description: |-
-          Whether the quote is in icelandic
-          false
-        type: boolean
-        x-go-name: IsIcelandic
-      name:
-        description: Name of the author
-        example: Muhammad Ali
+      died:
+        description: The date this author died
+        example: 2016-June-3
         type: string
-        x-go-name: Name
-      quote:
-        description: The quote for the day
-        example: Float like a butterfly, sting like a bee
-        type: string
-        x-go-name: Quote
-      quoteId:
-        description: The quote's id
-        example: 582676
-        format: int64
-        type: integer
-        x-go-name: QuoteId
-    type: object
-    x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
-  SearchViewAPIModel:
-    properties:
-      authorId:
-        description: The author's id
-        example: 24952
-        format: int64
-        type: integer
-        uniqueItems: true
-        x-go-name: AuthorId
+        x-go-name: Died
       isIcelandic:
-        description: Whether or not this quote is in Icelandic or not
+        description: Whether or not this quote is in icelandic
         example: false
         type: boolean
         x-go-name: IsIcelandic
       name:
-        description: Name of author
+        description: The name of the author
         example: Muhammad Ali
         type: string
         x-go-name: Name
+      nationality:
+        description: The author's nationality
+        example: American
+        type: string
+        x-go-name: Nationality
+      profession:
+        description: The author's main profession
+        example: Boxer
+        type: string
+        x-go-name: Profession
       quote:
-        description: The quote
-        example: Float like a butterfly, sting like a bee.
+        description: The quote for the day
+        example: I hated every minute of training, but I said, 'Don't quit. Suffer
+          now and live the rest of your life as a champion.'
         type: string
         x-go-name: Quote
       quoteId:
         description: The quote's id
-        example: 582676
+        example: 879890
         format: int64
         type: integer
-        uniqueItems: true
+        x-go-name: QuoteId
+      topicId:
+        description: The topic's Id that this QOD is quote of the day of
+        example: 100
+        format: uint64
+        type: integer
+        x-go-name: TopicId
+      topicName:
+        description: The topic's name that this QOD is quote of the day of
+        example: Wisdom
+        type: string
+        x-go-name: TopicName
+    type: object
+    x-go-name: QodAPIModel
+    x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
+  QuoteAPIModel:
+    properties:
+      authorId:
+        description: The author's id
+        example: 29333
+        format: uint64
+        type: integer
+        x-go-name: AuthorId
+      born:
+        description: The date this author was born
+        example: 1942-January-17
+        type: string
+        x-go-name: Born
+      count:
+        description: The popularity index of the quote
+        example: 1111
+        format: int64
+        type: integer
+        x-go-name: Count
+      died:
+        description: The date this author died
+        example: 2016-June-3
+        type: string
+        x-go-name: Died
+      isIcelandic:
+        description: Whether or not this quote is in icelandic
+        example: false
+        type: boolean
+        x-go-name: IsIcelandic
+      name:
+        description: The name of the author
+        example: Muhammad Ali
+        type: string
+        x-go-name: Name
+      nationality:
+        description: The author's nationality
+        example: American
+        type: string
+        x-go-name: Nationality
+      profession:
+        description: The author's main profession
+        example: Boxer
+        type: string
+        x-go-name: Profession
+      quote:
+        description: The quote
+        example: I hated every minute of training, but I said, 'Don't quit. Suffer
+          now and live the rest of your life as a champion.'
+        type: string
+        x-go-name: Quote
+      quoteId:
+        description: The quote's id
+        example: 879890
+        format: uint64
+        type: integer
         x-go-name: QuoteId
     type: object
     x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
-  TopicAPIModel:
+  Time:
+    properties:
+      age:
+        $ref: '#/definitions/ageModel'
+      born:
+        $ref: '#/definitions/BeforeAfter'
+      died:
+        $ref: '#/definitions/BeforeAfter'
+      isAlive:
+        default: false
+        description: If true only return authors that are known to be alive
+        example: true
+        type: boolean
+        x-go-name: IsAlive
+      isDead:
+        default: false
+        description: If true only return authors that are known to be dead
+        example: true
+        type: boolean
+        x-go-name: IsDead
+    type: object
+    x-go-name: timeModel
+    x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
+  ageModel:
+    properties:
+      exactly:
+        description: Only return authors that are exactly the given age
+        example: 25
+        format: int64
+        type: integer
+        x-go-name: Exactly
+      olderThan:
+        description: Only return authors that are older than or of equal age as the
+          given age
+        example: 25
+        format: int64
+        type: integer
+        x-go-name: OlderThan
+      youngerThan:
+        description: Only return authors that are younger than or of equal age as
+          the given age
+        example: 25
+        format: int64
+        type: integer
+        x-go-name: YoungerThan
+    type: object
+    x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
+  aodModel:
+    properties:
+      authorId:
+        description: The author's id
+        example: 29333
+        format: uint64
+        type: integer
+        x-go-name: AuthorId
+      born:
+        description: The date this author was born
+        example: 1942-January-17
+        type: string
+        x-go-name: Born
+      date:
+        description: The date when this author was the author of the day
+        example: "2021-06-12T00:00:00Z"
+        type: string
+        x-go-name: Date
+      died:
+        description: The date this author died
+        example: 2016-June-3
+        type: string
+        x-go-name: Died
+      isIcelandic:
+        description: Whether the author is icelandic or not
+        example: false
+        type: boolean
+        x-go-name: IsIcelandic
+      name:
+        description: The name of the author
+        example: Muhammad Ali
+        type: string
+        x-go-name: Name
+      nationality:
+        description: The author's nationality
+        example: American
+        type: string
+        x-go-name: Nationality
+      profession:
+        description: The author's main profession
+        example: Boxer
+        type: string
+        x-go-name: Profession
+    type: object
+    x-go-name: AodAPIModel
+    x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
+  authorModel:
+    properties:
+      authorId:
+        description: The author's id
+        example: 29333
+        format: uint64
+        type: integer
+        x-go-name: AuthorId
+      born:
+        description: The date this author was born
+        example: 1942-January-17
+        type: string
+        x-go-name: Born
+      count:
+        description: The popularity index of the author
+        example: 1111
+        format: int64
+        type: integer
+        x-go-name: Count
+      died:
+        description: The date this author died
+        example: 2016-June-3
+        type: string
+        x-go-name: Died
+      hasIcelandicQuotes:
+        description: Whether or not this author has some icelandic quotes
+        example: true
+        type: boolean
+        x-go-name: HasIcelandicQuotes
+      name:
+        description: The name of the author
+        example: Muhammad Ali
+        type: string
+        x-go-name: Name
+      nationality:
+        description: The author's nationality
+        example: American
+        type: string
+        x-go-name: Nationality
+      nrOfEnglishQuotes:
+        description: How many quotes in English this author has
+        example: 114
+        format: int64
+        type: integer
+        x-go-name: NrOfEnglishQuotes
+      nrOfIcelandicQuotes:
+        description: How many quotes in Icelandic this author has
+        example: 6
+        format: int64
+        type: integer
+        x-go-name: NrOfIcelandicQuotes
+      profession:
+        description: The author's main profession
+        example: Boxer
+        type: string
+        x-go-name: Profession
+    type: object
+    x-go-name: AuthorAPIModel
+    x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
+  topicModel:
     properties:
       id:
         format: int64
@@ -195,8 +391,9 @@ definitions:
         type: string
         x-go-name: Name
     type: object
+    x-go-name: TopicAPIModel
     x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
-  TopicViewAPIModel:
+  topicQuoteModel:
     properties:
       authorId:
         description: The author's id
@@ -205,6 +402,20 @@ definitions:
         type: integer
         uniqueItems: true
         x-go-name: AuthorId
+      born:
+        description: The date this author was born
+        example: 1942-January-17
+        type: string
+        x-go-name: Born
+      count:
+        format: int64
+        type: integer
+        x-go-name: Count
+      died:
+        description: The date this author died
+        example: 2016-June-3
+        type: string
+        x-go-name: Died
       isIcelandic:
         description: Whether or not this quote is in Icelandic or not
         example: false
@@ -215,6 +426,16 @@ definitions:
         example: Muhammad Ali
         type: string
         x-go-name: Name
+      nationality:
+        description: The author's nationality
+        example: American
+        type: string
+        x-go-name: Nationality
+      profession:
+        description: The author's main profession
+        example: Boxer
+        type: string
+        x-go-name: Profession
       quote:
         description: The quote
         example: Float like a butterfly, sting like a bee.
@@ -228,105 +449,33 @@ definitions:
         uniqueItems: true
         x-go-name: QuoteId
       topicId:
-        description: The topic's id (if topic id / name not supplied this will return
-          a zero id)
-        example: 10
-        format: int64
+        description: The topic's Id that this QOD is quote of the day of
+        example: 100
+        format: uint64
         type: integer
         x-go-name: TopicId
       topicName:
-        description: The topic's name (if topic id / name not supplied this will return
-          empty string "")
-        example: inspirational
+        description: The topic's name that this QOD is quote of the day of
+        example: Wisdom
         type: string
         x-go-name: TopicName
     type: object
+    x-go-name: TopicQuoteAPIModel
     x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
-  qodResponseModel:
-    properties:
-      authorid:
-        description: The author's id
-        example: 24952
-        format: int64
-        type: integer
-        uniqueItems: true
-        x-go-name: Authorid
-      date:
-        description: The date when this author was the author of the day
-        example: "2021-06-12T00:00:00Z"
-        type: string
-        x-go-name: Date
-      isicelandic:
-        description: Whether the quote is in icelandic
-        example: false
-        type: boolean
-        x-go-name: Isicelandic
-      name:
-        description: Name of the author
-        example: Muhammad Ali
-        type: string
-        x-go-name: Name
-      quote:
-        description: The quote for the day
-        example: Float like a butterfly, sting like a bee
-        type: string
-        x-go-name: Quote
-      quoteid:
-        description: The quote's id
-        example: 582676
-        format: int64
-        type: integer
-        uniqueItems: true
-        x-go-name: Quoteid
-    type: object
-    x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
-  quotesResponse:
-    properties:
-      authorid:
-        description: The author's id
-        example: 24952
-        format: int64
-        type: integer
-        uniqueItems: true
-        x-go-name: Authorid
-      isicelandic:
-        description: Whether or not this quote is in Icelandic or not
-        example: false
-        type: boolean
-        x-go-name: Isicelandic
-      name:
-        description: Name of author
-        example: Muhammad Ali
-        type: string
-        x-go-name: Name
-      quote:
-        description: The quote
-        example: Float like a butterfly, sting like a bee.
-        type: string
-        x-go-name: Quote
-      quoteid:
-        description: The quote's id
-        example: 582676
-        format: int64
-        type: integer
-        uniqueItems: true
-        x-go-name: Quoteid
-    type: object
-    x-go-name: baseQuotesResponseModel
-    x-go-package: _/Users/thorduragustsson/Programming/go/github.com/Skjaldbaka17/quotel-sls-api/swagger/docs
-host: rxvglshzhl.execute-api.eu-west-1.amazonaws.com
+host: rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1
 info:
   contact:
     email: skjaldbaka17@gmail.com
     name: Þórður Ágústsson
-  description: Quotel API offers a complete feature rich REST API access to all your
-    quotes needs. This is the documentation of our quotes API.
+  description: |-
+    Quotel API offers a complete feature rich REST API access to all your quotes needs. With over 1.000.000 quotes and 30.000 authors the Quotel API is one of the biggest quote-api out there.
+    This is the documentation for said API. You can access this api either with an "x-api-key" header and use the base path supplied or through: https://quotes-rest.p.rapidapi.com
   title: quotes-api.
   version: 1.0.0
 paths:
   /authors:
     post:
-      description: Get the authors by their ids
+      description: Use this route to get the authors that have the given ids.
       operationId: GetAuthors
       parameters:
       - description: The structure of the request for getting authors by their ids
@@ -338,7 +487,7 @@ paths:
             ids:
               description: A list of the authors's ids that you want
               example:
-              - 24952
+              - 29333
               - 19161
               items:
                 format: int64
@@ -355,11 +504,13 @@ paths:
           $ref: '#/responses/incorrectBodyStructureResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: Get authors by ids
       tags:
-      - AUTHORS
+      - authors
   /authors/aod:
     post:
-      description: Gets the author of the day
+      description: Use this route to get the AOD for today for "English" or "icelandic"
+        authors
       operationId: GetAuthorOfTheDay
       parameters:
       - description: The structure of the request for getting the author / quote of
@@ -383,15 +534,16 @@ paths:
           $ref: '#/responses/incorrectBodyStructureResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: Get the author of the day (AOD)
       tags:
-      - AUTHORS
+      - authors
   /authors/aod/history:
     post:
-      description: Gets the history for the authors of the day
+      description: Use this route to get the history of authors of the day for "English"
+        or "icelandic" authors -- starting from Middle of July 2021.
       operationId: GetAODHistory
       parameters:
       - description: The structure of the request for getting the history of AODs
-          / QODs
         in: body
         name: Body
         schema:
@@ -399,14 +551,14 @@ paths:
             properties:
               language:
                 default: English
-                description: Get the history of the AODS / QODs for the given language
-                  ("icelandic" or "english")
+                description: Get the history of the AODS for the given language ("icelandic"
+                  or "english")
                 example: icelandic
                 type: string
                 x-go-name: Language
               minimum:
-                description: The earliest date to return. All authors / quotes between
-                  minimum and today will be returned.
+                description: The earliest date to return. All authors between minimum
+                  and today will be returned.
                 example: "2020-12-21"
                 type: string
                 x-go-name: Minimum
@@ -419,38 +571,14 @@ paths:
           $ref: '#/responses/incorrectBodyStructureResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: Get the author of the day (AOD) history
       tags:
-      - AUTHORS
-  /authors/aod/new:
-    post:
-      description: sets the author of the day for the given dates
-      operationId: SetAuthorOfTheDay
-      parameters:
-      - description: The structure of the request for setting AODs
-        in: body
-        name: Body
-        schema:
-          items:
-            properties:
-              aods:
-                items:
-                  $ref: '#/definitions/OfTheDayModel'
-                type: array
-                x-go-name: Aods
-            type: object
-          type: array
-      responses:
-        "200":
-          $ref: '#/responses/successResponse'
-        "400":
-          $ref: '#/responses/incorrectBodyStructureResponse'
-        "500":
-          $ref: '#/responses/internalServerErrorResponse'
-      tags:
-      - AUTHORS
+      - authors
   /authors/list:
     post:
-      description: Get a list of authors according to some ordering / parameters
+      description: Use this route to get a list of authors according to some ordering
+        / parameters -- for example based on age, when they where born, on popularity,
+        profession or nationalities and many more
       operationId: ListAuthors
       parameters:
       - description: The structure of the request for getting a list of authors
@@ -461,13 +589,20 @@ paths:
             language:
               description: |-
                 Only return authors that have quotes in the given language ("english" or "icelandic") if left empty then no constraint
-                is set on the quotes' language. Note if ordering by nrOfQuotes if this parameter is set then only the amount of
+                is set on the quotes' language. Note: if also ordering by nrOfQuotes and this parameter is set then only the amount of
                 quotes the author has in the given language counts towards the final ordering.
               example: English
               type: string
               x-go-name: Language
+            nationalities:
+              description: Only return the author's with any of the given nationalities
+              example: American
+              items:
+                type: string
+              type: array
+              x-go-name: Nationalities
             orderConfig:
-              $ref: '#/definitions/OrderConfiguration'
+              $ref: '#/definitions/ListAuthorsOrderConfiguration'
             page:
               description: Response is paged. This parameter controls the page you
                 are asking for, starts with 0.
@@ -478,14 +613,23 @@ paths:
               x-go-name: Page
             pageSize:
               default: 25
-              description: Response is paged. This parameter controls the number of
-                Authors to be returned on each "page"
+              description: The Response is paged. This parameter controls the number
+                of Authors to be returned on each "page"
               example: 30
               format: int64
               maximum: 200
               minimum: 1
               type: integer
               x-go-name: PageSize
+            professions:
+              description: Only return the author's in any of the given professions
+              example: Designer
+              items:
+                type: string
+              type: array
+              x-go-name: Professions
+            time:
+              $ref: '#/definitions/Time'
           type: object
       responses:
         "200":
@@ -494,12 +638,12 @@ paths:
           $ref: '#/responses/incorrectBodyStructureResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: List authors based on parameters
       tags:
-      - AUTHORS
+      - authors
   /authors/random:
     post:
-      description: Get a random Author, and some of his quotes, according to the given
-        parameters
+      description: Use this route to get a random author, and some of his quotes.
       operationId: GetRandomAuthor
       parameters:
       - description: The structure of the request for getting a random author
@@ -516,7 +660,8 @@ paths:
               x-go-name: Language
             maxQuotes:
               default: 1
-              description: How many quotes, maximum, to be returned from this author
+              description: How many of the author's quotes, maximum, should this request
+                return
               example: 10
               format: int64
               maximum: 50
@@ -525,25 +670,56 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/searchViewsResponse'
+          $ref: '#/responses/quotesApiResponse'
         "400":
           $ref: '#/responses/incorrectBodyStructureResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: Get a random Author
       tags:
-      - AUTHORS
+      - authors
   /languages:
-    get:
-      description: Get languages supported by the api
+    post:
+      description: Use this route to get the languages supported by the api at any
+        moment
       operationId: GetLanguages
       responses:
         "200":
           $ref: '#/responses/listOfStrings'
+      summary: Get languages
       tags:
-      - META
+      - meta
+  /nationalities:
+    post:
+      description: Use this route to get all authors' nationalities available in the
+        api at any given moment
+      operationId: GetNationalities
+      responses:
+        "200":
+          $ref: '#/responses/listNationalities'
+        "500":
+          $ref: '#/responses/internalServerErrorResponse'
+      summary: Get nationalities
+      tags:
+      - meta
+  /professions:
+    post:
+      description: Use this route to get all authors' professions available in the
+        api at any given moment
+      operationId: Getprofessions
+      responses:
+        "200":
+          $ref: '#/responses/listProfessions'
+        "500":
+          $ref: '#/responses/internalServerErrorResponse'
+      summary: Get professions
+      tags:
+      - meta
   /quotes:
     post:
-      description: Get quotes by their ids
+      description: Use this route to either get quotes straight from their ids or
+        use it to get all the quotes from a particular author (by supplying the author's
+        id)
       operationId: GetQuotes
       parameters:
       - description: |-
@@ -591,16 +767,19 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/searchViewsResponse'
+          $ref: '#/responses/quotesApiResponse'
         "400":
           $ref: '#/responses/incorrectBodyStructureResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: Get quotes by ids
       tags:
-      - QUOTES
+      - quotes
   /quotes/list:
     post:
-      description: Get list of quotes according to some ordering / parameters
+      description: Use this route to get a list of quotes according to some ordering
+        / parameters -- list them based on length of quote, popularity or by their
+        id
       operationId: GetQuotesList
       parameters:
       - description: The structure of the request for getting a list of quotes
@@ -611,12 +790,12 @@ paths:
             language:
               description: |-
                 Only return quotes that have quotes in the given language ("english" or "icelandic") if left empty then no constraint
-                is set on the quotes' language.
+                is set on quotes' language.
               example: English
               type: string
               x-go-name: Language
             orderConfig:
-              $ref: '#/definitions/OrderConfiguration'
+              $ref: '#/definitions/ListQuotesOrderConfiguration'
             page:
               description: Response is paged. This parameter controls the page you
                 are asking for, starts with 0.
@@ -638,31 +817,39 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/searchViewsResponse'
+          $ref: '#/responses/quotesApiResponse'
         "400":
           $ref: '#/responses/incorrectBodyStructureResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: List quotes
       tags:
-      - QUOTES
+      - quotes
   /quotes/qod:
     post:
-      description: gets the quote of the day
+      description: Use this route to get quote of the day for a language or for a
+        topic -- starting from Middle of July 2021.
       operationId: GetQuoteOfTheDay
       parameters:
-      - description: The structure of the request for getting the author / quote of
-          the day
+      - description: The structure of the request for getting the quote of the day
         in: body
         name: Body
         schema:
           properties:
             language:
               default: English
-              description: Get the author / quote of the day for the given language
-                ("icelandic" or "english")
+              description: Get the quote of the day for the given language ("icelandic"
+                or "english")
               example: English
               type: string
               x-go-name: Language
+            topicId:
+              description: Get the quote of the day for the given topic by supplying
+                its topicId
+              example: 100
+              format: int64
+              type: integer
+              x-go-name: TopicId
           type: object
       responses:
         "200":
@@ -671,15 +858,16 @@ paths:
           $ref: '#/responses/incorrectBodyStructureResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: Get the quote of the day (QOD)
       tags:
-      - QUOTES
+      - quotes
   /quotes/qod/history:
     post:
-      description: Gets the history for the quotes of the day
+      description: Use this route to get the history of quotes of the day for each
+        language or for each topic -- starting from Middle of July 2021.
       operationId: GetQODHistory
       parameters:
-      - description: The structure of the request for getting the history of AODs
-          / QODs
+      - description: The structure of the request for getting the history of QODs
         in: body
         name: Body
         schema:
@@ -687,17 +875,23 @@ paths:
             properties:
               language:
                 default: English
-                description: Get the history of the AODS / QODs for the given language
-                  ("icelandic" or "english")
+                description: Get the history of the QODs for the given language ("icelandic"
+                  or "english")
                 example: icelandic
                 type: string
                 x-go-name: Language
               minimum:
-                description: The earliest date to return. All authors / quotes between
-                  minimum and today will be returned.
+                description: The earliest date to return. All quotes between minimum
+                  and today will be returned.
                 example: "2020-12-21"
                 type: string
                 x-go-name: Minimum
+              topicId:
+                description: Get the QOD for the specified topic
+                example: 1
+                format: int64
+                type: integer
+                x-go-name: TopicId
             type: object
           type: array
       responses:
@@ -707,36 +901,13 @@ paths:
           $ref: '#/responses/incorrectBodyStructureResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: Get the quote of the day (QOD) history
       tags:
-      - QUOTES
-  /quotes/qod/new:
-    post:
-      description: Sets the quote of the day for the given dates
-      operationId: SetQuoteOfTheDay
-      parameters:
-      - description: The structure of the request for setting the QOD
-        in: body
-        name: Body
-        schema:
-          properties:
-            qods:
-              items:
-                $ref: '#/definitions/OfTheDayModel'
-              type: array
-              x-go-name: Qods
-          type: object
-      responses:
-        "200":
-          $ref: '#/responses/successResponse'
-        "400":
-          $ref: '#/responses/incorrectBodyStructureResponse'
-        "500":
-          $ref: '#/responses/internalServerErrorResponse'
-      tags:
-      - QUOTES
+      - quotes
   /quotes/random:
     post:
-      description: Get a random quote according to the given parameters
+      description: Use this route to get a random quote from the whole database, from
+        specific topics like 'Motivational' or 'Love' or from a specific author.
       operationId: GetRandomQuote
       parameters:
       - description: The structure of the request for a random quote
@@ -747,7 +918,7 @@ paths:
             authorId:
               description: The random quote returned must be from the author with
                 the given authorId
-              example: 24952
+              example: 29333
               format: int64
               type: integer
               x-go-name: Authorid
@@ -762,29 +933,35 @@ paths:
               example: float
               type: string
               x-go-name: SearchString
-            topicId:
-              description: The random quote returned must be a part of the topic with
-                the given topicId
-              example: 10
-              format: int64
-              type: integer
-              x-go-name: TopicId
+            topicIds:
+              description: The random quote returned must be a part of one of the
+                topics with id in the topicIds array
+              example:
+              - 10
+              - 11
+              items:
+                format: int64
+                type: integer
+              type: array
+              x-go-name: TopicIds
           type: object
       responses:
         "200":
-          $ref: '#/responses/topicViewResponse'
+          $ref: '#/responses/topicApiResponse'
         "400":
           $ref: '#/responses/incorrectBodyStructureResponse'
         "404":
           $ref: '#/responses/notFoundResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: Get a random quote
       tags:
-      - QUOTES
+      - quotes
   /search:
     post:
-      description: Search for quotes / authors by a general string-search that searches
-        both in the names of the authors and the quotes themselves
+      description: Use this route to search for quotes / authors by a general full
+        test search that searches both in the names of the authors and the quotes
+        themselves
       operationId: SearchByString
       parameters:
       - description: The structure of the request for searching quotes/authors
@@ -819,27 +996,31 @@ paths:
               example: sting like butterfly
               type: string
               x-go-name: SearchString
-            topicId:
-              description: Should search in the specified topic for the searchString
-              example: 10
-              format: int64
-              type: integer
-              x-go-name: TopicId
+            topicIds:
+              description: Should search in the specified topics for the searchString
+              example:
+              - 10
+              items:
+                format: int64
+                type: integer
+              type: array
+              x-go-name: TopicIds
           required:
           - searchString
           type: object
       responses:
         "200":
-          $ref: '#/responses/topicViewsResponse'
+          $ref: '#/responses/quotesApiResponse'
         "400":
           $ref: '#/responses/incorrectBodyStructureResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: Search general
       tags:
-      - SEARCH
+      - search
   /search/authors:
     post:
-      description: Authors search. Searching authors by a given search string
+      description: Use this route to search for authors in the database.
       operationId: SearchAuthorsByString
       parameters:
       - description: The structure of the request for searching quotes/authors
@@ -884,11 +1065,13 @@ paths:
           $ref: '#/responses/incorrectBodyStructureResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: Search authors
       tags:
-      - SEARCH
+      - search
   /search/quotes:
     post:
-      description: Quotes search. Searching quotes by a given search string
+      description: Use this route to search for quotes by a general full test search
+        that searches for words and phrases in the quotes.
       operationId: SearchQuotesByString
       parameters:
       - description: The structure of the request for searching quotes/authors
@@ -923,27 +1106,32 @@ paths:
               example: sting like butterfly
               type: string
               x-go-name: SearchString
-            topicId:
-              description: Should search in the specified topic for the searchString
-              example: 10
-              format: int64
-              type: integer
-              x-go-name: TopicId
+            topicIds:
+              description: Should search in the specified topics for the searchString
+              example:
+              - 10
+              items:
+                format: int64
+                type: integer
+              type: array
+              x-go-name: TopicIds
           required:
           - searchString
           type: object
       responses:
         "200":
-          $ref: '#/responses/topicViewsResponse'
+          $ref: '#/responses/quotesApiResponse'
         "400":
           $ref: '#/responses/incorrectBodyStructureResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: Search quotes
       tags:
-      - SEARCH
+      - search
   /topic:
     post:
-      description: Get quotes from a particular topic
+      description: Use this route to get the quotes from the particular topic. For
+        example get all the quotes from topic "Smile" for a great time.
       operationId: GetTopic
       parameters:
       - description: The structure of the request for listing topics
@@ -981,16 +1169,17 @@ paths:
           type: object
       responses:
         "200":
-          $ref: '#/responses/topicViewsResponse'
+          $ref: '#/responses/quotesApiResponse'
         "400":
           $ref: '#/responses/incorrectBodyStructureResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: Get topic
       tags:
-      - TOPICS
+      - topics
   /topics:
     post:
-      description: List the available topics, english / icelandic or both
+      description: List all the available topics, english / icelandic or both
       operationId: GetTopics
       parameters:
       - description: The structure of the request for listing topics
@@ -1012,8 +1201,9 @@ paths:
           $ref: '#/responses/incorrectBodyStructureResponse'
         "500":
           $ref: '#/responses/internalServerErrorResponse'
+      summary: List topics
       tags:
-      - TOPICS
+      - topics
 produces:
 - application/json
 responses:
@@ -1021,17 +1211,17 @@ responses:
     description: Data structure representing the response for the history of AODs
     schema:
       items:
-        $ref: '#/definitions/AodAPIModel'
+        $ref: '#/definitions/aodModel'
       type: array
   aodResponse:
     description: Data structure representing the response for the author of the day
     schema:
-      $ref: '#/definitions/AodAPIModel'
+      $ref: '#/definitions/aodModel'
   authorsResponse:
     description: Data structure representing the response for authors
     schema:
       items:
-        $ref: '#/definitions/AuthorAPIModel'
+        $ref: '#/definitions/authorModel'
       type: array
   incorrectBodyStructureResponse:
     description: Data structure representing the error response to a wrongly structured
@@ -1043,29 +1233,46 @@ responses:
           example: request body is not structured correctly.
           type: string
           x-go-name: Message
-      type: object
-  incorrectCredentialsResponse:
-    description: Data structure representing the error response to an incorrect Credentials
-      error
-    schema:
-      properties:
-        message:
-          description: The error message
-          example: Valar Dohaeris
-          type: string
-          x-go-name: Message
+        statusCode:
+          description: The http status code for this error
+          example: 400
+          format: int64
+          type: integer
+          x-go-name: StatusCode
       type: object
   internalServerErrorResponse:
-    description: Data structure representing the error response to an internal server
-      error
+    description: Data structure representing the error response to internal server
+      errors
     schema:
       properties:
         message:
-          description: The error message
+          description: The error message describing what happened
           example: Please try again later.
           type: string
           x-go-name: Message
+        statusCode:
+          description: The http status code for this error
+          example: 500
+          format: int64
+          type: integer
+          x-go-name: StatusCode
       type: object
+  listNationalities:
+    description: Data structure for the nationalities in the database
+    schema:
+      items:
+        properties:
+          nationalities:
+            description: The nationalities supported
+            example:
+            - American
+            - Italian
+            items:
+              type: string
+            type: array
+            x-go-name: Nationalities
+        type: object
+      type: array
   listOfStrings:
     description: Data structure for supported languages information
     schema:
@@ -1082,6 +1289,22 @@ responses:
             x-go-name: Languages
         type: object
       type: array
+  listProfessions:
+    description: Data structure for the professions in the database
+    schema:
+      items:
+        properties:
+          professions:
+            description: The professions supported
+            example:
+            - Rapper
+            - Politician
+            items:
+              type: string
+            type: array
+            x-go-name: Professions
+        type: object
+      type: array
   notFoundResponse:
     description: Data structure representing the error response to a not found error
     schema:
@@ -1096,63 +1319,47 @@ responses:
     description: Data structure representing the response for the history of QODS
     schema:
       items:
-        $ref: '#/definitions/QodViewAPIModel'
+        $ref: '#/definitions/QodPIModel'
       type: array
   qodResponse:
-    description: Data structure representing the response for the quote of the day
+    description: Data structure representing the response for the QOD
     schema:
-      $ref: '#/definitions/QodViewAPIModel'
-  searchViewResponse:
-    description: Data structure representing the response for a quote
-    schema:
-      $ref: '#/definitions/SearchViewAPIModel'
-  searchViewsResponse:
+      $ref: '#/definitions/QodPIModel'
+  quotesApiResponse:
     description: Data structure representing the response for quotes
     schema:
       items:
-        $ref: '#/definitions/SearchViewAPIModel'
+        $ref: '#/definitions/QuoteAPIModel'
       type: array
-  successResponse:
-    description: ""
-    schema:
-      properties:
-        message:
-          example: This request was a success
-          type: string
-          x-go-name: Message
-        statusCode:
-          description: HTTP status code
-          example: 200
-          format: int64
-          type: integer
-          x-go-name: StatusCode
-      type: object
-  topicViewResponse:
+  topicApiResponse:
     description: Data structure representing the response for a quote based on a particular
       topic
     schema:
-      $ref: '#/definitions/TopicViewAPIModel'
-  topicViewsResponse:
-    description: Data structure representing the response for a quote based on a particular
-      topic
-    schema:
-      items:
-        $ref: '#/definitions/TopicViewAPIModel'
-      type: array
+      $ref: '#/definitions/topicQuoteModel'
   topicsResponse:
     description: Data structure representing a list response for topics
     schema:
       items:
-        $ref: '#/definitions/TopicAPIModel'
+        $ref: '#/definitions/topicModel'
       type: array
 schemes:
 - https
 swagger: "2.0"
 tags:
-- description: Using text search for finding authors and quotes.
-  name: SEARCH
-- description: Everthing with quotes.
-  name: QUOTES
-- description: Access all authors. Use this to get/explore authors, get a random author
-    or see the Author of the day.
-  name: AUTHORS
+- description: We built the /search route with full text phrase search in mind. Giving
+    you the possibility of findind that one quote or author that you are looking for
+    fast and easy -- if searching for single words that will take a loooooong time
+    but short phrases or at least 2 nouns is lightning fast.
+  name: search
+- description: With over 1.000.000 quote the /quotes route is the heart and soul of
+    this api. This resource offers many products like quote of the day, which is ordered
+    into topics and languages, random quote and lists.
+  name: quotes
+- description: Ok, I lied. /authors is just as much the heart and soul of this api
+    as /quotes. This api gives you access to over 30.000 authors and offers many products
+    like author of the day, random author and list authors based on multiple parameters
+    like 'age' and 'profession'.
+  name: authors
+- description: With over 100 topics the /topics route gives you direct access to the
+    quotes important enough to be a part of a distinguished topic like 'Love'.
+  name: topics

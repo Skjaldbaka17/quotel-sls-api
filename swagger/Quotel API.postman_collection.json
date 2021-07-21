@@ -1,0 +1,3421 @@
+{
+	"info": {
+		"_postman_id": "eb353613-9695-4667-9f1b-4f3156c1843d",
+		"name": "Quotel API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authors",
+			"item": [
+				{
+					"name": "aod",
+					"item": [
+						{
+							"name": "history",
+							"item": [
+								{
+									"name": "AOD history - icelandic",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"language\":\"icelandic\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/aod/history",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"aod",
+												"history"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "AOD history - English",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"language\":\"English\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/aod/history",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"aod",
+												"history"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "AOD history - Minimum",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"minimum\":\"2021-07-20\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/aod/history",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"aod",
+												"history"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "AOD - icelandic",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"language\":\"icelandic\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/aod",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"authors",
+										"aod"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "AOD",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/aod",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"authors",
+										"aod"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "List",
+					"item": [
+						{
+							"name": "alphabetical",
+							"item": [
+								{
+									"name": "list - alphabetically",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"pageSize\":25,\n    \"page\":0\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"list"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "list - alphabetically - english",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"pageSize\":25,\n    \"page\":0,\n    \"language\":\"english\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"list"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "list - alphabetically desc",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"pageSize\":25,\n    \"page\":0,\n    \"orderConfig\":{\n        \"orderBy\":\"alphabetical\",\n        \"reverse\":true\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"list"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "list - alphabetically from F",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"pageSize\":25,\n    \"page\":0,\n    \"orderConfig\":{\n        \"orderBy\":\"alphabetical\",\n        \"maximum\":\"f\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"list"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "list - alphabetically from F reverse",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"pageSize\":25,\n    \"page\":0,\n    \"orderConfig\":{\n        \"orderBy\":\"alphabetical\",\n        \"minimum\":\"f\",\n        \"reverse\":true\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"list"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "NrOfQuotes",
+							"item": [
+								{
+									"name": "list - 10 <= nrQ <= 11",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"pageSize\":25,\n    \"page\":0,\n    \"orderConfig\":{\n        \"orderBy\":\"nrOfQuotes\",\n        \"minimum\":\"10\",\n        \"maximum\":\"11\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"list"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "list - icelandic - nrQ",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"pageSize\":25,\n    \"page\":0,\n    \"language\":\"icelandic\",\n    \"orderConfig\":{\n        \"orderBy\":\"nrOfQuotes\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"list"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Popularity",
+							"item": [
+								{
+									"name": "popularity - mostPopular",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"pageSize\":25,\n    \"page\":0,\n    \"orderConfig\":{\n        \"orderBy\":\"popularity\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"list"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Professions - Nationalities",
+							"item": [
+								{
+									"name": "prof - politician",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n   \"professions\":[\"politician\"]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"list"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "prof - politician/rapper",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n   \"professions\":[\"politician\",\"rapper\"]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"list"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "nat - jamaican",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n   \"nationalities\":[\"jamaican\"]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"list"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "nat - italian/swedish",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"nationalities\":[\"swedish\",\"italian\"]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"authors",
+												"list"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Time",
+							"item": [
+								{
+									"name": "Exact",
+									"item": [
+										{
+											"name": "Born",
+											"item": [
+												{
+													"name": "born - 1956",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"born\":{\n           \"year\":1956\n       }\n   },\n   \"orderConfig\":{\n       \"orderBy\":\"popularity\"\n   }\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "born - June",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"born\":{\n           \"month\":\"june\"\n       }\n   },\n   \"orderConfig\":{\n       \"orderBy\":\"popularity\"\n   }\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "born - 16 June",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"born\":{\n           \"month\":\"june\",\n           \"date\":16\n       }\n   },\n   \"orderConfig\":{\n       \"orderBy\":\"popularity\"\n   }\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "born - 1971 June 16",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"born\":{\n           \"month\":\"june\",\n           \"date\":16,\n           \"year\":1971\n       }\n   },\n   \"orderConfig\":{\n       \"orderBy\":\"dateOfDeath\",\n       \"reverse\":true\n   }\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "born - 1956 order By dateOfBirth",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"born\":{\n           \"year\":1956\n       }\n   },\n   \"orderConfig\":{\n       \"orderBy\":\"dateOfBirth\"\n   }\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												}
+											]
+										},
+										{
+											"name": "Died",
+											"item": [
+												{
+													"name": "died - 1956",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"died\":{\n           \"year\":1956\n       }\n   },\n   \"orderConfig\":{\n       \"orderBy\":\"popularity\"\n   }\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "died - June",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"died\":{\n           \"month\":\"june\"\n       }\n   },\n   \"orderConfig\":{\n       \"orderBy\":\"popularity\"\n   }\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "died - 16 June",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"died\":{\n           \"month\":\"june\",\n           \"date\":16\n       }\n   },\n   \"orderConfig\":{\n       \"orderBy\":\"popularity\"\n   }\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "died - 1944 June 16",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"died\":{\n           \"month\":\"june\",\n           \"date\":16,\n           \"year\":1944\n       }\n   },\n   \"orderConfig\":{\n       \"orderBy\":\"dateOfDeath\",\n       \"reverse\":true\n   }\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "died - 1956 order By dateOfDeath",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"died\":{\n           \"year\":1956\n       }\n   },\n   \"orderConfig\":{\n       \"orderBy\":\"dateOfDeath\",\n       \"reverse\":false\n   }\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "Range",
+									"item": [
+										{
+											"name": "Born",
+											"item": [
+												{
+													"name": "born - before 1967-jan-28",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"born\":{\n           \"before\":\"1967-01-28\"\n       }\n   },\n   \"orderConfig\":{\"orderBy\":\"DATEOFBIRTH\", \"reverse\":true}\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "born - after 1967-jan-28",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"born\":{\n           \"after\":\"1967-01-28\"\n       }\n   },\n   \"orderConfig\":{\"orderBy\":\"DATEOFBIRTH\"}\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "born - between 1967-January-29 and 1967-February-28",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"born\":{\n           \"after\":\"1967-01-29\",\n           \"before\":\"1967-02-28\"\n       }\n   },\n   \"orderConfig\":{\"orderBy\":\"DATEOFBIRTH\"}\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												}
+											]
+										},
+										{
+											"name": "Died",
+											"item": [
+												{
+													"name": "died - before 1967-jan-28",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"died\":{\n           \"before\":\"1967-01-28\"\n       }\n   },\n   \"orderConfig\":{\"orderBy\":\"DATEOFDEATH\", \"reverse\":true}\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "died - after 1967-jan-28",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"died\":{\n           \"after\":\"1967-01-28\"\n       }\n   },\n   \"orderConfig\":{\"orderBy\":\"DATEOFDEATH\"}\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "died - between 1967-January-28 and 1967-February-28",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"died\":{\n           \"after\":\"1967-01-28\",\n           \"before\":\"1967-02-28\"\n       }\n   },\n   \"orderConfig\":{\"orderBy\":\"DATEOFDEATH\"}\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "Age",
+									"item": [
+										{
+											"name": "isAlive",
+											"item": [
+												{
+													"name": "isAlive",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"isAlive\":true\n   },\n   \"orderConfig\":{\"orderBy\":\"DATEOFDEATH\", \"reverse\":true}\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "isAlive - 50 years old",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"isAlive\":true,\n       \"age\":{\n           \"exactly\":50\n       }\n   },\n   \"orderConfig\":{\"orderBy\":\"DATEOFBIRTH\", \"reverse\":true}\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "isAlive - older than 70",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"isAlive\":true,\n       \"age\":{\n           \"olderThan\":70\n       }\n   },\n   \"orderConfig\":{\"orderBy\":\"DATEOFBIRTH\", \"reverse\":true}\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "isAlive - younger than 40",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"isAlive\":true,\n       \"age\":{\n           \"youngerThan\":40\n       }\n   },\n   \"orderConfig\":{\"orderBy\":\"DATEOFBIRTH\", \"reverse\":true}\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												}
+											]
+										},
+										{
+											"name": "isDead",
+											"item": [
+												{
+													"name": "isDead",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"isDead\":true\n   },\n   \"orderConfig\":{\"orderBy\":\"DATEOFDEATH\", \"reverse\":true}\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "isDead - 50 years old",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"isDead\":true,\n       \"age\":{\n           \"exactly\":50\n       }\n   },\n   \"orderConfig\":{\"orderBy\":\"DATEOFBIRTH\", \"reverse\":true}\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "isDead - older than 70",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"isDead\":true,\n       \"age\":{\n           \"olderThan\":70\n       }\n   },\n   \"orderConfig\":{\"orderBy\":\"DATEOFBIRTH\", \"reverse\":true}\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												},
+												{
+													"name": "isDead - younger than 40",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "x-api-key",
+																"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+																"type": "text"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n   \"time\":{\n       \"isDead\":true,\n       \"age\":{\n           \"youngerThan\":40\n       }\n   },\n   \"orderConfig\":{\"orderBy\":\"DATEOFBIRTH\", \"reverse\":true}\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+															"protocol": "https",
+															"host": [
+																"rxvglshzhl",
+																"execute-api",
+																"eu-west-1",
+																"amazonaws",
+																"com"
+															],
+															"path": [
+																"v1",
+																"authors",
+																"list"
+															]
+														}
+													},
+													"response": []
+												}
+											]
+										},
+										{
+											"name": "orderByAge",
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "x-api-key",
+														"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"time\":{\n        \"age\":{\n            \"olderThan\":20\n        }\n    },\n   \"orderConfig\":{\"orderBy\":\"AGE\"}\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/list",
+													"protocol": "https",
+													"host": [
+														"rxvglshzhl",
+														"execute-api",
+														"eu-west-1",
+														"amazonaws",
+														"com"
+													],
+													"path": [
+														"v1",
+														"authors",
+														"list"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Random",
+					"item": [
+						{
+							"name": "random",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"maxQuotes\":1\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/random",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"authors",
+										"random"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "random - icelandic",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"maxQuotes\":1,\n    \"language\":\"icelandic\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors/random",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"authors",
+										"random"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Authors - Muhammad Ali",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ids\":[29333]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/authors",
+							"protocol": "https",
+							"host": [
+								"rxvglshzhl",
+								"execute-api",
+								"eu-west-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"v1",
+								"authors"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Meta",
+			"item": [
+				{
+					"name": "listlanguages",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/meta/languages",
+							"protocol": "https",
+							"host": [
+								"rxvglshzhl",
+								"execute-api",
+								"eu-west-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"v1",
+								"meta",
+								"languages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "listProfessions",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/meta/professions",
+							"protocol": "https",
+							"host": [
+								"rxvglshzhl",
+								"execute-api",
+								"eu-west-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"v1",
+								"meta",
+								"professions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "listNationalities",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/meta/nationalities",
+							"protocol": "https",
+							"host": [
+								"rxvglshzhl",
+								"execute-api",
+								"eu-west-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"v1",
+								"meta",
+								"nationalities"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Quotes",
+			"item": [
+				{
+					"name": "QOD",
+					"item": [
+						{
+							"name": "qod",
+							"item": [
+								{
+									"name": "qod - topicId 100",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"topicId\":100\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/qod",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"quotes",
+												"qod"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "qod",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/qod",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"quotes",
+												"qod"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "qod - icelandic",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"language\":\"icelandic\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/qod",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"quotes",
+												"qod"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "history",
+							"item": [
+								{
+									"name": "qod - topicId 100",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"topicId\":100\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/qod/history",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"quotes",
+												"qod",
+												"history"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "qod",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/qod/history",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"quotes",
+												"qod",
+												"history"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "qod - icelandic",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"language\":\"icelandic\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/qod/history",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"quotes",
+												"qod",
+												"history"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "qod - minimum",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"minimum\":\"2021-07-20\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/qod/history",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"quotes",
+												"qod",
+												"history"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "List",
+					"item": [
+						{
+							"name": "list",
+							"item": [
+								{
+									"name": "list - reverse ids",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"orderConfig\":{\n        \"reverse\":true\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"quotes",
+												"list"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "list - by id",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"quotes",
+												"list"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "list - icelandic",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"language\":\"icelandic\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"quotes",
+												"list"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "list - start from 300.000",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"orderConfig\":{\n        \"minimum\":\"300000\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"quotes",
+												"list"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "length",
+							"item": [
+								{
+									"name": "length < 5",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"orderConfig\":{\n        \"orderBy\":\"length\",\n        \"maximum\":\"10\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"quotes",
+												"list"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "popularity",
+							"item": [
+								{
+									"name": "popularity",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-api-key",
+												"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"orderConfig\":{\n        \"orderBy\":\"popularity\"\n            }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/list",
+											"protocol": "https",
+											"host": [
+												"rxvglshzhl",
+												"execute-api",
+												"eu-west-1",
+												"amazonaws",
+												"com"
+											],
+											"path": [
+												"v1",
+												"quotes",
+												"list"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Random",
+					"item": [
+						{
+							"name": "random",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/random",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"quotes",
+										"random"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "random - authorId",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"authorId\":29333\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/random",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"quotes",
+										"random"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "random - topicId inspirational",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"topicIds\":[12]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/random",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"quotes",
+										"random"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "random - wisdom or motivational",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"topicIds\":[75,100]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/random",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"quotes",
+										"random"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "random - icelandic",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"language\":\"icelandic\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes/random",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"quotes",
+										"random"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "quotes - ids",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ids\":[879890,1]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes",
+							"protocol": "https",
+							"host": [
+								"rxvglshzhl",
+								"execute-api",
+								"eu-west-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"v1",
+								"quotes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "quotes - authorId",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-key",
+								"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"authorId\":29333,\n    \"pageSize\":10,\n    \"page\":1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/quotes",
+							"protocol": "https",
+							"host": [
+								"rxvglshzhl",
+								"execute-api",
+								"eu-west-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"v1",
+								"quotes"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "authors",
+					"item": [
+						{
+							"name": "easy",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"searchString\":\"Friedrich Nietzsche\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/search/authors",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"search",
+										"authors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "intermediate",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"searchString\":\"Stalin jseph\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/search/authors",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"search",
+										"authors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "hard",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"searchString\":\"Niet Friedric\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/search/authors",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"search",
+										"authors"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "general",
+					"item": [
+						{
+							"name": "easy - author",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"searchString\":\"Friedrich Nietzsche\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/search",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"search"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "intermediate - author",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"searchString\":\"Nietshe Friedrik\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/search",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"search"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "easy - quote",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"searchString\":\"If you are not allowed to Laugh in Heaven\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/search",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"search"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "inside topic - inspirational and motivational",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"searchString\":\"Jordan Michel\",\n    \"topicIds\":[75,12]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/search",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"search"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "quotes",
+					"item": [
+						{
+							"name": "easy",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"searchString\":\"Float like a butterfly sting like a bee\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/search/quotes",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"search",
+										"quotes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "intermediate",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"searchString\":\"bee sting like a butterfly\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/search/quotes",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"search",
+										"quotes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "hard",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"searchString\":\"bee btterfly float\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/search/quotes",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"search",
+										"quotes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "inside topic - inspirational and motivational",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"searchString\":\"Happiness resides not in possessions\",\n    \"topicIds\":[12]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/search",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"search"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Topics",
+			"item": [
+				{
+					"name": "getTopic",
+					"item": [
+						{
+							"name": "topic - name motivational",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"pageSize\":25,\n    \"page\":10,\n    \"topic\":\"motivational\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/topic",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"topic"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "topic - id motivational",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"pageSize\":25,\n    \"page\":0,\n    \"topicId\":75\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/topic",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"topic"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "getTopics",
+					"item": [
+						{
+							"name": "topics - english",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\"language\":\"english\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/topics",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"topics"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "topics",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-api-key",
+										"value": "wHCAOr3dAmaiBoSAw17ES30Z5S1AHqmy4SsuJBxr",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1/topics",
+									"protocol": "https",
+									"host": [
+										"rxvglshzhl",
+										"execute-api",
+										"eu-west-1",
+										"amazonaws",
+										"com"
+									],
+									"path": [
+										"v1",
+										"topics"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

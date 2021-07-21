@@ -17,10 +17,14 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /quotes/random QUOTES GetRandomQuote
-// Get a random quote according to the given parameters
+// swagger:route POST /quotes/random quotes GetRandomQuote
+//
+// Get a random quote
+//
+// Use this route to get a random quote from the whole database, from specific topics like 'Motivational' or 'Love' or from a specific author.
+//
 // responses:
-//  200: topicViewResponse
+//  200: topicApiResponse
 //  400: incorrectBodyStructureResponse
 //  404: notFoundResponse
 //  500: internalServerErrorResponse
@@ -56,7 +60,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	if result == (structs.TopicViewAPIModel{}) {
+	if result == (structs.QuoteDBModel{}) {
 		log.Printf("Got error when querying DB in GetRandomQuote: %s", err)
 		return events.APIGatewayProxyResponse{
 			Body:       "No quote exists that matches the given parameters",
@@ -64,7 +68,8 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	out, _ := json.Marshal(result)
+	quoteAPI := result.ConvertToAPIModel()
+	out, _ := json.Marshal(quoteAPI)
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),
 		StatusCode: http.StatusOK,

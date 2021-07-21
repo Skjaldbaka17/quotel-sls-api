@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"regexp"
 	"time"
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
@@ -19,8 +18,12 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /authors/aod/history AUTHORS GetAODHistory
-// Gets the history for the authors of the day
+// swagger:route POST /authors/aod/history authors GetAODHistory
+//
+// Get the author of the day (AOD) history
+//
+// Use this route to get the history of authors of the day for "English" or "icelandic" authors -- starting from Middle of July 2021.
+//
 // responses:
 //	200: aodHistoryResponse
 //  400: incorrectBodyStructureResponse
@@ -28,6 +31,7 @@ var theReqHandler = RequestHandler{}
 
 //GetAODHistory gets Aod history starting from some point
 func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
 	//Initialize DB if requestHandler.Db = nil
 	if errResponse := requestHandler.InitializeDB(); errResponse != (structs.ErrorResponse{}) {
 		return events.APIGatewayProxyResponse{
@@ -100,24 +104,8 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	reg := regexp.MustCompile(time.Now().Format("2006-01-02"))
-
-	if len(authors) == 0 || !reg.Match([]byte(authors[0].Date)) {
-		err = requestHandler.SetNewRandomAOD(requestBody.Language)
-		if err != nil {
-			log.Printf("Got error when setting newRandomAOD in getAODHistory: %s", err)
-			errResponse := structs.ErrorResponse{
-				Message: utils.InternalServerError,
-			}
-			return events.APIGatewayProxyResponse{
-				Body:       errResponse.ToString(),
-				StatusCode: http.StatusInternalServerError,
-			}, nil
-		}
-		return requestHandler.handler(request)
-	}
-
-	out, _ := json.Marshal(authors)
+	authorsAPI := structs.ConvertToAodAPIModel(authors)
+	out, _ := json.Marshal(authorsAPI)
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),
 		StatusCode: http.StatusOK,

@@ -17,8 +17,12 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /quotes/qod/history QUOTES GetQODHistory
-// Gets the history for the quotes of the day
+// swagger:route POST /quotes/qod/history quotes GetQODHistory
+//
+// Get the quote of the day (QOD) history
+//
+// Use this route to get the history of quotes of the day for each language or for each topic -- starting from Middle of July 2021.
+//
 // responses:
 //	200: qodHistoryResponse
 //  400: incorrectBodyStructureResponse
@@ -47,18 +51,30 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		requestBody.Language = "English"
 	}
 
-	var quotes []structs.QodViewDBModel
+	var quotes []structs.QodDBModel
 	var err error
 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
-	dbPointer := requestHandler.QodLanguageSQL(requestBody.Language)
+	if requestBody.TopicId > 0 {
+		dbPointer := requestHandler.Db.Table("qods").Where("topic_id = ?", requestBody.TopicId)
 
-	//Not maximum because then possibility of endless cycle with the if statement below!
-	if requestBody.Minimum != "" {
-		dbPointer = dbPointer.Where("date >= ?", requestBody.Minimum)
+		//Not maximum because then possibility of endless cycle with the if statement below!
+		if requestBody.Minimum != "" {
+			dbPointer = dbPointer.Where("date >= ?", requestBody.Minimum)
+		}
+		dbPointer = dbPointer.Where("date <= current_date").Order("date DESC")
+		//** ---------- Paramatere configuratino for DB query ends ---------- **//
+		err = dbPointer.Find(&quotes).Error
+	} else {
+		dbPointer := requestHandler.QodLanguageSQL(requestBody.Language)
+
+		//Not maximum because then possibility of endless cycle with the if statement below!
+		if requestBody.Minimum != "" {
+			dbPointer = dbPointer.Where("date >= ?", requestBody.Minimum)
+		}
+		dbPointer = dbPointer.Where("date <= current_date").Where("topic_id = 0").Order("date DESC")
+		//** ---------- Paramatere configuratino for DB query ends ---------- **//
+		err = dbPointer.Find(&quotes).Error
 	}
-	dbPointer = dbPointer.Where("date <= current_date").Order("date DESC")
-	//** ---------- Paramatere configuratino for DB query ends ---------- **//
-	err = dbPointer.Find(&quotes).Error
 
 	if err != nil {
 		log.Printf("Got error when querying DB in GetQODHistory: %s", err)
@@ -71,22 +87,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	if len(quotes) == 0 {
-		err = requestHandler.SetNewRandomQOD(&requestBody)
-		if err != nil {
-			log.Printf("Got error when querying setting new Random QOD in history: %s", err)
-			errResponse := structs.ErrorResponse{
-				Message: utils.InternalServerError,
-			}
-			return events.APIGatewayProxyResponse{
-				Body:       errResponse.ToString(),
-				StatusCode: http.StatusInternalServerError,
-			}, nil
-		}
-		return requestHandler.handler(request)
-	}
-
-	qodHistoryAPI := structs.ConvertToQodViewsAPIModel(quotes)
+	qodHistoryAPI := structs.ConvertToQodAPIModel(quotes)
 	out, _ := json.Marshal(qodHistoryAPI)
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),

@@ -6,13 +6,13 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -24,18 +24,20 @@ type RequestHandler struct {
 }
 
 func (requestHandler *RequestHandler) InitializeDB() structs.ErrorResponse {
-	log.Println("HEREBRUV:" + os.Getenv(DATABASE_URL))
+	if os.Getenv("DATABASE_URL") == "" {
+		godotenv.Load("../../../.env")
+	}
+
 	if requestHandler.Db == nil {
 		var err error
 
 		dsn := os.Getenv(DATABASE_URL)
 		requestHandler.Db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-			Logger: logger.Default.LogMode(logger.Error),
+			Logger: logger.Default.LogMode(logger.Silent),
 		})
 		if err != nil {
 			log.Printf("Could not connect to DB, got error: %s", err)
 			return structs.ErrorResponse{Message: InternalServerError, StatusCode: http.StatusInternalServerError}
-
 		}
 
 		// defer db.Close()
@@ -43,24 +45,20 @@ func (requestHandler *RequestHandler) InitializeDB() structs.ErrorResponse {
 	return structs.ErrorResponse{}
 }
 
-func (requestHandler *RequestHandler) GetRandomQuoteFromDb(requestBody *structs.Request) (structs.TopicViewAPIModel, error) {
-	const NR_OF_QUOTES = 639028
-	const NR_OF_ENGLISH_QUOTES = 634841
+func (requestHandler *RequestHandler) GetRandomQuoteFromDb(requestBody *structs.Request) (structs.QuoteDBModel, error) {
 	var dbPointer *gorm.DB
-	var topicResult structs.TopicViewDBModel
+	var topicResult []structs.QuoteDBModel
 
 	var shouldDoQuick = true
 
 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
-	m1 := regexp.MustCompile(` `)
-	phrasesearch := m1.ReplaceAllString(requestBody.SearchString, " <-> ")
 
 	//Random quote from a particular topic
-	if requestBody.TopicId > 0 {
-		dbPointer = requestHandler.Db.Table("topicsview, plainto_tsquery(?) as plainq, to_tsquery(?) as phraseq", requestBody.SearchString, phrasesearch).Where("topic_id = ?", requestBody.TopicId)
+	if len(requestBody.TopicIds) > 0 {
+		dbPointer = requestHandler.Db.Table("topicsview").Where("topic_id in ?", requestBody.TopicIds)
 		shouldDoQuick = false
 	} else {
-		dbPointer = requestHandler.Db.Table("searchview, plainto_tsquery(?) as plainq, to_tsquery(?) as phraseq", requestBody.SearchString, phrasesearch)
+		dbPointer = requestHandler.Db.Table("quotes")
 	}
 
 	//Random quote from a particular author
@@ -76,34 +74,61 @@ func (requestHandler *RequestHandler) GetRandomQuoteFromDb(requestBody *structs.
 		shouldDoQuick = false
 	}
 
-	if requestBody.SearchString != "" {
-		dbPointer = dbPointer.Where("( quote_tsv @@ plainq OR quote_tsv @@ phraseq)")
-		shouldDoQuick = false
-	}
-
 	//Order by used to get random quote if there are "few" rows returned
 	if !shouldDoQuick {
 		dbPointer = dbPointer.Order("random()") //Randomized, O( n*log(n) )
 	} else {
-		dbPointer = dbPointer.Raw("select * from searchview tablesample system(0.1)")
+		dbPointer = dbPointer.Raw("select * from quotes tablesample system(0.1) limit 10")
 	}
 
 	//** ---------- Paramater configuratino for DB query ends ---------- **//
-	err := dbPointer.Limit(1).Find(&topicResult).Error
+	err := dbPointer.Limit(10).Find(&topicResult).Error
+
 	if err != nil {
-		return structs.TopicViewAPIModel{}, err
+		return structs.QuoteDBModel{}, err
 	}
-	return topicResult.ConvertToAPIModel(), nil
+	if len(topicResult) == 0 {
+		return structs.QuoteDBModel{}, nil
+	}
+	toReturn := topicResult[0]
+	//Sometimes if request is for an english quote we are returned an icelandic quote (because of tablesample) therefore go through the 100 quotes returned and return the first
+	//non-icelandic one you find
+	if toReturn.IsIcelandic && strings.ToLower(requestBody.Language) != "icelandic" {
+		for _, quote := range topicResult {
+			if !quote.IsIcelandic {
+				toReturn = quote
+				break
+			}
+		}
+	}
+	return toReturn, nil
 }
 
-//setQOD inserts a new row into qod/qodice table
-func (requestHandler *RequestHandler) SetQOD(language string, date string, quoteId int) error {
-	switch strings.ToLower(language) {
-	case "icelandic":
-		return requestHandler.Db.Exec("insert into qodice (quote_id, date) values((select id from quotes where id = ? and is_icelandic), ?) on conflict (date) do update set quote_id = ?", quoteId, date, quoteId).Error
-	default:
-		return requestHandler.Db.Exec("insert into qod (quote_id, date) values((select id from quotes where id = ? and not is_icelandic), ?) on conflict (date) do update set quote_id = ?", quoteId, date, quoteId).Error
-	}
+const HOSTED_DOCS_URL = "http://www.api.quotel-rest.com.s3-website-eu-west-1.amazonaws.com/#operation/"
+
+var mapToDocs = map[string]string{
+	"/authors/aod":         "GetAuthorOfTheDay",
+	"/authors/aod/history": "GetAODHistory",
+	"/authors":             "GetAuthors",
+	"/authors/list":        "ListAuthors",
+	"/authors/random":      "GetRandomAuthor",
+
+	"/meta/languages":     "GetLanguages",
+	"/meta/nationalities": "GetNationalities",
+	"/meta/professions":   "Getprofessions",
+
+	"/quotes/qod":         "GetQuoteOfTheDay",
+	"/quotes/qod/history": "GetQODHistory",
+	"/quotes":             "GetQuotes",
+	"/quotes/list":        "GetQuotesList",
+	"/quotes/random":      "GetRandomQuote",
+
+	"/search/authors": "SearchAuthorsByString",
+	"/search/quotes":  "SearchQuotesByString",
+	"/search":         "SearchByString",
+
+	"/topic":  "GetTopic",
+	"/topics": "GetTopics",
 }
 
 //ValidateRequestBody takes in the request and validates all the input fields, returns an error with reason for validation-failure
@@ -114,8 +139,9 @@ func (requestHandler *RequestHandler) ValidateRequest(request events.APIGatewayP
 	err := json.Unmarshal([]byte(request.Body), &requestBody)
 	if err != nil {
 		log.Printf("Got err: %s", err)
+		log.Println("HERESON:", request.Resource)
 		return structs.Request{}, structs.ErrorResponse{
-			Message:    "request body is not structured correctly. Please refer to the /docs page for information on how to structure the request body",
+			Message:    "request body is not structured correctly. Please refer to the " + HOSTED_DOCS_URL + mapToDocs[request.Resource] + " page for information on how to structure the request body",
 			StatusCode: http.StatusBadRequest}
 	}
 
@@ -136,46 +162,6 @@ func (requestHandler *RequestHandler) ValidateRequest(request events.APIGatewayP
 	}
 
 	const layout = "2006-01-02"
-	//Set date into correct format, if supplied, otherwise input today's date in the correct format for all qods
-	if len(requestBody.Qods) != 0 {
-		for idx, _ := range requestBody.Qods {
-			if requestBody.Qods[idx].Date == "" {
-				requestBody.Qods[idx].Date = time.Now().UTC().Format(layout)
-			} else {
-				var parsedDate time.Time
-				parsedDate, err := time.Parse(layout, requestBody.Qods[idx].Date)
-				if err != nil {
-					log.Printf("Got error when decoding: %s", err)
-					return structs.Request{}, structs.ErrorResponse{
-						Message:    fmt.Sprintf("the date is not structured correctly, should be in %s format", layout),
-						StatusCode: http.StatusBadRequest}
-				}
-
-				requestBody.Qods[idx].Date = parsedDate.UTC().Format(layout)
-			}
-		}
-	}
-
-	//Set date into correct format, if supplied, otherwise input today's date in the correct format for all qods
-	if len(requestBody.Aods) != 0 {
-		for idx, _ := range requestBody.Aods {
-			if requestBody.Aods[idx].Date == "" {
-				requestBody.Aods[idx].Date = time.Now().UTC().Format(layout)
-			} else {
-				var parsedDate time.Time
-				parsedDate, err := time.Parse(layout, requestBody.Aods[idx].Date)
-				if err != nil {
-					log.Printf("Got error when decoding: %s", err)
-					return structs.Request{}, structs.ErrorResponse{
-						Message:    fmt.Sprintf("the date is not structured correctly, should be in %s format", layout),
-						StatusCode: http.StatusBadRequest}
-				}
-
-				requestBody.Aods[idx].Date = parsedDate.UTC().Format(layout)
-			}
-		}
-	}
-
 	if requestBody.Minimum != "" {
 
 		_, err := time.Parse(layout, requestBody.Minimum)
@@ -233,31 +219,12 @@ func SetMaxMinNumber(orderConfig structs.OrderConfig, column string, orderDirect
 
 //qodLanguageSQL adds to the sql query for the quotes db a condition of whether the quotes to be fetched are quotes in a particular language
 func (requestHandler *RequestHandler) QodLanguageSQL(language string) *gorm.DB {
+	dbPointer := requestHandler.Db.Table("qods")
 	switch strings.ToLower(language) {
 	case "icelandic":
-		return requestHandler.Db.Table("qodiceview")
+		return dbPointer.Where("is_icelandic")
 	default:
-		return requestHandler.Db.Table("qodview")
-	}
-}
-
-//SetNewRandomQOD sets a random quote as the qod for today (if language=icelandic is supplied then it adds the random qod to the icelandic qod table)
-func (requestHandler *RequestHandler) SetNewRandomQOD(requestBody *structs.Request) error {
-	quoteItem, err := requestHandler.GetRandomQuoteFromDb(requestBody)
-	if err != nil {
-		return err
-	}
-
-	return requestHandler.setQOD(requestBody.Language, time.Now().Format("2006-01-02"), quoteItem.QuoteId)
-}
-
-//setQOD inserts a new row into qod/qodice table
-func (requestHandler *RequestHandler) setQOD(language string, date string, quoteId int) error {
-	switch strings.ToLower(language) {
-	case "icelandic":
-		return requestHandler.Db.Exec("insert into qodice (quote_id, date) values((select id from quotes where id = ? and is_icelandic), ?) on conflict (date) do update set quote_id = ?", quoteId, date, quoteId).Error
-	default:
-		return requestHandler.Db.Exec("insert into qod (quote_id, date) values((select id from quotes where id = ? and not is_icelandic), ?) on conflict (date) do update set quote_id = ?", quoteId, date, quoteId).Error
+		return dbPointer.Not("is_icelandic")
 	}
 }
 
@@ -266,9 +233,9 @@ func AuthorLanguageSQL(language string, dbPointer *gorm.DB) *gorm.DB {
 	if language != "" {
 		switch strings.ToLower(language) {
 		case "english":
-			dbPointer = dbPointer.Not("has_icelandic_quotes")
+			dbPointer = dbPointer.Where("nr_of_icelandic_quotes = 0")
 		case "icelandic":
-			dbPointer = dbPointer.Where("has_icelandic_quotes")
+			dbPointer = dbPointer.Where("nr_of_icelandic_quotes > 0")
 		}
 	}
 	return dbPointer
@@ -276,40 +243,13 @@ func AuthorLanguageSQL(language string, dbPointer *gorm.DB) *gorm.DB {
 
 //aodLanguageSQL adds to the sql query for the authors db a condition of whether the authors to be fetched have quotes in a particular language
 func AodLanguageSQL(language string, dbPointer *gorm.DB) *gorm.DB {
+	dbPointer = dbPointer.Table("aods")
 	switch strings.ToLower(language) {
 	case "icelandic":
-		return dbPointer.Table("aodiceview")
+		return dbPointer.Where("is_icelandic")
 	default:
-		return dbPointer.Table("aodview")
+		return dbPointer.Not("is_icelandic")
 	}
-}
-
-//setAOD inserts a new row into the aod/aodice table
-func (requestHandler *RequestHandler) SetAOD(language string, date string, authorId int) error {
-	switch strings.ToLower(language) {
-	case "icelandic":
-		return requestHandler.Db.Exec("insert into aodice (author_id, date) values((select id from authors where id = ? and has_icelandic_quotes), ?) on conflict (date) do update set author_id = ?", authorId, date, authorId).Error
-	default:
-		return requestHandler.Db.Exec("insert into aod (author_id, date) values((select id from authors where id = ? and not has_icelandic_quotes), ?) on conflict (date) do update set author_id = ?", authorId, date, authorId).Error
-	}
-}
-
-//SetNewRandomQOD sets a random quote as the qod for today (if language=icelandic is supplied then it adds the random qod to the icelandic qod table)
-func (requestHandler *RequestHandler) SetNewRandomAOD(language string) error {
-	var authorItem structs.AuthorDBModel
-
-	if language == "" {
-		language = "english"
-	}
-	dbPointer := requestHandler.Db.Table("authors")
-	dbPointer = AuthorLanguageSQL(language, dbPointer)
-
-	err := dbPointer.Order("random()").Limit(1).Scan(&authorItem).Error
-	if err != nil {
-		return err
-	}
-
-	return requestHandler.SetAOD(language, time.Now().Format("2006-01-02"), authorItem.Id)
 }
 
 // CheckForSpellingErrorsInSearchString takes the searchstring and partitions it into its separate words (max 20)
@@ -335,12 +275,9 @@ func (requestHandler *RequestHandler) CheckForSpellingErrorsInSearchString(searc
 		if err != nil {
 			log.Printf("Got error when querying DB in SearchByString: %s", err)
 		}
-		log.Println("THE WORD:", theWord)
 		if len(theWord) > 0 && theWord[0] != "" {
-			log.Printf("THe word %s, the STring %s", theWord[0], newSearchString)
 			newSearchString = strings.Join([]string{newSearchString, theWord[0]}, " ")
 		}
-		log.Println("THe string:", newSearchString)
 	}
 	return newSearchString
 }

@@ -17,11 +17,14 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /quotes QUOTES GetQuotes
-// Get quotes by their ids
+// swagger:route POST /quotes quotes GetQuotes
+//
+// Get quotes by ids
+//
+// Use this route to either get quotes straight from their ids or use it to get all the quotes from a particular author (by supplying the author's id)
 //
 // responses:
-//	200: searchViewsResponse
+//	200: quotesApiResponse
 //  400: incorrectBodyStructureResponse
 //  500: internalServerErrorResponse
 
@@ -44,18 +47,18 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}, nil
 	}
 
-	var quotes []structs.SearchViewDBModel
+	var quotes []structs.QuoteDBModel
 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
 
-	dbPointer := requestHandler.Db.Table("searchview").Order("quote_id ASC")
+	dbPointer := requestHandler.Db.Table("quotes").Order("id ASC")
 	if requestBody.AuthorId > 0 {
 		dbPointer = dbPointer.
 			Where("author_id = ?", requestBody.AuthorId)
 		dbPointer = utils.Pagination(requestBody, dbPointer)
 	} else {
-		dbPointer = dbPointer.Where("quote_id in ?", requestBody.Ids)
+		dbPointer = dbPointer.Where("id in ?", requestBody.Ids)
 	}
-	//** ---------- Paramatere configuratino for DB query ends ---------- **//
+	//** ---------- Paramatere configuration for DB query ends ---------- **//
 
 	err := dbPointer.Find(&quotes).Error
 
@@ -73,9 +76,9 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	//Update popularity in background! TODO: PUT IN ITS OWN LAMBDA FUNCTION!
 	go requestHandler.DirectFetchQuotesCountIncrement(requestBody.Ids)
 
-	searchViewsAPI := structs.ConvertToSearchViewsAPIModel(quotes)
+	quotesApi := structs.ConvertToQuotesAPIModel(quotes)
 
-	out, _ := json.Marshal(searchViewsAPI)
+	out, _ := json.Marshal(quotesApi)
 	return events.APIGatewayProxyResponse{
 		Body:       string(out),
 		StatusCode: http.StatusOK,
