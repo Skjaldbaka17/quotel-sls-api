@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -53,15 +52,13 @@ func (requestHandler *RequestHandler) GetRandomQuoteFromDb(requestBody *structs.
 	var shouldDoQuick = true
 
 	//** ---------- Paramatere configuratino for DB query begins ---------- **//
-	m1 := regexp.MustCompile(` `)
-	phrasesearch := m1.ReplaceAllString(requestBody.SearchString, " <-> ")
 
 	//Random quote from a particular topic
 	if len(requestBody.TopicIds) > 0 {
-		dbPointer = requestHandler.Db.Table("topicsview, plainto_tsquery(?) as plainq", requestBody.SearchString, phrasesearch).Where("topic_id in ?", requestBody.TopicIds)
+		dbPointer = requestHandler.Db.Table("topicsview").Where("topic_id in ?", requestBody.TopicIds)
 		shouldDoQuick = false
 	} else {
-		dbPointer = requestHandler.Db.Table("quotes, plainto_tsquery(?) as plainq", requestBody.SearchString, phrasesearch)
+		dbPointer = requestHandler.Db.Table("quotes")
 	}
 
 	//Random quote from a particular author
@@ -74,11 +71,6 @@ func (requestHandler *RequestHandler) GetRandomQuoteFromDb(requestBody *structs.
 	dbPointer = QuoteLanguageSQL(requestBody.Language, dbPointer)
 
 	if strings.ToLower(requestBody.Language) == "icelandic" {
-		shouldDoQuick = false
-	}
-
-	if requestBody.SearchString != "" {
-		dbPointer = dbPointer.Where("( quote_tsv @@ plainq )")
 		shouldDoQuick = false
 	}
 
@@ -112,6 +104,33 @@ func (requestHandler *RequestHandler) GetRandomQuoteFromDb(requestBody *structs.
 	return toReturn, nil
 }
 
+const HOSTED_DOCS_URL = "http://www.api.quotel-rest.com.s3-website-eu-west-1.amazonaws.com/#operation/"
+
+var mapToDocs = map[string]string{
+	"/authors/aod":         "GetAuthorOfTheDay",
+	"/authors/aod/history": "GetAODHistory",
+	"/authors":             "GetAuthors",
+	"/authors/list":        "ListAuthors",
+	"/authors/random":      "GetRandomAuthor",
+
+	"/meta/languages":     "GetLanguages",
+	"/meta/nationalities": "GetNationalities",
+	"/meta/professions":   "Getprofessions",
+
+	"/quotes/qod":         "GetQuoteOfTheDay",
+	"/quotes/qod/history": "GetQODHistory",
+	"/quotes":             "GetQuotes",
+	"/quotes/list":        "GetQuotesList",
+	"/quotes/random":      "GetRandomQuote",
+
+	"/search/authors": "SearchAuthorsByString",
+	"/search/quotes":  "SearchQuotesByString",
+	"/search":         "SearchByString",
+
+	"/topic":  "GetTopic",
+	"/topics": "GetTopics",
+}
+
 //ValidateRequestBody takes in the request and validates all the input fields, returns an error with reason for validation-failure
 //if validation fails.
 //TODO: Make validation better! i.e. make it "real"
@@ -120,8 +139,9 @@ func (requestHandler *RequestHandler) ValidateRequest(request events.APIGatewayP
 	err := json.Unmarshal([]byte(request.Body), &requestBody)
 	if err != nil {
 		log.Printf("Got err: %s", err)
+		log.Println("HERESON:", request.Resource)
 		return structs.Request{}, structs.ErrorResponse{
-			Message:    "request body is not structured correctly. Please refer to the /docs page for information on how to structure the request body",
+			Message:    "request body is not structured correctly. Please refer to the " + HOSTED_DOCS_URL + mapToDocs[request.Resource] + " page for information on how to structure the request body",
 			StatusCode: http.StatusBadRequest}
 	}
 

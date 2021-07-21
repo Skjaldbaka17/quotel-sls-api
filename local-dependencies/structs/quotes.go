@@ -29,8 +29,8 @@ type QuoteAPIModel struct {
 
 	Nationality string `json:"nationality,omitempty"`
 	Profession  string `json:"profession,omitempty"`
-	BirthDate   string `json:"birthDate,omitempty"`
-	DeathDate   string `json:"deathDate,omitempty"`
+	Born        string `json:"born,omitempty"`
+	Died        string `json:"died,omitempty"`
 	Name        string `json:"name,omitempty"`
 	TopicName   string `json:"topicName,omitempty"`
 	TopicId     int    `json:"topicId,omitempty"`
@@ -65,8 +65,8 @@ type QodAPIModel struct {
 	Name        string `json:"name,omitempty"`
 	Nationality string `json:"nationality,omitempty"`
 	Profession  string `json:"profession,omitempty"`
-	BirthDate   string `json:"birthDate,omitempty"`
-	DeathDate   string `json:"deathDate,omitempty"`
+	Born        string `json:"born,omitempty"`
+	Died        string `json:"died,omitempty"`
 	Date        string `json:"date,omitempty"`
 
 	IsIcelandic bool   `json:"isIcelandic,omitempty"`
@@ -85,8 +85,8 @@ func (dbModel *QuoteDBModel) ConvertToAPIModel() QuoteAPIModel {
 		IsIcelandic: dbModel.IsIcelandic,
 		Nationality: dbModel.Nationality,
 		Profession:  dbModel.Profession,
-		BirthDate:   getDate(dbModel.BirthYear, dbModel.BirthMonth, dbModel.BirthDate),
-		DeathDate:   getDate(dbModel.DeathYear, dbModel.DeathMonth, dbModel.DeathDate),
+		Born:        getDate(dbModel.BirthYear, dbModel.BirthMonth, dbModel.BirthDate),
+		Died:        getDate(dbModel.DeathYear, dbModel.DeathMonth, dbModel.DeathDate),
 		Name:        dbModel.Name,
 		TopicName:   dbModel.TopicName,
 		TopicId:     dbModel.TopicId,
@@ -123,8 +123,8 @@ func (dbModel *QodDBModel) ConvertToAPIModel() QodAPIModel {
 		Quote:       dbModel.Quote,
 		Nationality: dbModel.Nationality,
 		Profession:  dbModel.Profession,
-		BirthDate:   getDate(dbModel.BirthYear, dbModel.BirthMonth, dbModel.BirthDate),
-		DeathDate:   getDate(dbModel.DeathYear, dbModel.DeathMonth, dbModel.DeathDate),
+		Born:        getDate(dbModel.BirthYear, dbModel.BirthMonth, dbModel.BirthDate),
+		Died:        getDate(dbModel.DeathYear, dbModel.DeathMonth, dbModel.DeathDate),
 		Name:        dbModel.Name,
 		Date:        dbModel.Date,
 		IsIcelandic: dbModel.IsIcelandic,

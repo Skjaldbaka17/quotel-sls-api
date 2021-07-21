@@ -442,8 +442,8 @@ func TestHandler(t *testing.T) {
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile(strconv.Itoa(birthYear))
-			if !reg.Match([]byte(firstAuthor.BirthDate)) {
-				t.Fatalf("Expected to get author born in %d but got author born in %s", birthYear, firstAuthor.BirthDate)
+			if !reg.Match([]byte(firstAuthor.Born)) {
+				t.Fatalf("Expected to get author born in %d but got author born in %s", birthYear, firstAuthor.Born)
 			}
 		})
 		t.Run("Should return first 50 authors born in June", func(t *testing.T) {
@@ -456,39 +456,39 @@ func TestHandler(t *testing.T) {
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile("June")
-			if !reg.Match([]byte(firstAuthor.BirthDate)) {
-				t.Fatalf("Expected to get author born in %s but got author born in %s", "June", firstAuthor.BirthDate)
+			if !reg.Match([]byte(firstAuthor.Born)) {
+				t.Fatalf("Expected to get author born in %s but got author born in %s", "June", firstAuthor.Born)
 			}
 		})
 
 		t.Run("Should return first 50 authors born on June-16", func(t *testing.T) {
 			birthMonth := "JUNE"
-			birthDate := 16
-			var jsonStr = fmt.Sprintf(`{"time":{"born":{"month":"%s", "date":%d}}}`, birthMonth, birthDate)
+			Born := 16
+			var jsonStr = fmt.Sprintf(`{"time":{"born":{"month":"%s", "date":%d}}}`, birthMonth, Born)
 
 			var authors []structs.AuthorAPIModel
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile("June-16")
-			if !reg.Match([]byte(firstAuthor.BirthDate)) {
-				t.Fatalf("Expected to get author born in %s but got author born in %s", "June-16", firstAuthor.BirthDate)
+			if !reg.Match([]byte(firstAuthor.Born)) {
+				t.Fatalf("Expected to get author born in %s but got author born in %s", "June-16", firstAuthor.Born)
 			}
 		})
 
 		t.Run("Should return first 50 authors born on 1998-June-16", func(t *testing.T) {
 			birthMonth := "JUNE"
-			birthDate := 16
+			Born := 16
 			birthYear := 1998
-			var jsonStr = fmt.Sprintf(`{"time":{"born":{"year":%d,"month":"%s", "date":%d}}}`, birthYear, birthMonth, birthDate)
+			var jsonStr = fmt.Sprintf(`{"time":{"born":{"year":%d,"month":"%s", "date":%d}}}`, birthYear, birthMonth, Born)
 
 			var authors []structs.AuthorAPIModel
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile("1998-June-16")
-			if !reg.Match([]byte(firstAuthor.BirthDate)) {
-				t.Fatalf("Expected to get author born on %s but got author born on %s", "1998-June-16", firstAuthor.BirthDate)
+			if !reg.Match([]byte(firstAuthor.Born)) {
+				t.Fatalf("Expected to get author born on %s but got author born on %s", "1998-June-16", firstAuthor.Born)
 			}
 		})
 
@@ -501,8 +501,8 @@ func TestHandler(t *testing.T) {
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile("1956-January-")
-			if !reg.Match([]byte(firstAuthor.BirthDate)) {
-				t.Fatalf("Expected to get author born in %s but got author born in %s", "1956-January-", firstAuthor.BirthDate)
+			if !reg.Match([]byte(firstAuthor.Born)) {
+				t.Fatalf("Expected to get author born in %s but got author born in %s", "1956-January-", firstAuthor.Born)
 			}
 		})
 		t.Run("Should return first 50 authors born in 1956 order by date of birth DESC", func(t *testing.T) {
@@ -514,11 +514,11 @@ func TestHandler(t *testing.T) {
 			firstAuthor := authors[0]
 
 			//Do it like this because the authors who where "born" the latest in that year are all the authors that did not have months/dates, only a birth_year
-			//Therefore the expected returned DeathDate is "1956" (not with "-").
+			//Therefore the expected returned Died is "1956" (not with "-").
 			reg := regexp.MustCompile("1956-")
 			reg2 := regexp.MustCompile("1956")
-			if reg.Match([]byte(firstAuthor.BirthDate)) || !reg2.Match([]byte(firstAuthor.BirthDate)) {
-				t.Fatalf("Expected to get author born in %s but got author born in %s", "1956", firstAuthor.BirthDate)
+			if reg.Match([]byte(firstAuthor.Born)) || !reg2.Match([]byte(firstAuthor.Born)) {
+				t.Fatalf("Expected to get author born in %s but got author born in %s", "1956", firstAuthor.Born)
 			}
 		})
 
@@ -532,8 +532,8 @@ func TestHandler(t *testing.T) {
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile(strconv.Itoa(deathYear))
-			if !reg.Match([]byte(firstAuthor.DeathDate)) {
-				t.Fatalf("Expected to get author died in %d but got author died in %s", deathYear, firstAuthor.DeathDate)
+			if !reg.Match([]byte(firstAuthor.Died)) {
+				t.Fatalf("Expected to get author died in %d but got author died in %s", deathYear, firstAuthor.Died)
 			}
 		})
 		t.Run("Should return first 50 authors died in June", func(t *testing.T) {
@@ -546,37 +546,37 @@ func TestHandler(t *testing.T) {
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile("June")
-			if !reg.Match([]byte(firstAuthor.DeathDate)) {
-				t.Fatalf("Expected to get author died in %s but got author died in %s", "June", firstAuthor.DeathDate)
+			if !reg.Match([]byte(firstAuthor.Died)) {
+				t.Fatalf("Expected to get author died in %s but got author died in %s", "June", firstAuthor.Died)
 			}
 		})
 		t.Run("Should return first 50 authors died on June-16", func(t *testing.T) {
 			deathMonth := "JUNE"
-			deathDate := 16
-			var jsonStr = fmt.Sprintf(`{"time":{"died":{"month":"%s", "date":%d}}}`, deathMonth, deathDate)
+			Died := 16
+			var jsonStr = fmt.Sprintf(`{"time":{"died":{"month":"%s", "date":%d}}}`, deathMonth, Died)
 
 			var authors []structs.AuthorAPIModel
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile("June-16")
-			if !reg.Match([]byte(firstAuthor.DeathDate)) {
-				t.Fatalf("Expected to get author died on %s but got author died on %s", "June-16", firstAuthor.DeathDate)
+			if !reg.Match([]byte(firstAuthor.Died)) {
+				t.Fatalf("Expected to get author died on %s but got author died on %s", "June-16", firstAuthor.Died)
 			}
 		})
 		t.Run("Should return first 50 authors died on 1960-June-16", func(t *testing.T) {
 			deathMonth := "JUNE"
-			deathDate := 16
+			Died := 16
 			deathYear := 1960
-			var jsonStr = fmt.Sprintf(`{"time":{"died":{"year":%d,"month":"%s", "date":%d}}}`, deathYear, deathMonth, deathDate)
+			var jsonStr = fmt.Sprintf(`{"time":{"died":{"year":%d,"month":"%s", "date":%d}}}`, deathYear, deathMonth, Died)
 
 			var authors []structs.AuthorAPIModel
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
 
-			reg := regexp.MustCompile(fmt.Sprintf("%d-%s-%d", deathYear, "June", deathDate))
-			if !reg.Match([]byte(firstAuthor.DeathDate)) {
-				t.Fatalf("Expected to get author died on %s but got author died on %s", fmt.Sprintf("%d-%s-%d", deathYear, deathMonth, deathDate), firstAuthor.DeathDate)
+			reg := regexp.MustCompile(fmt.Sprintf("%d-%s-%d", deathYear, "June", Died))
+			if !reg.Match([]byte(firstAuthor.Died)) {
+				t.Fatalf("Expected to get author died on %s but got author died on %s", fmt.Sprintf("%d-%s-%d", deathYear, deathMonth, Died), firstAuthor.Died)
 			}
 		})
 		t.Run("Should return first 50 authors born in 1956 order by date of death ASC", func(t *testing.T) {
@@ -588,8 +588,8 @@ func TestHandler(t *testing.T) {
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile("1956-January-")
-			if !reg.Match([]byte(firstAuthor.DeathDate)) {
-				t.Fatalf("Expected to get author died in %s but got author died in %s", "1956-January-", firstAuthor.DeathDate)
+			if !reg.Match([]byte(firstAuthor.Died)) {
+				t.Fatalf("Expected to get author died in %s but got author died in %s", "1956-January-", firstAuthor.Died)
 			}
 		})
 		t.Run("Should return first 50 authors born in 1956 order by date of death DESC", func(t *testing.T) {
@@ -601,11 +601,11 @@ func TestHandler(t *testing.T) {
 			firstAuthor := authors[0]
 
 			//Do it like this because the authors who "died" the latest in that year are all the authors that did not have months/dates, only a birth_year.
-			//Therefore the expected returned DeathDate is "1956" (not with "-").
+			//Therefore the expected returned Died is "1956" (not with "-").
 			reg := regexp.MustCompile("1956-")
 			reg2 := regexp.MustCompile("1956")
-			if reg.Match([]byte(firstAuthor.DeathDate)) || !reg2.Match([]byte(firstAuthor.DeathDate)) {
-				t.Fatalf("Expected to get author died in %s but got author died in %s", "1956", firstAuthor.DeathDate)
+			if reg.Match([]byte(firstAuthor.Died)) || !reg2.Match([]byte(firstAuthor.Died)) {
+				t.Fatalf("Expected to get author died in %s but got author died in %s", "1956", firstAuthor.Died)
 			}
 		})
 
@@ -618,8 +618,8 @@ func TestHandler(t *testing.T) {
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile("1967-January-26")
-			if !reg.Match([]byte(firstAuthor.BirthDate)) {
-				t.Fatalf("Expected to get author born on %s but got author born on %s", "1967-January-26", firstAuthor.BirthDate)
+			if !reg.Match([]byte(firstAuthor.Born)) {
+				t.Fatalf("Expected to get author born on %s but got author born on %s", "1967-January-26", firstAuthor.Born)
 			}
 		})
 		t.Run("Should return first 50 authors born after 1967-January-27", func(t *testing.T) {
@@ -631,8 +631,8 @@ func TestHandler(t *testing.T) {
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile("1967-January-28")
-			if !reg.Match([]byte(firstAuthor.BirthDate)) {
-				t.Fatalf("Expected to get author born on %s but got author born on %s", "1967-January-28", firstAuthor.BirthDate)
+			if !reg.Match([]byte(firstAuthor.Born)) {
+				t.Fatalf("Expected to get author born on %s but got author born on %s", "1967-January-28", firstAuthor.Born)
 			}
 		})
 		t.Run("Should return first 50 authors born between 1967-January-29 <-> 1967-February-28", func(t *testing.T) {
@@ -645,8 +645,8 @@ func TestHandler(t *testing.T) {
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile("1967-January-30")
-			if !reg.Match([]byte(firstAuthor.BirthDate)) {
-				t.Fatalf("Expected to get author born on %s but got author born on %s", "1967-January-30", firstAuthor.BirthDate)
+			if !reg.Match([]byte(firstAuthor.Born)) {
+				t.Fatalf("Expected to get author born on %s but got author born on %s", "1967-January-30", firstAuthor.Born)
 			}
 
 			//Now make the same request but reverse order to get first the authors closes to born on 1967-February-28
@@ -657,8 +657,8 @@ func TestHandler(t *testing.T) {
 			firstAuthor = authors[0]
 
 			reg = regexp.MustCompile("1967-February-28")
-			if !reg.Match([]byte(firstAuthor.BirthDate)) {
-				t.Fatalf("Expected to get author born on %s but got author born on %s", "1967-February-28", firstAuthor.BirthDate)
+			if !reg.Match([]byte(firstAuthor.Born)) {
+				t.Fatalf("Expected to get author born on %s but got author born on %s", "1967-February-28", firstAuthor.Born)
 			}
 
 		})
@@ -672,8 +672,8 @@ func TestHandler(t *testing.T) {
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile("1967-January-27")
-			if !reg.Match([]byte(firstAuthor.DeathDate)) {
-				t.Fatalf("Expected to get author died on %s but got author died on %s", "1967-January-27", firstAuthor.DeathDate)
+			if !reg.Match([]byte(firstAuthor.Died)) {
+				t.Fatalf("Expected to get author died on %s but got author died on %s", "1967-January-27", firstAuthor.Died)
 			}
 		})
 		t.Run("Should return first 50 authors died after 1967-January-28", func(t *testing.T) {
@@ -685,8 +685,8 @@ func TestHandler(t *testing.T) {
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile("1967-February-7")
-			if !reg.Match([]byte(firstAuthor.DeathDate)) {
-				t.Fatalf("Expected to get author died on %s but got author died on %s", "1967-February-07", firstAuthor.DeathDate)
+			if !reg.Match([]byte(firstAuthor.Died)) {
+				t.Fatalf("Expected to get author died on %s but got author died on %s", "1967-February-07", firstAuthor.Died)
 			}
 		})
 		t.Run("Should return first 50 authors died between 1967-January-28 - 1967-February-28", func(t *testing.T) {
@@ -699,8 +699,8 @@ func TestHandler(t *testing.T) {
 			firstAuthor := authors[0]
 
 			reg := regexp.MustCompile("1967-February-7")
-			if !reg.Match([]byte(firstAuthor.DeathDate)) {
-				t.Fatalf("Expected to get author died on %s but got author died on %s", "1967-February-7", firstAuthor.DeathDate)
+			if !reg.Match([]byte(firstAuthor.Died)) {
+				t.Fatalf("Expected to get author died on %s but got author died on %s", "1967-February-7", firstAuthor.Died)
 			}
 
 			//Now make the same request but reverse order to get first the authors closes to born on 1967-February-28
@@ -711,8 +711,8 @@ func TestHandler(t *testing.T) {
 			firstAuthor = authors[0]
 
 			reg = regexp.MustCompile("1967-February-28")
-			if !reg.Match([]byte(firstAuthor.DeathDate)) {
-				t.Fatalf("Expected to get author died on %s but got author died on %s", "1967-February-28", firstAuthor.DeathDate)
+			if !reg.Match([]byte(firstAuthor.Died)) {
+				t.Fatalf("Expected to get author died on %s but got author died on %s", "1967-February-28", firstAuthor.Died)
 			}
 		})
 
@@ -722,8 +722,8 @@ func TestHandler(t *testing.T) {
 			var authors []structs.AuthorAPIModel
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
-			if firstAuthor.DeathDate != "" {
-				t.Fatalf("Expected to get author still alive but got author died on %s", firstAuthor.DeathDate)
+			if firstAuthor.Died != "" {
+				t.Fatalf("Expected to get author still alive but got author died on %s", firstAuthor.Died)
 			}
 		})
 
@@ -734,13 +734,13 @@ func TestHandler(t *testing.T) {
 			var authors []structs.AuthorAPIModel
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
-			if firstAuthor.DeathDate != "" {
-				t.Fatalf("Expected to get author still alive but got author died on %s", firstAuthor.DeathDate)
+			if firstAuthor.Died != "" {
+				t.Fatalf("Expected to get author still alive but got author died on %s", firstAuthor.Died)
 			}
 
-			birth, err := time.Parse("2006-January-2", firstAuthor.BirthDate)
+			birth, err := time.Parse("2006-January-2", firstAuthor.Born)
 			if err != nil {
-				t.Fatalf("Expected given author to have valid birthdate but got an error: %+v", err)
+				t.Fatalf("Expected given author to have valid Born but got an error: %+v", err)
 			}
 
 			age := math.Floor(time.Since(birth).Hours() / 24 / 365)
@@ -756,13 +756,13 @@ func TestHandler(t *testing.T) {
 			var authors []structs.AuthorAPIModel
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
-			if firstAuthor.DeathDate != "" {
-				t.Fatalf("Expected to get author still alive but got author died on %s", firstAuthor.DeathDate)
+			if firstAuthor.Died != "" {
+				t.Fatalf("Expected to get author still alive but got author died on %s", firstAuthor.Died)
 			}
 
-			birth, err := time.Parse("2006-January-2", firstAuthor.BirthDate)
+			birth, err := time.Parse("2006-January-2", firstAuthor.Born)
 			if err != nil {
-				t.Fatalf("Expected given author to have valid birthdate but got an error: %+v", err)
+				t.Fatalf("Expected given author to have valid Born but got an error: %+v", err)
 			}
 
 			age := math.Floor(time.Since(birth).Hours() / 24 / 365)
@@ -779,13 +779,13 @@ func TestHandler(t *testing.T) {
 			var authors []structs.AuthorAPIModel
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
-			if firstAuthor.DeathDate != "" {
-				t.Fatalf("Expected to get author still alive but got author died on %s", firstAuthor.DeathDate)
+			if firstAuthor.Died != "" {
+				t.Fatalf("Expected to get author still alive but got author died on %s", firstAuthor.Died)
 			}
 
-			birth, err := time.Parse("2006-January-2", firstAuthor.BirthDate)
+			birth, err := time.Parse("2006-January-2", firstAuthor.Born)
 			if err != nil {
-				t.Fatalf("Expected given author to have valid birthdate but got an error: %+v", err)
+				t.Fatalf("Expected given author to have valid Born but got an error: %+v", err)
 			}
 
 			age := math.Floor(time.Since(birth).Hours() / 24 / 365)
@@ -801,13 +801,13 @@ func TestHandler(t *testing.T) {
 			var authors []structs.AuthorAPIModel
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
-			if firstAuthor.DeathDate == "" {
+			if firstAuthor.Died == "" {
 				t.Fatalf("Expected to get author who is dead but got author who has no death date, %+v", firstAuthor)
 			}
 
-			birth, err := time.Parse("2006-January-2", firstAuthor.BirthDate)
+			birth, err := time.Parse("2006-January-2", firstAuthor.Born)
 			if err != nil {
-				t.Fatalf("Expected given author to have valid birthdate but got an error: %+v", err)
+				t.Fatalf("Expected given author to have valid Born but got an error: %+v", err)
 			}
 
 			age := math.Floor(time.Since(birth).Hours() / 24 / 365)
@@ -822,14 +822,14 @@ func TestHandler(t *testing.T) {
 			var authors []structs.AuthorAPIModel
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
-			if firstAuthor.DeathDate == "" {
+			if firstAuthor.Died == "" {
 				t.Fatalf("Expected to get author who is dead but got author who has no death date, %+v", firstAuthor)
 			}
 
-			birth, err := time.Parse("2006-January-2", firstAuthor.BirthDate)
+			birth, err := time.Parse("2006-January-2", firstAuthor.Born)
 			if err != nil {
-				t.Logf("Expected given author to have valid birthdate but got an error: %s, with author: %+v", err, firstAuthor)
-				birth, err = time.Parse("2006", firstAuthor.BirthDate)
+				t.Logf("Expected given author to have valid Born but got an error: %s, with author: %+v", err, firstAuthor)
+				birth, err = time.Parse("2006", firstAuthor.Born)
 				if err != nil {
 					t.Fatalf("Expected given author to have at least birth_year but got an error: %s, with author: %+v", err, firstAuthor)
 				}
@@ -847,7 +847,7 @@ func TestHandler(t *testing.T) {
 			var authors []structs.AuthorAPIModel
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
-			if firstAuthor.DeathDate == "" {
+			if firstAuthor.Died == "" {
 				t.Fatalf("Expected to get author dead but got author still alive %+v", firstAuthor)
 			}
 
@@ -859,18 +859,18 @@ func TestHandler(t *testing.T) {
 			var authors []structs.AuthorAPIModel
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
-			if firstAuthor.DeathDate == "" {
+			if firstAuthor.Died == "" {
 				t.Fatalf("Expected to get author dead but got author alive: %+v", firstAuthor)
 			}
 
-			birth, err := time.Parse("2006-January-2", firstAuthor.BirthDate)
+			birth, err := time.Parse("2006-January-2", firstAuthor.Born)
 			if err != nil {
-				t.Fatalf("Expected given author to have valid birthdate but got an error: %+v", err)
+				t.Fatalf("Expected given author to have valid Born but got an error: %+v", err)
 			}
 
-			death, err := time.Parse("2006-January-2", firstAuthor.DeathDate)
+			death, err := time.Parse("2006-January-2", firstAuthor.Died)
 			if err != nil {
-				t.Fatalf("Expected given author to have valid deathdate but got an error: %+v", err)
+				t.Fatalf("Expected given author to have valid Died but got an error: %+v", err)
 			}
 
 			age := math.Floor(death.Sub(birth).Hours() / 24 / 365)
@@ -887,14 +887,14 @@ func TestHandler(t *testing.T) {
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
 
-			birth, err := time.Parse("2006-January-2", firstAuthor.BirthDate)
+			birth, err := time.Parse("2006-January-2", firstAuthor.Born)
 			if err != nil {
-				t.Fatalf("Expected given author to have valid birthdate but got an error: %+v", err)
+				t.Fatalf("Expected given author to have valid Born but got an error: %+v", err)
 			}
 
-			death, err := time.Parse("2006-January-2", firstAuthor.DeathDate)
+			death, err := time.Parse("2006-January-2", firstAuthor.Died)
 			if err != nil {
-				t.Fatalf("Expected given author to have valid deathdate but got an error: %+v", err)
+				t.Fatalf("Expected given author to have valid Died but got an error: %+v", err)
 			}
 
 			age := math.Floor(death.Sub(birth).Hours() / 24 / 365)
@@ -913,21 +913,21 @@ func TestHandler(t *testing.T) {
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
 
-			birth, err := time.Parse("2006-January-2", firstAuthor.BirthDate)
+			birth, err := time.Parse("2006-January-2", firstAuthor.Born)
 			if err != nil {
-				birth, err = time.Parse("2006", firstAuthor.BirthDate)
+				birth, err = time.Parse("2006", firstAuthor.Born)
 				if err != nil {
-					t.Fatalf("Expected given author to have valid birthdate but got an error: %+v", err)
+					t.Fatalf("Expected given author to have valid Born but got an error: %+v", err)
 				}
 			}
 
 			lastAge := math.Floor(time.Since(birth).Hours() / 24 / 365)
 			for _, author := range authors {
-				birth, err = time.Parse("2006-January-2", author.BirthDate)
+				birth, err = time.Parse("2006-January-2", author.Born)
 				if err != nil {
-					birth, err = time.Parse("2006", firstAuthor.BirthDate)
+					birth, err = time.Parse("2006", firstAuthor.Born)
 					if err != nil {
-						t.Fatalf("Expected given author to have valid birthdate but got an error: %+v", err)
+						t.Fatalf("Expected given author to have valid Born but got an error: %+v", err)
 					}
 				}
 				currentAge := math.Floor(time.Since(birth).Hours() / 24 / 365)
@@ -944,21 +944,21 @@ func TestHandler(t *testing.T) {
 			GetRequest(jsonStr, &authors, t)
 			firstAuthor := authors[0]
 
-			birth, err := time.Parse("2006-January-2", firstAuthor.BirthDate)
+			birth, err := time.Parse("2006-January-2", firstAuthor.Born)
 			if err != nil {
-				birth, err = time.Parse("2006", firstAuthor.BirthDate)
+				birth, err = time.Parse("2006", firstAuthor.Born)
 				if err != nil {
-					t.Fatalf("Expected given author to have valid birthdate but got an error: %+v", err)
+					t.Fatalf("Expected given author to have valid Born but got an error: %+v", err)
 				}
 			}
 
 			lastAge := math.Floor(time.Since(birth).Hours() / 24 / 365)
 			for _, author := range authors {
-				birth, err = time.Parse("2006-January-2", author.BirthDate)
+				birth, err = time.Parse("2006-January-2", author.Born)
 				if err != nil {
-					birth, err = time.Parse("2006", firstAuthor.BirthDate)
+					birth, err = time.Parse("2006", firstAuthor.Born)
 					if err != nil {
-						t.Fatalf("Expected given author to have valid birthdate but got an error: %+v", err)
+						t.Fatalf("Expected given author to have valid Born but got an error: %+v", err)
 					}
 				}
 				currentAge := math.Floor(time.Since(birth).Hours() / 24 / 365)

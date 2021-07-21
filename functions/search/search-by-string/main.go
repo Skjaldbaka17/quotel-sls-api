@@ -52,33 +52,11 @@ func authorSearch(requestBody *structs.Request, dbPointer *gorm.DB, searchString
 	dbPointer = utils.AuthorLanguageSQL(requestBody.Language, dbPointer)
 
 	return dbPointer
-	// table := "quotes"
-	// //TODO: Validate that this topicId exists
-	// if len(requestBody.TopicIds) > 0 {
-	// 	table = "topicsview"
-	// }
-	// dbPointer = dbPointer.Table(table).
-	// 	Where("( similarity(name, ?) > 0.4)", requestBody.SearchString)
-
-	// dbPointer = utils.AuthorLanguageSQL(requestBody.Language, dbPointer)
-
-	// if len(requestBody.TopicIds) > 0 {
-	// 	dbPointer = dbPointer.Where("topic_id in ?", requestBody.TopicIds)
-	// }
-
-	// //Particular language search
-	// dbPointer = utils.QuoteLanguageSQL(requestBody.Language, dbPointer)
-
-	// dbPointer = dbPointer.
-	// 	Clauses(clause.OrderBy{
-	// 		Expression: clause.Expr{SQL: "similarity(name,?) desc, id desc", Vars: []interface{}{requestBody.SearchString}, WithoutParentheses: true},
-	// 	})
-	// return dbPointer
 }
 
 // swagger:route POST /search search SearchByString
 //
-// Search
+// Search general
 //
 // Use this route to search for quotes / authors by a general full test search that searches both in the names of the authors and the quotes themselves
 //

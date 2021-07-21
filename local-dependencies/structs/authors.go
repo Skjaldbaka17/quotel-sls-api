@@ -30,8 +30,8 @@ type AuthorAPIModel struct {
 	NrOfIcelandicQuotes int    `json:"nrOfIcelandicQuotes,omitempty"`
 	NrOfEnglishQuotes   int    `json:"nrOfEnglishQuotes,omitempty"`
 	Count               int    `json:"count,omitempty"`
-	BirthDate           string `json:"birthDate,omitempty"`
-	DeathDate           string `json:"deathDate,omitempty"`
+	Born                string `json:"born,omitempty"`
+	Died                string `json:"died,omitempty"`
 	Profession          string `json:"profession,omitempty"`
 	Nationality         string `json:"nationality,omitempty"`
 }
@@ -54,8 +54,8 @@ type AodDBModel struct {
 
 type AodAPIModel struct {
 	Name        string `json:"name,omitempty"`
-	BirthDate   string `json:"birthDate,omitempty"`
-	DeathDate   string `json:"deathDate,omitempty"`
+	Born        string `json:"born,omitempty"`
+	Died        string `json:"died,omitempty"`
 	Profession  string `json:"profession,omitempty"`
 	Nationality string `json:"nationality,omitempty"`
 	Date        string `json:"date,omitempty"`
@@ -74,8 +74,8 @@ func (dbModel *AuthorDBModel) ConvertToAPIModel() AuthorAPIModel {
 		NrOfIcelandicQuotes: dbModel.NrOfIcelandicQuotes,
 		NrOfEnglishQuotes:   dbModel.NrOfEnglishQuotes,
 		Count:               dbModel.Count,
-		BirthDate:           getDate(dbModel.BirthYear, dbModel.BirthMonth, dbModel.BirthDate),
-		DeathDate:           getDate(dbModel.DeathYear, dbModel.DeathMonth, dbModel.DeathDate),
+		Born:                getDate(dbModel.BirthYear, dbModel.BirthMonth, dbModel.BirthDate),
+		Died:                getDate(dbModel.DeathYear, dbModel.DeathMonth, dbModel.DeathDate),
 		Profession:          dbModel.Profession,
 		Nationality:         dbModel.Nationality,
 	}
@@ -86,8 +86,8 @@ func (dbModel *AodDBModel) ConvertToAPIModel() AodAPIModel {
 	return AodAPIModel{
 		AuthorId:    dbModel.AuthorId,
 		Name:        dbModel.Name,
-		BirthDate:   getDate(dbModel.BirthYear, dbModel.BirthMonth, dbModel.BirthDate),
-		DeathDate:   getDate(dbModel.DeathYear, dbModel.DeathMonth, dbModel.DeathDate),
+		Born:        getDate(dbModel.BirthYear, dbModel.BirthMonth, dbModel.BirthDate),
+		Died:        getDate(dbModel.DeathYear, dbModel.DeathMonth, dbModel.DeathDate),
 		Profession:  dbModel.Profession,
 		Nationality: dbModel.Nationality,
 		Date:        dbModel.Date,

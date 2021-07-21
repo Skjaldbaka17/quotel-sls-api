@@ -107,21 +107,21 @@ definitions:
         format: int64
         type: integer
         x-go-name: AuthorId
-      birthDate:
+      born:
         description: The date this author was born
         example: 1942-January-17
         type: string
-        x-go-name: BirthDate
+        x-go-name: Born
       date:
         description: The date when this quote was the quote of the day
         example: "2021-06-12"
         type: string
         x-go-name: Date
-      deathDate:
+      died:
         description: The date this author died
         example: 2016-June-3
         type: string
-        x-go-name: DeathDate
+        x-go-name: Died
       isIcelandic:
         description: Whether or not this quote is in icelandic
         example: false
@@ -176,22 +176,22 @@ definitions:
         format: uint64
         type: integer
         x-go-name: AuthorId
-      birthDate:
+      born:
         description: The date this author was born
         example: 1942-January-17
         type: string
-        x-go-name: BirthDate
+        x-go-name: Born
       count:
         description: The popularity index of the quote
         example: 1111
         format: int64
         type: integer
         x-go-name: Count
-      deathDate:
+      died:
         description: The date this author died
         example: 2016-June-3
         type: string
-        x-go-name: DeathDate
+        x-go-name: Died
       isIcelandic:
         description: Whether or not this quote is in icelandic
         example: false
@@ -281,21 +281,21 @@ definitions:
         format: uint64
         type: integer
         x-go-name: AuthorId
-      birthDate:
+      born:
         description: The date this author was born
         example: 1942-January-17
         type: string
-        x-go-name: BirthDate
+        x-go-name: Born
       date:
         description: The date when this author was the author of the day
         example: "2021-06-12T00:00:00Z"
         type: string
         x-go-name: Date
-      deathDate:
+      died:
         description: The date this author died
         example: 2016-June-3
         type: string
-        x-go-name: DeathDate
+        x-go-name: Died
       isIcelandic:
         description: Whether the author is icelandic or not
         example: false
@@ -327,22 +327,22 @@ definitions:
         format: uint64
         type: integer
         x-go-name: AuthorId
-      birthDate:
+      born:
         description: The date this author was born
         example: 1942-January-17
         type: string
-        x-go-name: BirthDate
+        x-go-name: Born
       count:
         description: The popularity index of the author
         example: 1111
         format: int64
         type: integer
         x-go-name: Count
-      deathDate:
+      died:
         description: The date this author died
         example: 2016-June-3
         type: string
-        x-go-name: DeathDate
+        x-go-name: Died
       hasIcelandicQuotes:
         description: Whether or not this author has some icelandic quotes
         example: true
@@ -402,20 +402,20 @@ definitions:
         type: integer
         uniqueItems: true
         x-go-name: AuthorId
-      birthDate:
+      born:
         description: The date this author was born
         example: 1942-January-17
         type: string
-        x-go-name: BirthDate
+        x-go-name: Born
       count:
         format: int64
         type: integer
         x-go-name: Count
-      deathDate:
+      died:
         description: The date this author died
         example: 2016-June-3
         type: string
-        x-go-name: DeathDate
+        x-go-name: Died
       isIcelandic:
         description: Whether or not this quote is in Icelandic or not
         example: false
@@ -906,9 +906,8 @@ paths:
       - quotes
   /quotes/random:
     post:
-      description: |-
-        Use this route to get a random quote from the whole database, from specific topics like 'Motivational' or 'Love' or from a specific authro.
-        You can even supply a searchString that the returned random quote must contain.
+      description: Use this route to get a random quote from the whole database, from
+        specific topics like 'Motivational' or 'Love' or from a specific author.
       operationId: GetRandomQuote
       parameters:
       - description: The structure of the request for a random quote
@@ -959,6 +958,117 @@ paths:
       tags:
       - quotes
   /search:
+    post:
+      description: Use this route to search for quotes / authors by a general full
+        test search that searches both in the names of the authors and the quotes
+        themselves
+      operationId: SearchByString
+      parameters:
+      - description: The structure of the request for searching quotes/authors
+        in: body
+        name: Body
+        required: true
+        schema:
+          properties:
+            language:
+              description: The particular language that the quote should be in
+              example: English
+              type: string
+              x-go-name: Language
+            page:
+              description: The page you are asking for, starts with 0.
+              example: 0
+              format: int64
+              minimum: 0
+              type: integer
+              x-go-name: Page
+            pageSize:
+              default: 25
+              description: The number of quotes to be returned on each "page"
+              example: 30
+              format: int64
+              maximum: 200
+              minimum: 1
+              type: integer
+              x-go-name: PageSize
+            searchString:
+              description: The string to be used in the search
+              example: sting like butterfly
+              type: string
+              x-go-name: SearchString
+            topicIds:
+              description: Should search in the specified topics for the searchString
+              example:
+              - 10
+              items:
+                format: int64
+                type: integer
+              type: array
+              x-go-name: TopicIds
+          required:
+          - searchString
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/quotesApiResponse'
+        "400":
+          $ref: '#/responses/incorrectBodyStructureResponse'
+        "500":
+          $ref: '#/responses/internalServerErrorResponse'
+      summary: Search general
+      tags:
+      - search
+  /search/authors:
+    post:
+      description: Use this route to search for authors in the database.
+      operationId: SearchAuthorsByString
+      parameters:
+      - description: The structure of the request for searching quotes/authors
+        in: body
+        name: Body
+        required: true
+        schema:
+          properties:
+            language:
+              description: The particular language that the quote should be in
+              example: English
+              type: string
+              x-go-name: Language
+            page:
+              description: The page you are asking for, starts with 0.
+              example: 0
+              format: int64
+              minimum: 0
+              type: integer
+              x-go-name: Page
+            pageSize:
+              default: 25
+              description: The number of quotes to be returned on each "page"
+              example: 30
+              format: int64
+              maximum: 200
+              minimum: 1
+              type: integer
+              x-go-name: PageSize
+            searchString:
+              description: The string to be used in the search
+              example: Ali Muhammad
+              type: string
+              x-go-name: SearchString
+          required:
+          - searchString
+          type: object
+      responses:
+        "200":
+          $ref: '#/responses/authorsResponse'
+        "400":
+          $ref: '#/responses/incorrectBodyStructureResponse'
+        "500":
+          $ref: '#/responses/internalServerErrorResponse'
+      summary: Search authors
+      tags:
+      - search
+  /search/quotes:
     post:
       description: Use this route to search for quotes by a general full test search
         that searches for words and phrases in the quotes.
@@ -1016,56 +1126,6 @@ paths:
         "500":
           $ref: '#/responses/internalServerErrorResponse'
       summary: Search quotes
-      tags:
-      - search
-  /search/authors:
-    post:
-      description: Use this route to search for authors in the database.
-      operationId: SearchAuthorsByString
-      parameters:
-      - description: The structure of the request for searching quotes/authors
-        in: body
-        name: Body
-        required: true
-        schema:
-          properties:
-            language:
-              description: The particular language that the quote should be in
-              example: English
-              type: string
-              x-go-name: Language
-            page:
-              description: The page you are asking for, starts with 0.
-              example: 0
-              format: int64
-              minimum: 0
-              type: integer
-              x-go-name: Page
-            pageSize:
-              default: 25
-              description: The number of quotes to be returned on each "page"
-              example: 30
-              format: int64
-              maximum: 200
-              minimum: 1
-              type: integer
-              x-go-name: PageSize
-            searchString:
-              description: The string to be used in the search
-              example: Ali Muhammad
-              type: string
-              x-go-name: SearchString
-          required:
-          - searchString
-          type: object
-      responses:
-        "200":
-          $ref: '#/responses/authorsResponse'
-        "400":
-          $ref: '#/responses/incorrectBodyStructureResponse'
-        "500":
-          $ref: '#/responses/internalServerErrorResponse'
-      summary: Search Authors
       tags:
       - search
   /topic:

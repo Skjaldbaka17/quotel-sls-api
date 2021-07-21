@@ -1,16 +1,16 @@
-- [ ] Change 'deathDate' and 'birthDate' in api to 'died' and 'born'?
+
 - [ ] Put new API on RapidAPI
-- [ ] Make README for future me better -- also readme for setup-quotel-db and old quotel-api (not serverless) and crawler
 - [ ] Make new/Better README for RAPIDAPI
-- [ ] Make examples for all Features RapidAPI (Maybe in SWAGGER?)
-- [ ] optimize queries (longTime in tests)
 - [ ] Use RapidAPI for WhoTheFuckSaidThat.com
-- [ ] Setup AURORA POSTGRES SERVERLESS with the new Data (pg_dump? https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Migrate.html -> https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html#AuroraPostgreSQL.Migrating.RDSPostgreSQL.Import.Console)
-- [ ] When: "request body is not structured correctly. Please refer to the /docs page for information on how to structure the request body" then set instead of '/docs' the link
-to the S3 hosted website with the docs (even better let the link be specific to the endpoint that cause it for example http://www.api.quotel-rest.com.s3-website-eu-west-1.amazonaws.com/#operation/GetQuotes)
 
-
+- [ ] Make README for future me better -- also readme for setup-quotel-db and old quotel-api (not serverless) and crawler
 - [ ] Explain how the searchin works in README (i.e. first plainto_ts then check fuzzy search if user had )
+
+- [ ] Setup AURORA POSTGRES SERVERLESS with the new Data (pg_dump? https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Migrate.html -> https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html#AuroraPostgreSQL.Migrating.RDSPostgreSQL.Import.Console)
+
+
+
+
 
 
 - [x] set utils/structs as packages in their own module called 'handlers' or something like that
@@ -35,6 +35,11 @@ to the S3 hosted website with the docs (even better let the link be specific to 
 - [x] Put new version of API on AWS
 - [x] Add 2-lambda functions and schedule them to run once daily inserting the QOD, QODICE, AOD and AODICES (and for QODs/QODICEs have it get random quote from topics for quality quotes)
 - [x] Create new swagger based on newest version on AWS (Multiple Examples?)
+- [x] Make examples for all Features RapidAPI (Maybe in SWAGGER?) -- Did it in postman
+- [x] optimize queries (longTime in tests)
+- [x] Change 'deathDate' and 'birthDate' in api to 'died' and 'born'?
+- [x] When: "request body is not structured correctly. Please refer to the /docs page for information on how to structure the request body" then set instead of '/docs' the link
+to the S3 hosted website with the docs (even better let the link be specific to the endpoint that cause it for example http://www.api.quotel-rest.com.s3-website-eu-west-1.amazonaws.com/#operation/GetQuotes)
 
 
 //Dumping local database to a file called pgexpdump.sql

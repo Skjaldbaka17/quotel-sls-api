@@ -21,8 +21,7 @@ var theReqHandler = RequestHandler{}
 //
 // Get a random quote
 //
-// Use this route to get a random quote from the whole database, from specific topics like 'Motivational' or 'Love' or from a specific authro.
-// You can even supply a searchString that the returned random quote must contain.
+// Use this route to get a random quote from the whole database, from specific topics like 'Motivational' or 'Love' or from a specific author.
 //
 // responses:
 //  200: topicApiResponse

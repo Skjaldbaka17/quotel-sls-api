@@ -100,10 +100,10 @@ type AodAPIModel struct {
 	Name string `json:"name,omitempty"`
 	// The date this author was born
 	// example: 1942-January-17
-	BirthDate string `json:"birthDate,omitempty"`
+	Born string `json:"born,omitempty"`
 	// The date this author died
 	// example: 2016-June-3
-	DeathDate string `json:"deathDate,omitempty"`
+	Died string `json:"died,omitempty"`
 	// The author's main profession
 	// example: Boxer
 	Profession string `json:"profession,omitempty"`
@@ -128,10 +128,10 @@ type AuthorAPIModel struct {
 	Name string `json:"name,omitempty"`
 	// The date this author was born
 	// example: 1942-January-17
-	BirthDate string `json:"birthDate,omitempty"`
+	Born string `json:"born,omitempty"`
 	// The date this author died
 	// example: 2016-June-3
-	DeathDate string `json:"deathDate,omitempty"`
+	Died string `json:"died,omitempty"`
 	// The author's main profession
 	// example: Boxer
 	Profession string `json:"profession,omitempty"`
@@ -173,10 +173,10 @@ type QuoteAPIModel struct {
 	Name string `json:"name,omitempty"`
 	// The date this author was born
 	// example: 1942-January-17
-	BirthDate string `json:"birthDate,omitempty"`
+	Born string `json:"born,omitempty"`
 	// The date this author died
 	// example: 2016-June-3
-	DeathDate string `json:"deathDate,omitempty"`
+	Died string `json:"died,omitempty"`
 	// The author's main profession
 	// example: Boxer
 	Profession string `json:"profession,omitempty"`
@@ -214,10 +214,10 @@ type QodAPIModel struct {
 
 	// The date this author was born
 	// example: 1942-January-17
-	BirthDate string `json:"birthDate,omitempty"`
+	Born string `json:"born,omitempty"`
 	// The date this author died
 	// example: 2016-June-3
-	DeathDate string `json:"deathDate,omitempty"`
+	Died string `json:"died,omitempty"`
 	// The author's main profession
 	// example: Boxer
 	Profession string `json:"profession,omitempty"`
@@ -265,10 +265,10 @@ type TopicQuoteAPIModel struct {
 
 	// The date this author was born
 	// example: 1942-January-17
-	BirthDate string `json:"birthDate,omitempty"`
+	Born string `json:"born,omitempty"`
 	// The date this author died
 	// example: 2016-June-3
-	DeathDate string `json:"deathDate,omitempty"`
+	Died string `json:"died,omitempty"`
 	// The author's main profession
 	// example: Boxer
 	Profession string `json:"profession,omitempty"`

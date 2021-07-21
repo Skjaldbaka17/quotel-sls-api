@@ -39,7 +39,7 @@ func search(requestBody *structs.Request, dbPointer *gorm.DB) *gorm.DB {
 	return dbPointer
 }
 
-// swagger:route POST /search search SearchQuotesByString
+// swagger:route POST /search/quotes search SearchQuotesByString
 //
 // Search quotes
 //
