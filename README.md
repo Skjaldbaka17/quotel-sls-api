@@ -90,6 +90,8 @@ make test-all
 
 ### API Documentation
 
+http://www.api.quotel-rest.com.s3-website-eu-west-1.amazonaws.com
+
 For documenting the API we use Swagger (or OpenAPI) and document each endpoint inside the code with specific comments forexed with `swagger:route`. To compile these comments into a swagger.yaml file you simply run:
 
 ```shell
