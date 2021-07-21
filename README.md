@@ -1,6 +1,6 @@
 # quotel-sls-api
 
-This is the readme for the Quotel Serverless API hosted on AWS-lambda with the following endpoint https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1. Note you need an authorized API-key to access the API through that url. You can contact me at skjaldbaka17@gmail.com or https://www.linkedin.com/in/þórður-ágústsson/ to get an API key or you can use the rapidapi.com marketplace: https://quotes-rest.p.rapidapi.com to get access to the API.
+This is the readme for the Quotel Serverless API hosted on AWS-lambda with the following endpoint https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1. Note you need an authorized API-key to access the API through that url. You can contact me at skjaldbaka17@gmail.com or https://www.linkedin.com/in/þórður-ágústsson/ to get an API key or you can use the rapidapi.com marketplace: https://rapidapi.com/skjaldbaka17/api/quotes-rest/ to get access to the API.
 
 ## About the API
 
@@ -41,7 +41,7 @@ sam local start-api --env-vars env.json
 You can also run
 
 ```bash
-    make build-run
+make build-run
 ```
 
 which builds the project and then runs it locally using the env.json.
@@ -54,37 +54,37 @@ We use the `testing` package that comes built-in in Golang and you can simply ru
 
 For /authors
 ```shell
-	make test-authors
+make test-authors
 ```
 
 For /quotes
 ```shell
-	make test-quotes
+make test-quotes
 ```
 For /search
 ```shell
-	make test-search
+make test-search
 ```
 
 For /topics
 ```shell
-	make test-topics
+make test-topics
 ```
 
 For /meta
 ```shell
-	make test-meta
+make test-meta
 ```
 
 For the daily cron jobs:
 ```shell
-	make test-daily
+make test-daily
 ```
 
 Or if you want to run all the above tests then run:
 
 ```shell
-    make test-all
+make test-all
 ```
 
 
@@ -93,18 +93,18 @@ Or if you want to run all the above tests then run:
 For documenting the API we use Swagger (or OpenAPI) and document each endpoint inside the code with specific comments forexed with `swagger:route`. To compile these comments into a swagger.yaml file you simply run:
 
 ```shell
-    make docs
+make docs
 ```
 
 This command will first check if you have the goswagger bin compiled. If it is not installed on your machine the command should install it with the command
 ```shell
-    go get -u github.com/go-swagger/go-swagger/cmd/swagger
+go get -u github.com/go-swagger/go-swagger/cmd/swagger
 ```
 
 Then to upload the docs to the already made s3 bucket `s3://www.api.quotel-rest.com` (it compiles the comments first then uploads) you can simply run 
 
 ```shell
-    make upload-docs    
+make upload-docs    
 ```
 
 ### The search
@@ -114,17 +114,17 @@ The search was implemented with phrases in mind. We wanted to try and make a fas
 The general search works like this:
 
 1. First we do a general phrase-search using `plainto_tsquery('english', 'love') as plainq` and then ordering the search based on `ts_rank(tsv, plainq)`, the ordering is a part of the reason why this takes so much time when the number of rows that the `( tsv @@ plainq )` returns is high. If this query returns some rows we return them to the user, otherwise we go to step 2.
-2. Now the 1. search has 'failed' so we assume that the user has made a spelling error. We take their searchString and split it up into the distinct words (split based on space) and search for each word in our `unique_lexeme`, a materialized view containing each distinct stemmed word in our database (both from authors.name and quotes.quote), using a similarity search based on word trigrams. This will "fix" most common spelling error or atleast find the most similar word used in our database. For each word we find and fix we put them back into the sentence (searchString) and use this new (spelling fixed) string to search in the same way as in step 1. If this search returns some rows we return them to the user. If not we go to step 3.
+2. Now the 1. search has 'failed' so we assume that the user has made a spelling error. FUZZY SEARCH!. We take their searchString and split it up into the distinct words (split based on space) and search for each word in our `unique_lexeme`, a materialized view containing each distinct stemmed word in our database (both from authors.name and quotes.quote), using a similarity search based on word trigrams. This will "fix" most common spelling error or atleast find the most similar word used in our database. For each word we find and fix we put them back into the sentence (searchString) and use this new (spelling fixed) string to search in the same way as in step 1. If this search returns some rows we return them to the user. If not we go to step 3.
 3. Now most things have failed so we assume that the string the user sent us is a strange string (like trying to search for `Friedrich Nietzsche`, who knows if this is even a correct spelling of the man's name) and we assume the user is looking for some foreign author, therefore we take their string and do a similarity search against the `authors` table and if we get some matches we take the best match and find his/hers quotes and return those. If no match we return an empty array `[]`. 
 4. Coming maybe later... Search for any quote/author containing at least one of the words in the searchString (not capable of implementing this now because the query takes tooooooo long a time on the small RDS machine I am using, maybe when I switch to using Aurora Postgres serverless service).
 
 The search for quotes works like this:
 
-1. Same as steps 1-2 in general-search but instead of running `ts_rank(tsv, plainq)` and `( tsv @@ plainq )` we run `ts_rank(quote_tsv, plainq)` and `( quote_tsv @@ plainq )`
+1. Same as steps 1-2 in general-search but instead of running `ts_rank(tsv, plainq)` and `( tsv @@ plainq )` we run `ts_rank(quote_tsv, plainq)` and `( quote_tsv @@ plainq )` and also in step two we look only through distinc words of quotes, i.e. in materialized view `unique_lexeme_quotes`.
 
 The search for authors works like this:
 
-1. Same as steps 1 in general-search but instead of running `ts_rank(tsv, plainq)` and `( tsv @@ plainq )` we run `ts_rank(name_tsv, plainq)` and `( name_tsv @@ plainq )` and we run the queries against the `authors` table. If some rows are found we return them otherwise go to step 2.
+1. Same as steps 1-2 in general-search but instead of running `ts_rank(tsv, plainq)` and `( tsv @@ plainq )` we run `ts_rank(name_tsv, plainq)` and `( name_tsv @@ plainq )` and we run the queries against the `authors` table. And also in step two we look only through distinc words of authors names, i.e. in materialized view `unique_lexeme_authors`. If some rows are found we return them otherwise go to step 2.
 2. Now we do a similarity search against the `authors.name`and return those rows who are most similar.
 
 
