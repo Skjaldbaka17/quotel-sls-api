@@ -1,18 +1,12 @@
 # quotel-sls-api
 
+This is the readme for the Quotel Serverless API hosted on AWS-lambda with the following endpoint https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1. Note you need an authorized API-key to access the API through that url. You can contact me at skjaldbaka17@gmail.com or https://www.linkedin.com/in/þórður-ágústsson/ to get an API key or you can use the rapidapi.com marketplace: https://quotes-rest.p.rapidapi.com to get access to the API.
 
+## About the API
 
-This is a sample template for quotel-sls-api - Below is a brief explanation of what we have generated for you:
+The API is a connection to the Database setup by https://github.com/skjaldbaka17/setup-quotel-db which contains around 1.000.000 quotes, over 30.000 authors and over 100.000 quotes sorted into 133 topics. For documentation of this API see: http://www.api.quotel-rest.com.s3-website-eu-west-1.amazonaws.com .
 
-```bash
-.
-├── Makefile                    <-- Make to automate build
-├── README.md                   <-- This instructions file
-├── hello-world                 <-- Source code for a lambda function
-│   ├── main.go                 <-- Lambda function code
-│   └── main_test.go            <-- Unit tests
-└── template.yaml
-```
+The primary motivation for this project was to learn to setup and manage SaaS on AWS, using the serverless solutions provided by AWS like Lambda functions, API-Gateway and SAM. The project was a success.
 
 ## Requirements
 
@@ -34,40 +28,107 @@ The `sam build` command is wrapped inside of the `Makefile`. To execute this sim
 make
 ```
 
-### Local development
+## Local development
 
 **Invoking function locally through local API Gateway**
 
+Note you need to add a env.json file with "DATABASE_URL":"YOUR_DATABASE_URL" for the API to work, also remember that sam is running the API using Docker so if your DB is on your local machine you need to use as host:"docker.for.mac.localhost".
+
 ```bash
-sam local start-api
+sam local start-api --env-vars env.json
 ```
 
-If the previous command ran successfully you should now be able to hit the following local endpoint to invoke your function `http://localhost:3000/hello`
+You can also run
 
-**SAM CLI** is used to emulate both Lambda and API Gateway locally and uses our `template.yaml` to understand how to bootstrap this environment (runtime, where the source code is, etc.) - The following excerpt is what the CLI will read in order to initialize an API and its routes:
-
-```yaml
-...
-Events:
-    HelloWorld:
-        Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-        Properties:
-            Path: /hello
-            Method: get
+```bash
+    make build-run
 ```
+
+which builds the project and then runs it locally using the env.json.
+
+If one of the the previous commands ran successfully you should now be able to hit the following base local endpoint to invoke the lambda functions `http://localhost:3000/` (test with `http://localhost:3000/quotes/random` for getting a random quote)
+
+### Testing
+
+We use the `testing` package that comes built-in in Golang and you can simply run the following commands to test the various functionalities of the api:
+
+For /authors
+```shell
+	make test-authors
+```
+
+For /quotes
+```shell
+	make test-quotes
+```
+For /search
+```shell
+	make test-search
+```
+
+For /topics
+```shell
+	make test-topics
+```
+
+For /meta
+```shell
+	make test-meta
+```
+
+For the daily cron jobs:
+```shell
+	make test-daily
+```
+
+Or if you want to run all the above tests then run:
+
+```shell
+    make test-all
+```
+
+
+### API Documentation
+
+For documenting the API we use Swagger (or OpenAPI) and document each endpoint inside the code with specific comments forexed with `swagger:route`. To compile these comments into a swagger.yaml file you simply run:
+
+```shell
+    make docs
+```
+
+This command will first check if you have the goswagger bin compiled. If it is not installed on your machine the command should install it with the command
+```shell
+    go get -u github.com/go-swagger/go-swagger/cmd/swagger
+```
+
+Then to upload the docs to the already made s3 bucket `s3://www.api.quotel-rest.com` (it compiles the comments first then uploads) you can simply run 
+
+```shell
+    make upload-docs    
+```
+
+### The search
+
+The search was implemented with phrases in mind. We wanted to try and make a fast full-text search for the quotes, which was a median success. I give the search about a 6.5/10. It does well on phrases but is extremely slow when searching for common single words (like 'love').
+
+The general search works like this:
+
+1. First we do a general phrase-search using `plainto_tsquery('english', 'love') as plainq` and then ordering the search based on `ts_rank(tsv, plainq)`, the ordering is a part of the reason why this takes so much time when the number of rows that the `( tsv @@ plainq )` returns is high. If this query returns some rows we return them to the user, otherwise we go to step 2.
+2. Now the 1. search has 'failed' so we assume that the user has made a spelling error. We take their searchString and split it up into the distinct words (split based on space) and search for each word in our `unique_lexeme`, a materialized view containing each distinct stemmed word in our database (both from authors.name and quotes.quote), using a similarity search based on word trigrams. This will "fix" most common spelling error or atleast find the most similar word used in our database. For each word we find and fix we put them back into the sentence (searchString) and use this new (spelling fixed) string to search in the same way as in step 1. If this search returns some rows we return them to the user. If not we go to step 3.
+3. Now most things have failed so we assume that the string the user sent us is a strange string (like trying to search for `Friedrich Nietzsche`, who knows if this is even a correct spelling of the man's name) and we assume the user is looking for some foreign author, therefore we take their string and do a similarity search against the `authors` table and if we get some matches we take the best match and find his/hers quotes and return those. If no match we return an empty array `[]`. 
+4. Coming maybe later... Search for any quote/author containing at least one of the words in the searchString (not capable of implementing this now because the query takes tooooooo long a time on the small RDS machine I am using, maybe when I switch to using Aurora Postgres serverless service).
+
+The search for quotes works like this:
+
+1. Same as steps 1-2 in general-search but instead of running `ts_rank(tsv, plainq)` and `( tsv @@ plainq )` we run `ts_rank(quote_tsv, plainq)` and `( quote_tsv @@ plainq )`
+
+The search for authors works like this:
+
+1. Same as steps 1 in general-search but instead of running `ts_rank(tsv, plainq)` and `( tsv @@ plainq )` we run `ts_rank(name_tsv, plainq)` and `( name_tsv @@ plainq )` and we run the queries against the `authors` table. If some rows are found we return them otherwise go to step 2.
+2. Now we do a similarity search against the `authors.name`and return those rows who are most similar.
+
 
 ## Packaging and deployment
-
-AWS Lambda Golang runtime requires a flat folder with the executable generated on build step. SAM will use `CodeUri` property to know where to look up for the application:
-
-```yaml
-...
-    FirstFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: hello_world/
-            ...
-```
 
 To deploy your application for the first time, run the following in your shell:
 
@@ -77,21 +138,9 @@ sam deploy --guided
 
 The command will package and deploy your application to AWS, with a series of prompts:
 
-* **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
-* **AWS Region**: The AWS region you want to deploy your app to.
-* **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes.
-* **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
-* **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
-
 You can find your API Gateway Endpoint URL in the output values displayed after deployment.
 
-### Testing
 
-We use `testing` package that is built-in in Golang and you can simply run the following command to run our tests:
-
-```shell
-go test -v ./hello-world/
-```
 # Appendix
 
 ### Golang installation
@@ -128,16 +177,3 @@ If it's already installed, run the following command to ensure it's the latest v
 ```shell
 choco upgrade golang
 ```
-
-## Bringing to the next level
-
-Here are a few ideas that you can use to get more acquainted as to how this overall process works:
-
-* Create an additional API resource (e.g. /hello/{proxy+}) and return the name requested through this new path
-* Update unit test to capture that
-* Package & Deploy
-
-Next, you can use the following resources to know more about beyond hello world samples and how others structure their Serverless applications:
-
-* [AWS Serverless Application Repository](https://aws.amazon.com/serverless/serverlessrepo/)
-# quotel-sls-api

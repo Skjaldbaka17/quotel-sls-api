@@ -9,10 +9,6 @@
 - [ ] Setup AURORA POSTGRES SERVERLESS with the new Data (pg_dump? https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Migrate.html -> https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html#AuroraPostgreSQL.Migrating.RDSPostgreSQL.Import.Console)
 
 
-
-
-
-
 - [x] set utils/structs as packages in their own module called 'handlers' or something like that
 - [x] Optimize random for both English and Icelandic and BOTH!!!
 - [x] Developer portal: https://docs.amazonaws.cn/en_us/apigateway/latest/developerguide/apigateway-developer-portal.html !!!

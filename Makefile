@@ -9,7 +9,6 @@ build-run:
 run-env:
 	sam local start-api --env-vars env.json
 
-
 check-swagger:
 	which swagger || (go get -u github.com/go-swagger/go-swagger/cmd/swagger)
 docs: check-swagger
@@ -21,7 +20,6 @@ upload-docs:
 	make docs
 	aws s3 cp ./swagger s3://www.api.quotel-rest.com --recursive --exclude "*" --include "swagger.*" --include "index.html" --acl "public-read"
 	echo "\nDocs hosted HERE:\n\n\t http://www.api.quotel-rest.com.s3-website-eu-west-1.amazonaws.com\n"
-
 
 test-authors:
 #/authors tests
@@ -61,7 +59,6 @@ test-daily:
 
 test-all:
 	make test-authors
-	make test-quotes
 	make test-quotes
 	make test-search
 	make test-topics
