@@ -1,14 +1,24 @@
 # quotel-sls-api
 
-This is the readme for the Quotel Serverless API hosted on AWS-lambda with the following endpoint 
+This is the readme for the Quotel Serverless API hosted on AWS-lambda with the following endpoint:
 
-https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1. 
+    https://rxvglshzhl.execute-api.eu-west-1.amazonaws.com/v1
 
-Note you need an authorized API-key to access the API through that url. You can contact me at skjaldbaka17@gmail.com or https://www.linkedin.com/in/þórður-ágústsson/ to get an API key or you can use the rapidapi.com marketplace: https://rapidapi.com/skjaldbaka17/api/quotes-rest/ to get access to the API.
+Note you need an authorized API-key to access the API through that url. 
+
+You can contact me at skjaldbaka17@gmail.com or https://www.linkedin.com/in/þórður-ágústsson/ to get an API key or you can use the rapidapi.com marketplace: 
+
+    https://rapidapi.com/skjaldbaka17/api/quotes-rest/ 
+    
+to get freemium access to the API.
 
 ## About the API
 
-The API is a connection to the Database setup by https://github.com/skjaldbaka17/setup-quotel-db which contains around 1.000.000 quotes, over 30.000 authors and over 100.000 quotes sorted into 133 topics. For documentation of this API see: http://www.api.quotel-rest.com.s3-website-eu-west-1.amazonaws.com .
+The API is a connection to the Database setup by https://github.com/skjaldbaka17/setup-quotel-db which contains around 1.000.000 quotes, over 30.000 authors and over 100.000 quotes sorted into 133 topics. 
+
+For documentation of this API see: 
+
+    http://www.api.quotel-rest.com.s3-website-eu-west-1.amazonaws.com
 
 The primary motivation for this project was to learn to setup and manage SaaS on AWS, using the serverless solutions provided by AWS like Lambda functions, API-Gateway and SAM. The project was a success.
 
@@ -107,15 +117,17 @@ This command will first check if you have the goswagger bin compiled. If it is n
 go get -u github.com/go-swagger/go-swagger/cmd/swagger
 ```
 
-Then to upload the docs to the already made s3 bucket `s3://www.api.quotel-rest.com` (it compiles the comments first then uploads) you can simply run 
+Then to upload the docs to the already made s3 bucket `s3://www.api.quotel-rest.com` (it compiles the comments first then uploads, note to use the bucket as a static website you need to configure it on aws for static website hosting with index.html as the entry point -- something that we will change in the future to be handled by SAM (i.e. use sam to build the said bucket)) you can simply run 
 
 ```shell
 make upload-docs    
 ```
 
-### The search
+### About the full-text-search
 
-The search was implemented with phrases in mind. We wanted to try and make a fast full-text search for the quotes, which was a median success. I give the search about a 6.5/10. It does well on phrases but is extremely slow when searching for common single words (like 'love').
+The search was implemented with phrases in mind. We wanted to try and make a fast full-text search for the quotes, which was a median success. I give the search about a 6.5/10. It does well on phrases but is extremely slow when searching for common single words (like 'love'). To see indexes used to make the search faster see: 
+
+    https://github.com/skjaldbaka17/setup-quotel-db
 
 The general search works like this:
 
@@ -142,7 +154,7 @@ To deploy your application for the first time, run the following in your shell:
 sam deploy --guided
 ```
 
-The command will package and deploy your application to AWS, with a series of prompts:
+The command will package and deploy your application to AWS, with a series of prompts.
 
 You can find your API Gateway Endpoint URL in the output values displayed after deployment.
 
