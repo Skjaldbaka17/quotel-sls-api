@@ -32,7 +32,7 @@ make
 
 **Invoking function locally through local API Gateway**
 
-Note you need to add a env.json file with "DATABASE_URL":"YOUR_DATABASE_URL" for the API to work, also remember that sam is running the API using Docker so if your DB is on your local machine you need to use as host:"docker.for.mac.localhost".
+Note you need to add a env.json file to root with "DATABASE_URL":"YOUR_DATABASE_URL" for the API to work, also remember that sam is running the API using Docker so if your DB is on your local machine you need to use as host:"docker.for.mac.localhost".
 
 ```bash
 sam local start-api --env-vars env.json
@@ -44,13 +44,13 @@ You can also run
 make build-run
 ```
 
-which builds the project and then runs it locally using the env.json.
+which builds the project and then runs it locally using the env.json you created and put in root.
 
 If one of the the previous commands ran successfully you should now be able to hit the following base local endpoint to invoke the lambda functions `http://localhost:3000/` (test with `http://localhost:3000/quotes/random` for getting a random quote)
 
 ### Testing
 
-We use the `testing` package that comes built-in in Golang and you can simply run the following commands to test the various functionalities of the api:
+We use the `testing` package that comes built-in in Golang. Before running the tests you need to create a `.env` file in root with `DATABASE_URL=YOUR_DB_URL` then you can simply run the following commands to test the various functionalities of the api:
 
 For /authors
 ```shell
