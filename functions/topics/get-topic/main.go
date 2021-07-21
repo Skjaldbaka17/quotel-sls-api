@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/structs"
 	"github.com/Skjaldbaka17/quotel-sls-api/local-dependencies/utils"
@@ -18,10 +19,14 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /topic TOPICS GetTopic
-// Get quotes from a particular topic
+// swagger:route POST /topic topics GetTopic
+//
+// Get topic
+//
+// Use this route to get the quotes from the particular topic. For example get all the quotes from topic "Smile" for a great time.
+//
 // responses:
-//	200: topicViewsResponse
+//	200: quotesApiResponse
 //  400: incorrectBodyStructureResponse
 //  500: internalServerErrorResponse
 
@@ -52,7 +57,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	})
 
 	if requestBody.Topic != "" {
-		dbPoint = dbPoint.Where("lower(topic_name) = lower(?)", requestBody.Topic)
+		dbPoint = dbPoint.Where("topic_name = ?", strings.Title(strings.ToLower(requestBody.Topic)))
 	} else {
 		dbPoint = dbPoint.Where("topic_id = ?", requestBody.TopicId)
 	}

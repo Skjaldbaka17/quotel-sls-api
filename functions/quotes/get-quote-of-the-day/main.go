@@ -17,8 +17,12 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /quotes/qod QUOTES GetQuoteOfTheDay
-// gets the quote of the day
+// swagger:route POST /quotes/qod quotes GetQuoteOfTheDay
+//
+// Get the quote of the day (QOD)
+//
+// Use this route to get quote of the day for a language or for a topic -- starting from Middle of July 2021.
+//
 // responses:
 //	200: qodResponse
 //  400: incorrectBodyStructureResponse

@@ -17,8 +17,12 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /authors/aod AUTHORS GetAuthorOfTheDay
-// Gets the author of the day
+// swagger:route POST /authors/aod authors GetAuthorOfTheDay
+//
+// Get the author of the day (AOD)
+//
+// Use this route to get the AOD for today for "English" or "icelandic" authors
+//
 // responses:
 //	200: aodResponse
 //  400: incorrectBodyStructureResponse

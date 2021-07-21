@@ -42,9 +42,11 @@ func search(requestBody *structs.Request, dbPointer *gorm.DB) *gorm.DB {
 	return dbPointer
 }
 
-// swagger:route POST /search/authors SEARCH SearchAuthorsByString
+// swagger:route POST /search/authors search SearchAuthorsByString
 //
-// Authors search. Searching authors by a given search string
+// Search Authors
+//
+// Use this route to search for authors in the database.
 //
 // responses:
 //	200: authorsResponse

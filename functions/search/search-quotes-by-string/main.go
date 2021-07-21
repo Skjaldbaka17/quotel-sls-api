@@ -39,10 +39,14 @@ func search(requestBody *structs.Request, dbPointer *gorm.DB) *gorm.DB {
 	return dbPointer
 }
 
-// swagger:route POST /search/quotes SEARCH SearchQuotesByString
-// Quotes search. Searching quotes by a given search string
+// swagger:route POST /search search SearchQuotesByString
+//
+// Search quotes
+//
+// Use this route to search for quotes by a general full test search that searches for words and phrases in the quotes.
+//
 // responses:
-//  200: topicViewsResponse
+//  200: quotesApiResponse
 //  400: incorrectBodyStructureResponse
 //  500: internalServerErrorResponse
 

@@ -181,6 +181,7 @@ Resources:
   SearchByStringFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
+      Timeout: 30
       CodeUri: functions/search/search-by-string
       Handler: search-by-string
       Runtime: go1.x
@@ -194,6 +195,7 @@ Resources:
   SearchAuthorsByStringFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
+      Timeout: 30
       CodeUri: functions/search/search-authors-by-string
       Handler: search-authors-by-string
       Runtime: go1.x
@@ -207,6 +209,7 @@ Resources:
   SearchQuotesByStringFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
+      Timeout: 30
       CodeUri: functions/search/search-quotes-by-string
       Handler: search-quotes-by-string
       Runtime: go1.x

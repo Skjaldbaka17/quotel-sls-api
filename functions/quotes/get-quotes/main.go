@@ -17,11 +17,14 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /quotes QUOTES GetQuotes
-// Get quotes by their ids
+// swagger:route POST /quotes quotes GetQuotes
+//
+// Get quotes by ids
+//
+// Use this route to either get quotes straight from their ids or use it to get all the quotes from a particular author (by supplying the author's id)
 //
 // responses:
-//	200: searchViewsResponse
+//	200: quotesApiResponse
 //  400: incorrectBodyStructureResponse
 //  500: internalServerErrorResponse
 

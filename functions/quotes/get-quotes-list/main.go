@@ -18,12 +18,14 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /quotes/list QUOTES GetQuotesList
+// swagger:route POST /quotes/list quotes GetQuotesList
 //
-// Get list of quotes according to some ordering / parameters
+// List quotes
+//
+// Use this route to get a list of quotes according to some ordering / parameters -- list them based on length of quote, popularity or by their id
 //
 // responses:
-//	200: searchViewsResponse
+//	200: quotesApiResponse
 //  400: incorrectBodyStructureResponse
 //  500: internalServerErrorResponse
 
@@ -62,9 +64,12 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		if requestBody.OrderConfig.Reverse {
 			orderDirection = "ASC"
 		}
-		dbPointer = dbPointer.Order("count " + orderDirection)
+
+		//where > 0 just because otherwise most quotes have 0 count and therefore it takes a very long time to fetch even thought indexed, because most have same value in count
+		//note: this is only problem in the beginning
+		dbPointer = dbPointer.Where("count > 0").Order("count " + orderDirection)
 	case "length":
-		dbPointer = utils.SetMaxMinNumber(requestBody.OrderConfig, "length(quote)", orderDirection, dbPointer)
+		dbPointer = utils.SetMaxMinNumber(requestBody.OrderConfig, "quote_length", orderDirection, dbPointer)
 	default:
 		dbPointer = utils.SetMaxMinNumber(requestBody.OrderConfig, "id", orderDirection, dbPointer)
 	}

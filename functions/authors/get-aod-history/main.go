@@ -18,8 +18,12 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /authors/aod/history AUTHORS GetAODHistory
-// Gets the history for the authors of the day
+// swagger:route POST /authors/aod/history authors GetAODHistory
+//
+// Get the author of the day (AOD) history
+//
+// Use this route to get the history of authors of the day for "English" or "icelandic" authors -- starting from Middle of July 2021.
+//
 // responses:
 //	200: aodHistoryResponse
 //  400: incorrectBodyStructureResponse

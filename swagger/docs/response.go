@@ -1,87 +1,18 @@
 package docs
 
-// Data structure representing the response for authors
-// swagger:response authorsResponse
-type authorsResponseWrapper struct {
-	// An authors response
-	// in: body
-	Body []AuthorAPIModel
-}
+// ------------------------------------ AUTHORS ------------------------------------ //
 
-// Data structure representing the response for quotes
-// swagger:response searchViewsResponse
-type searchViewsResponseWrapper struct {
-	// Quotes response
-	// in: body
-	Body []SearchViewAPIModel
-}
-
-// Data structure representing the response for a quote
-// swagger:response searchViewResponse
-type searchViewResponseWrapper struct {
-	// A quote struct
-	// in: body
-	Body SearchViewAPIModel
-}
-
-// Data structure representing the response for a quote based on a particular topic
-// swagger:response topicViewResponse
-type topicViewResponseWrapper struct {
-	// A quote struct
-	// in: body
-	Body TopicViewAPIModel
-}
-
-// Data structure representing the response for a quote based on a particular topic
-// swagger:response topicViewsResponse
-type topicViewsResponseWrapper struct {
-	// A quote struct
-	// in: body
-	Body []TopicViewAPIModel
-}
-
-// Data structure representing the response for the author of the day
-// swagger:response aodResponse
-type aodResponseWrapper struct {
-	// The response to the author of the day request
-	// in: body
-	Body AodAPIModel
-}
-
-// Data structure representing the response for the history of AODs
-// swagger:response aodHistoryResponse
-type aodHistoryResponseWrapper struct {
-	// The response to the history of AODs request
-	// in: body
-	Body []AodAPIModel
-}
-
-// Data structure representing the response for the quote of the day
-// swagger:response qodResponse
-type qodResponseWrapper struct {
-	// The response to the quote of the day request
-	// in: body
-	Body QodViewAPIModel
-}
-
-// Data structure representing the response for the history of QODS
-// swagger:response qodHistoryResponse
-type qodHistoryResponseWrapper struct {
-	// The response to the history of QODs
-	// in: body
-	Body []QodViewAPIModel
-}
-
-// swagger:response successResponse
-type successResponseWrapper struct {
-	// The successful response to a successful setting of an asset
+// Data structure representing the error response to internal server errors
+// swagger:response internalServerErrorResponse
+type internalServerErrorResponseWrapper struct {
+	// The structure of the error response
 	// in: body
 	Body struct {
-		// Example: This request was a success
+		// The error message describing what happened
+		// Example: Please try again later.
 		Message string `json:"message"`
-		// HTTP status code
-		//
-		// Example: 200
+		// The http status code for this error
+		// Example: 500
 		StatusCode int `json:"statusCode"`
 	}
 }
@@ -95,50 +26,59 @@ type incorrectBodyStructureResponseWrapper struct {
 		// The error message
 		// Example: request body is not structured correctly.
 		Message string `json:"message"`
+		// The http status code for this error
+		// Example: 400
+		StatusCode int `json:"statusCode"`
 	}
 }
 
-// Data structure representing the error response to an internal server error
-// swagger:response internalServerErrorResponse
-type internalServerErrorResponseWrapper struct {
-	// The error response to an internal server
+// Data structure representing the response for the history of AODs
+// swagger:response aodHistoryResponse
+type aodHistoryResponseWrapper struct {
+	// The response to the get history of AODs request
 	// in: body
-	Body struct {
-		// The error message
-		// Example: Please try again later.
-		Message string `json:"message"`
+	Body []AodAPIModel
+}
+
+// Data structure representing the response for the author of the day
+// swagger:response aodResponse
+type aodResponseWrapper struct {
+	// The response to the author of the day request
+	// in: body
+	Body AodAPIModel
+}
+
+// Data structure representing the response for authors
+// swagger:response authorsResponse
+type authorsResponseWrapper struct {
+	// The structure of authors objects
+	// in: body
+	Body []AuthorAPIModel
+}
+
+// ------------------------------------ META ------------------------------------ //
+
+// Data structure for the nationalities in the database
+// swagger:response listNationalities
+type listNationalitiesWrapper struct {
+	// The nationalities supported by the api
+	// in: body
+	Body []struct {
+		// The nationalities supported
+		// example: ["American", "Italian"]
+		Nationalities []string `json:"nationalities"`
 	}
 }
 
-// Data structure representing the error response to a not found error
-// swagger:response notFoundResponse
-type notFoundResponseWrapper struct {
-	// The error response to a not found error
+// Data structure for the professions in the database
+// swagger:response listProfessions
+type listProfessionsWrapper struct {
+	// The professions supported by the api
 	// in: body
-	Body struct {
-		// The error message
-		// Example: No quote exists that matches the given parameters.
-		Message string `json:"message"`
-	}
-}
-
-// Data structure representing a list response for topics
-// swagger:response topicsResponse
-type topicsResponseWrapper struct {
-	// List of topics
-	// in: body
-	Body []TopicAPIModel
-}
-
-// Data structure representing the error response to an incorrect Credentials error
-// swagger:response incorrectCredentialsResponse
-type incorrectCredentialsResponseWrapper struct {
-	// The error response to an unothorized access
-	// in: body
-	Body struct {
-		// The error message
-		// Example: Valar Dohaeris
-		Message string `json:"message"`
+	Body []struct {
+		// The professions supported
+		// example: ["Rapper", "Politician"]
+		Professions []string `json:"professions"`
 	}
 }
 
@@ -151,5 +91,63 @@ type listOfStringsWrapper struct {
 		// The languages supported
 		// example: ["English", "Icelandic"]
 		Languages []string `json:"languages"`
+	}
+}
+
+// ------------------------------------ QUOTES ------------------------------------ //
+
+// Data structure representing the response for quotes
+// swagger:response quotesApiResponse
+type quotesApiResponseWrapper struct {
+	// Quotes response
+	// in: body
+	Body []QuoteAPIModel
+}
+
+// Data structure representing the response for the history of QODS
+// swagger:response qodHistoryResponse
+type qodHistoryResponseWrapper struct {
+	// The response to the history of QODs
+	// in: body
+	Body []QodAPIModel
+}
+
+// Data structure representing the response for the QOD
+// swagger:response qodResponse
+type qodResponseWrapper struct {
+	// The response to the quote of the day request
+	// in: body
+	Body QodAPIModel
+}
+
+// ------------------------------------ TOPICS ------------------------------------ //
+
+// Data structure representing the response for a quote based on a particular topic
+// swagger:response topicApiResponse
+type topicApiResponseWrapper struct {
+	// A quote struct
+	// in: body
+	Body TopicQuoteAPIModel
+}
+
+// Data structure representing a list response for topics
+// swagger:response topicsResponse
+type topicsResponseWrapper struct {
+	// List of topics
+	// in: body
+	Body []TopicAPIModel
+}
+
+// ------------------------------------ OTHER ------------------------------------ //
+
+// Data structure representing the error response to a not found error
+// swagger:response notFoundResponse
+type notFoundResponseWrapper struct {
+	// The error response to a not found error
+	// in: body
+	Body struct {
+		// The error message
+		// Example: No quote exists that matches the given parameters.
+		Message string `json:"message"`
 	}
 }

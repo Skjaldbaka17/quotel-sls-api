@@ -58,10 +58,10 @@ func (requestHandler *RequestHandler) GetRandomQuoteFromDb(requestBody *structs.
 
 	//Random quote from a particular topic
 	if len(requestBody.TopicIds) > 0 {
-		dbPointer = requestHandler.Db.Table("topicsview, plainto_tsquery(?) as plainq, to_tsquery(?) as phraseq", requestBody.SearchString, phrasesearch).Where("topic_id in ?", requestBody.TopicIds)
+		dbPointer = requestHandler.Db.Table("topicsview, plainto_tsquery(?) as plainq", requestBody.SearchString, phrasesearch).Where("topic_id in ?", requestBody.TopicIds)
 		shouldDoQuick = false
 	} else {
-		dbPointer = requestHandler.Db.Table("quotes, plainto_tsquery(?) as plainq, to_tsquery(?) as phraseq", requestBody.SearchString, phrasesearch)
+		dbPointer = requestHandler.Db.Table("quotes, plainto_tsquery(?) as plainq", requestBody.SearchString, phrasesearch)
 	}
 
 	//Random quote from a particular author
@@ -78,7 +78,7 @@ func (requestHandler *RequestHandler) GetRandomQuoteFromDb(requestBody *structs.
 	}
 
 	if requestBody.SearchString != "" {
-		dbPointer = dbPointer.Where("( quote_tsv @@ plainq OR quote_tsv @@ phraseq)")
+		dbPointer = dbPointer.Where("( quote_tsv @@ plainq )")
 		shouldDoQuick = false
 	}
 
@@ -86,11 +86,11 @@ func (requestHandler *RequestHandler) GetRandomQuoteFromDb(requestBody *structs.
 	if !shouldDoQuick {
 		dbPointer = dbPointer.Order("random()") //Randomized, O( n*log(n) )
 	} else {
-		dbPointer = dbPointer.Raw("select * from quotes tablesample system(0.1)")
+		dbPointer = dbPointer.Raw("select * from quotes tablesample system(0.1) limit 10")
 	}
 
 	//** ---------- Paramater configuratino for DB query ends ---------- **//
-	err := dbPointer.Limit(100).Find(&topicResult).Error
+	err := dbPointer.Limit(10).Find(&topicResult).Error
 
 	if err != nil {
 		return structs.QuoteDBModel{}, err

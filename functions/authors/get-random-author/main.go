@@ -18,10 +18,14 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /authors/random AUTHORS GetRandomAuthor
-// Get a random Author, and some of his quotes, according to the given parameters
+// swagger:route POST /authors/random authors GetRandomAuthor
+//
+// Get a random Author
+//
+// Use this route to get a random author, and some of his quotes.
+//
 // responses:
-//	200: searchViewsResponse
+//	200: quotesApiResponse
 //  400: incorrectBodyStructureResponse
 //  500: internalServerErrorResponse
 

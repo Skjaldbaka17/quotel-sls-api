@@ -1,7 +1,9 @@
 tags:
-  - name: SEARCH
-    description: Using text search for finding authors and quotes.
-  - name: QUOTES
-    description: Everthing with quotes.
-  - name: AUTHORS
-    description: Access all authors. Use this to get/explore authors, get a random author or see the Author of the day. 
+  - name: search
+    description: We built the /search route with full text phrase search in mind. Giving you the possibility of findind that one quote or author that you are looking for fast and easy -- if searching for single words that will take a loooooong time but short phrases or at least 2 nouns is lightning fast.
+  - name: quotes
+    description: With over 1.000.000 quote the /quotes route is the heart and soul of this api. This resource offers many products like quote of the day, which is ordered into topics and languages, random quote and lists. 
+  - name: authors
+    description: Ok, I lied. /authors is just as much the heart and soul of this api as /quotes. This api gives you access to over 30.000 authors and offers many products like author of the day, random author and list authors based on multiple parameters like 'age' and 'profession'. 
+  - name: topics
+    description: With over 100 topics the /topics route gives you direct access to the quotes important enough to be a part of a distinguished topic like 'Love'. 

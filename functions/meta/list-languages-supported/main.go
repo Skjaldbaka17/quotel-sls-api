@@ -16,12 +16,16 @@ type RequestHandler struct {
 var theReqHandler = RequestHandler{}
 var languages = []string{"English", "Icelandic"}
 
-// swagger:route GET /languages META GetLanguages
-// Get languages supported by the api
+// swagger:route POST /languages meta GetLanguages
+//
+// Get languages
+//
+// Use this route to get the languages supported by the api at any moment
+//
 // responses:
 //	200: listOfStrings
 
-// ListLanguages handles GET requests for getting the languages supported by the api
+// ListLanguages handles POST requests for getting the languages supported by the api
 func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	type response = struct {

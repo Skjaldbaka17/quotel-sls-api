@@ -17,8 +17,12 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /quotes/qod/history QUOTES GetQODHistory
-// Gets the history for the quotes of the day
+// swagger:route POST /quotes/qod/history quotes GetQODHistory
+//
+// Get the quote of the day (QOD) history
+//
+// Use this route to get the history of quotes of the day for each language or for each topic -- starting from Middle of July 2021.
+//
 // responses:
 //	200: qodHistoryResponse
 //  400: incorrectBodyStructureResponse

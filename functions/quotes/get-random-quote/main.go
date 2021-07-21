@@ -17,10 +17,15 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /quotes/random QUOTES GetRandomQuote
-// Get a random quote according to the given parameters
+// swagger:route POST /quotes/random quotes GetRandomQuote
+//
+// Get a random quote
+//
+// Use this route to get a random quote from the whole database, from specific topics like 'Motivational' or 'Love' or from a specific authro.
+// You can even supply a searchString that the returned random quote must contain.
+//
 // responses:
-//  200: topicViewResponse
+//  200: topicApiResponse
 //  400: incorrectBodyStructureResponse
 //  404: notFoundResponse
 //  500: internalServerErrorResponse

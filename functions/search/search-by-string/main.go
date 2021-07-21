@@ -41,35 +41,49 @@ func search(requestBody *structs.Request, dbPointer *gorm.DB, searchString strin
 }
 
 func authorSearch(requestBody *structs.Request, dbPointer *gorm.DB, searchString string) *gorm.DB {
-	table := "quotes"
-	//TODO: Validate that this topicId exists
-	if len(requestBody.TopicIds) > 0 {
-		table = "topicsview"
-	}
-	dbPointer = dbPointer.Table(table).
-		Where("( similarity(name, ?) > 0.4)", requestBody.SearchString)
-
-	dbPointer = utils.AuthorLanguageSQL(requestBody.Language, dbPointer)
-
-	if len(requestBody.TopicIds) > 0 {
-		dbPointer = dbPointer.Where("topic_id in ?", requestBody.TopicIds)
-	}
+	//Order by authorid to have definitive order (when for examplke some names rank the same for similarity), same for why quote_id
+	dbPointer = dbPointer.Table("authors").
+		Where("( similarity(name, ?) > 0.4)", requestBody.SearchString).
+		Clauses(clause.OrderBy{
+			Expression: clause.Expr{SQL: "similarity(name,?) desc", Vars: []interface{}{requestBody.SearchString}, WithoutParentheses: true},
+		})
 
 	//Particular language search
-	dbPointer = utils.QuoteLanguageSQL(requestBody.Language, dbPointer)
+	dbPointer = utils.AuthorLanguageSQL(requestBody.Language, dbPointer)
 
-	dbPointer = dbPointer.
-		Clauses(clause.OrderBy{
-			Expression: clause.Expr{SQL: "similarity(name,?) desc, id desc", Vars: []interface{}{requestBody.SearchString}, WithoutParentheses: true},
-		})
 	return dbPointer
+	// table := "quotes"
+	// //TODO: Validate that this topicId exists
+	// if len(requestBody.TopicIds) > 0 {
+	// 	table = "topicsview"
+	// }
+	// dbPointer = dbPointer.Table(table).
+	// 	Where("( similarity(name, ?) > 0.4)", requestBody.SearchString)
+
+	// dbPointer = utils.AuthorLanguageSQL(requestBody.Language, dbPointer)
+
+	// if len(requestBody.TopicIds) > 0 {
+	// 	dbPointer = dbPointer.Where("topic_id in ?", requestBody.TopicIds)
+	// }
+
+	// //Particular language search
+	// dbPointer = utils.QuoteLanguageSQL(requestBody.Language, dbPointer)
+
+	// dbPointer = dbPointer.
+	// 	Clauses(clause.OrderBy{
+	// 		Expression: clause.Expr{SQL: "similarity(name,?) desc, id desc", Vars: []interface{}{requestBody.SearchString}, WithoutParentheses: true},
+	// 	})
+	// return dbPointer
 }
 
-// swagger:route POST /search SEARCH SearchByString
-// Search for quotes / authors by a general string-search that searches both in the names of the authors and the quotes themselves
+// swagger:route POST /search search SearchByString
+//
+// Search
+//
+// Use this route to search for quotes / authors by a general full test search that searches both in the names of the authors and the quotes themselves
 //
 // responses:
-//  200: topicViewsResponse
+//  200: quotesApiResponse
 //  400: incorrectBodyStructureResponse
 //  500: internalServerErrorResponse
 
@@ -102,7 +116,43 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 			searchString := requestHandler.CheckForSpellingErrorsInSearchString(requestBody.SearchString, "unique_lexeme")
 			dbPointer = search(&requestBody, requestHandler.Db, searchString)
 		} else if i == 2 {
+			//Make nicer: --but what this is doing:
+			/*
+				First do authorsearch: do a general similarity search through the authors table (only 30.000 rows)...
+				If you find a matchin author: Fetch his/hers quotes from "quotes" in quoteId order and return.
+				If no match just break the loop and return an empty array signaling nothing was found to match the searchstring
+			*/
+			var results []structs.AuthorDBModel
 			dbPointer = authorSearch(&requestBody, requestHandler.Db, requestBody.SearchString)
+			err := utils.Pagination(requestBody, dbPointer).
+				Find(&results).Error
+			if err != nil {
+				log.Printf("Got error when querying authorDB in SearchByString: %s", err)
+				errResponse := structs.ErrorResponse{
+					Message: utils.InternalServerError,
+				}
+				return events.APIGatewayProxyResponse{
+					Body:       errResponse.ToString(),
+					StatusCode: http.StatusInternalServerError,
+				}, nil
+			}
+			if len(results) > 0 {
+				dbPointer = requestHandler.Db.Table("quotes").Where("author_id = ?", results[0].ID).Order("id")
+				err = utils.Pagination(requestBody, dbPointer).
+					Find(&topicResults).Error
+				if err != nil {
+					log.Printf("Got error when querying authorDB in SearchByString: %s", err)
+					errResponse := structs.ErrorResponse{
+						Message: utils.InternalServerError,
+					}
+					return events.APIGatewayProxyResponse{
+						Body:       errResponse.ToString(),
+						StatusCode: http.StatusInternalServerError,
+					}, nil
+				}
+				break
+			}
+			break
 		}
 
 		err := utils.Pagination(requestBody, dbPointer).

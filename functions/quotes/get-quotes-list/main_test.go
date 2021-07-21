@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"testing"
 	"time"
 
@@ -153,7 +154,7 @@ func TestHandler(t *testing.T) {
 				GetRequest(jsonStr, &respQuotes, t)
 
 				firstQuote := respQuotes[0]
-
+				log.Println("resp:", len(respQuotes))
 				if !firstQuote.IsIcelandic {
 					t.Fatalf("got %+v, but expected a quote in Icelandic.", firstQuote)
 				}

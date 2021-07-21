@@ -119,9 +119,11 @@ func checkTime(requestBody *structs.Request, dbPointer *gorm.DB) *gorm.DB {
 	return dbPointer
 }
 
-// swagger:route POST /authors/list AUTHORS ListAuthors
+// swagger:route POST /authors/list authors ListAuthors
 //
-// Get a list of authors according to some ordering / parameters
+// List authors based on parameters
+//
+// Use this route to get a list of authors according to some ordering / parameters -- for example based on age, when they where born, on popularity, profession or nationalities and many more
 //
 // responses:
 //	200: authorsResponse
@@ -148,7 +150,7 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	}
 
 	var authors []structs.AuthorDBModel
-	//** ---------- Paramatere configuratino for DB query begins ---------- **//
+	//** ---------- Paramatere configuration for DB query begins ---------- **//
 	dbPointer := requestHandler.Db.Table("authors")
 
 	dbPointer = utils.AuthorLanguageSQL(requestBody.Language, dbPointer)

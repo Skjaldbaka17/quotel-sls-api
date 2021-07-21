@@ -17,8 +17,11 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /authors AUTHORS GetAuthors
-// Get the authors by their ids
+// swagger:route POST /authors authors GetAuthors
+//
+// Get authors by ids
+//
+// Use this route to get the authors that have the given ids.
 //
 // responses:
 //	200: authorsResponse

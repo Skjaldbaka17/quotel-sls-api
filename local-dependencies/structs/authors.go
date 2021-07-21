@@ -60,8 +60,6 @@ type AodAPIModel struct {
 	Nationality string `json:"nationality,omitempty"`
 	Date        string `json:"date,omitempty"`
 	IsIcelandic bool   `json:"isIcelandic,omitempty"`
-	TopicId     uint   `json:"topicId,omitempty"`
-	TopicName   string `json:"topicName,omitempty"`
 	AuthorId    uint   `json:"authorId,omitempty"`
 }
 

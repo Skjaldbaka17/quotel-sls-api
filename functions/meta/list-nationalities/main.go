@@ -16,12 +16,17 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route GET /languages META GetLanguages
-// Get languages supported by the api
+// swagger:route POST /nationalities meta GetNationalities
+//
+// Get nationalities
+//
+// Use this route to get all authors' nationalities available in the api at any given moment
+//
 // responses:
-//	200: listOfStrings
+//	200: listNationalities
+//  500: internalServerErrorResponse
 
-// ListLanguages handles GET requests for getting the languages supported by the api
+// ListNationalities handles POST requests for getting the disctint nationalities in the database
 func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	//Initialize DB if requestHandler.Db = nil
