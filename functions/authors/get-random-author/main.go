@@ -62,13 +62,20 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	dbPointer = utils.AuthorLanguageSQL(requestBody.Language, dbPointer)
 	//** ---------- Paramatere configuratino for DB query ends ---------- **//
 
+	var err error
 	if !shouldDoQuick {
-		dbPointer = dbPointer.Order("random()")
+		err = dbPointer.Order("random()").First(&author).Error
 	} else {
-		dbPointer = dbPointer.Raw("select * from authors tablesample system(0.25)")
-	}
+		err = dbPointer.Raw("select * from authors tablesample system(0.25)").First(&author).Error
+		//If no author in row
+		if err != nil {
+			err = dbPointer.Raw("select * from authors tablesample system(0.25)").First(&author).Error
 
-	err := dbPointer.First(&author).Error
+			if err != nil {
+				err = dbPointer.Raw("select * from authors tablesample system(0.25)").First(&author).Error
+			}
+		}
+	}
 
 	if err != nil {
 		log.Printf("Got error when querying DB, first one, in GetRandomAuthor: %s", err)
