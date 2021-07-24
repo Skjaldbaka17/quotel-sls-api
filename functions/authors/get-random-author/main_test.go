@@ -130,6 +130,30 @@ func TestHandler(t *testing.T) {
 			}
 		})
 
+		t.Run("Should return random author 100 times with a maximum of 2 of his quotes", func(t *testing.T) {
+			maxQuotes := 2
+			var jsonStr = fmt.Sprintf(`{"maxQuotes":%d}`, maxQuotes)
+			var authors []structs.QuoteAPIModel
+
+			for i := 0; i < 100; i++ {
+				res := GetRequest(jsonStr, &authors, t)
+
+				if len(authors) == 0 {
+					t.Fatalf("Expected at least 1 quote but got response body: %s", res)
+				}
+				firstAuthor := authors[0]
+				if firstAuthor.Name == "" || firstAuthor.AuthorId == 0 {
+					t.Fatalf("Expected a random author but got an empty name for author")
+				}
+
+				if len(authors) > 2 {
+					t.Fatalf("Expected max 2 quotes but got %d nr %d", len(authors), i)
+				}
+				authors = []structs.QuoteAPIModel{}
+			}
+
+		})
+
 	})
 
 }

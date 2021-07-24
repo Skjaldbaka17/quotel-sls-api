@@ -66,13 +66,12 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 	if !shouldDoQuick {
 		err = dbPointer.Order("random()").First(&author).Error
 	} else {
-		err = dbPointer.Raw("select * from authors tablesample system(0.25)").First(&author).Error
-		//If no author in row
-		if err != nil {
-			err = dbPointer.Raw("select * from authors tablesample system(0.25)").First(&author).Error
-
-			if err != nil {
-				err = dbPointer.Raw("select * from authors tablesample system(0.25)").First(&author).Error
+		//If no author in row then do the query again
+		for i := 0; i < 100; i++ {
+			err = nil
+			err = requestHandler.Db.Raw("select * from authors tablesample system(0.25)").First(&author).Error
+			if err == nil {
+				break
 			}
 		}
 	}
