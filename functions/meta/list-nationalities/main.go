@@ -16,7 +16,7 @@ type RequestHandler struct {
 
 var theReqHandler = RequestHandler{}
 
-// swagger:route POST /nationalities meta GetNationalities
+// swagger:route POST /meta/nationalities meta GetNationalities
 //
 // Get nationalities
 //

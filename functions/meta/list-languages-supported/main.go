@@ -16,7 +16,7 @@ type RequestHandler struct {
 var theReqHandler = RequestHandler{}
 var languages = []string{"English", "Icelandic"}
 
-// swagger:route POST /languages meta GetLanguages
+// swagger:route POST /meta/languages meta GetLanguages
 //
 // Get languages
 //

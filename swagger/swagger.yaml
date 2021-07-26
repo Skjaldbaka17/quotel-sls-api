@@ -679,7 +679,7 @@ paths:
       summary: Get a random Author
       tags:
       - authors
-  /languages:
+  /meta/languages:
     post:
       description: Use this route to get the languages supported by the api at any
         moment
@@ -690,7 +690,7 @@ paths:
       summary: Get languages
       tags:
       - meta
-  /nationalities:
+  /meta/nationalities:
     post:
       description: Use this route to get all authors' nationalities available in the
         api at any given moment
@@ -703,7 +703,7 @@ paths:
       summary: Get nationalities
       tags:
       - meta
-  /professions:
+  /meta/professions:
     post:
       description: Use this route to get all authors' professions available in the
         api at any given moment
