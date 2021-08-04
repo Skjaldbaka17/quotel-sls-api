@@ -151,17 +151,17 @@ func (requestHandler *RequestHandler) handler(request events.APIGatewayProxyRequ
 		}
 	}
 
-	if len(topicResults) == 0 {
-		errResponse := structs.ErrorResponse{
-			Message:    "There are no quotes matching your search. Please check your string for spelling errors etc.",
-			StatusCode: http.StatusOK,
-		}
-		return events.APIGatewayProxyResponse{
-			Body:       errResponse.ToString(),
-			StatusCode: http.StatusOK,
-		}, nil
+	// if len(topicResults) == 0 {
+	// 	errResponse := structs.ErrorResponse{
+	// 		Message:    "There are no quotes matching your search. Please check your string for spelling errors etc.",
+	// 		StatusCode: http.StatusOK,
+	// 	}
+	// 	return events.APIGatewayProxyResponse{
+	// 		Body:       errResponse.ToString(),
+	// 		StatusCode: http.StatusOK,
+	// 	}, nil
 
-	}
+	// }
 	//Update popularity in background! TODO: Add as its own lambda function
 	go requestHandler.TopicViewAppearInSearchCountIncrement(topicResults)
 	apiResults := structs.ConvertToQuotesAPIModel(topicResults)
